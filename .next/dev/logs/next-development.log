@@ -1,0 +1,21 @@
+[00:00:02.739] Server  LOG     
+[00:00:02.739] Server  LOG       We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+[00:00:02.739] Server  LOG       The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+[00:00:02.740] Server  LOG       	- include was updated to add '.next/dev/types/**/*.ts'
+[00:00:02.740] Server  LOG     
+[00:00:02.862] Server  LOG     ✓ Ready in 2.6s
+[00:00:06.314] Server  LOG     ○ Compiling / ...
+[00:00:07.208] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:07.208] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:00:07.208] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320303838} /_vercel/insights/view
+[00:00:19.915] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/portfolio color: rgb(120, 120, 120) color: inherit {"dp":"/portfolio","o":"http://localhost:3000/portfolio","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320316542} /_vercel/insights/view
+[00:00:20.748] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/blog color: rgb(120, 120, 120) color: inherit {"dp":"/blog","o":"http://localhost:3000/blog","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320317378} /_vercel/insights/view
+[00:00:21.834] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/portfolio color: rgb(120, 120, 120) color: inherit {"dp":"/portfolio","o":"http://localhost:3000/portfolio","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320318461} /_vercel/insights/view
+[00:00:34.258] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/faq color: rgb(120, 120, 120) color: inherit {"dp":"/faq","o":"http://localhost:3000/faq","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320330888} /_vercel/insights/view
+[00:00:34.713] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/blog color: rgb(120, 120, 120) color: inherit {"dp":"/blog","o":"http://localhost:3000/blog","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320331341} /_vercel/insights/view
+[00:00:36.234] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/#contact color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/#contact","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320332860} /_vercel/insights/view
+[00:00:38.544] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/portfolio color: rgb(120, 120, 120) color: inherit {"dp":"/portfolio","o":"http://localhost:3000/portfolio","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320335171} /_vercel/insights/view
+[00:00:42.022] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320338649} /_vercel/insights/view
+[00:00:48.258] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/portfolio color: rgb(120, 120, 120) color: inherit {"dp":"/portfolio","o":"http://localhost:3000/portfolio","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320344885} /_vercel/insights/view
+[00:00:51.073] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773320347697} /_vercel/insights/view
