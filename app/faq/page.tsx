@@ -11,19 +11,19 @@ export const metadata = {
 
 export default function FAQPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-black">
       <Header />
 
       <main>
         {/* FAQ Section */}
-        <section className="py-16 md:py-24">
+        <section className="py-16 md:py-24 bg-black">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Page Header */}
             <div className="text-center mb-16">
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+              <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
                 Frequently Asked Questions
               </h1>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-gray-300">
                 Find answers to common questions about our services
               </p>
             </div>
@@ -34,12 +34,12 @@ export default function FAQPage() {
         </section>
 
         {/* Contact CTA */}
-        <section className="bg-gray-50 py-16 md:py-24">
+        <section className="bg-gray-900 py-16 md:py-24">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Still have questions?
             </h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-lg text-gray-300 mb-8">
               Don't see what you're looking for? Reach out and we'll be happy to help!
             </p>
           </div>

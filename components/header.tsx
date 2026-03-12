@@ -18,11 +18,11 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
+    <header className="sticky top-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-sm border-b border-gray-300 dark:border-gray-800">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold text-gray-900 dark:text-white">
-          Studio
+        <Link href="/" className="text-2xl font-bold text-black dark:text-white">
+          KCAPTURED
         </Link>
 
         {/* Desktop Navigation */}
@@ -31,7 +31,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-sm font-medium"
+              className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors text-sm font-medium"
             >
               {link.label}
             </Link>
@@ -43,7 +43,7 @@ export function Header() {
           <ThemeToggle />
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="md:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg transition-colors"
             aria-label="Toggle menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -57,14 +57,14 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 md:hidden"
+            className="absolute top-full left-0 right-0 bg-white dark:bg-black border-b border-gray-300 dark:border-gray-800 md:hidden"
           >
             <div className="flex flex-col p-4 gap-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors font-medium"
+                  className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors font-medium"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}

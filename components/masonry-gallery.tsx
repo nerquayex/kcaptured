@@ -33,8 +33,8 @@ export function MasonryGallery() {
             whileTap={{ scale: 0.95 }}
             className={`px-6 py-2 rounded-lg font-medium transition-all ${
               selectedCategory === cat.value
-                ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700'
+                ? 'bg-black dark:bg-white text-white dark:text-black'
+                : 'bg-gray-200 dark:bg-gray-800 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700'
             }`}
           >
             {cat.label}
@@ -47,7 +47,7 @@ export function MasonryGallery() {
         layout
         className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4"
       >
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {filteredImages.map((image) => (
             <motion.div
               key={image.id}
@@ -69,7 +69,6 @@ export function MasonryGallery() {
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
               </div>
-              <p className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">{image.title}</p>
             </motion.div>
           ))}
         </AnimatePresence>

@@ -10,26 +10,26 @@ export interface Testimonial {
 export const testimonials: Testimonial[] = [
   {
     id: '1',
-    clientName: 'Sarah Johnson',
-    clientRole: 'Brand Owner',
-    content: 'The photos captured my brand perfectly. Professional, creative, and delivered on time!',
-    videoUrl: '', // REPLACE WITH YOUR CLOUDINARY VIDEO URL
+    clientName: 'Happy Client',
+    clientRole: 'Lifestyle Session',
+    content: 'The photos are absolutely stunning! Perfect captures of our special moments.',
+    videoUrl: 'https://res.cloudinary.com/dq4tkpuu4/video/upload/v1773351713/IMG_4097_wpvm2t.mov',
     imageUrl: 'https://via.placeholder.com/100x100',
   },
   {
     id: '2',
-    clientName: 'Michael Chen',
-    clientRole: 'Entrepreneur',
-    content: 'Best headshot session I\'ve had. The photographer really made me feel comfortable and confident.',
-    videoUrl: '', // REPLACE WITH YOUR CLOUDINARY VIDEO URL
+    clientName: 'Professional',
+    clientRole: 'Studio Session',
+    content: 'Amazing headshots! The quality and professionalism exceeded expectations.',
+    videoUrl: 'https://res.cloudinary.com/dq4tkpuu4/video/upload/v1773351707/IMG_1792_vankcs.mov',
     imageUrl: 'https://via.placeholder.com/100x100',
   },
   {
     id: '3',
-    clientName: 'Emma Davis',
-    clientRole: 'Model',
-    content: 'Exceptional work! The attention to detail and creative vision was outstanding.',
-    videoUrl: '', // REPLACE WITH YOUR CLOUDINARY VIDEO URL
+    clientName: 'Creative Director',
+    clientRole: 'Brand Shoot',
+    content: 'Fantastic work! The photographer really understood our vision and delivered brilliantly.',
+    videoUrl: 'https://res.cloudinary.com/dq4tkpuu4/video/upload/v1773351706/FAC3213C-DDD1-465F-A2D3-713549EC094E_n5hscs.mov',
     imageUrl: 'https://via.placeholder.com/100x100',
   },
 ];

@@ -8,25 +8,43 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Photography Studio | Lifestyle & Studio Photography',
-  description: 'Professional photography services specializing in lifestyle and studio portraits. Authentic moments captured beautifully.',
-  generator: 'v0.app',
+  title: 'KCAPTURED - Professional Photography | Lifestyle & Studio',
+  description: 'Premium photography services specializing in authentic lifestyle and professional studio portraits. Capturing beautiful moments that tell your story.',
+  keywords: ['photography', 'lifestyle photography', 'studio photography', 'professional portraits', 'photographer'],
+  authors: [{ name: 'KCAPTURED' }],
+  creator: 'KCAPTURED',
+  publisher: 'KCAPTURED',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
   icons: {
-    icon: [
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+    shortcut: '/favicon.ico',
+  },
+  openGraph: {
+    title: 'KCAPTURED - Professional Photography',
+    description: 'Premium lifestyle and studio photography services',
+    url: 'https://kcaptured.com',
+    siteName: 'KCAPTURED',
+    type: 'website',
+    images: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773348310/35-2W1A0773__2_jjv1ug.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'KCAPTURED Photography',
       },
     ],
-    apple: '/apple-icon.png',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'KCAPTURED - Professional Photography',
+    description: 'Premium lifestyle and studio photography services',
+    creator: '@kcaptured',
+    images: ['https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773348310/35-2W1A0773__2_jjv1ug.jpg'],
   },
 }
 
@@ -37,7 +55,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="font-sans antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50">
+      <body className="font-sans antialiased bg-white dark:bg-black text-gray-900 dark:text-white">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
           <Analytics />

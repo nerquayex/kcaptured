@@ -4,22 +4,22 @@ import { ArrowRight } from 'lucide-react';
 
 export function BlogPostCard({ post }: { post: BlogPost }) {
   return (
-    <article className="flex flex-col h-full border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+    <article className="flex flex-col h-full border border-gray-800 rounded-lg p-6 bg-gray-950 hover:shadow-lg dark:hover:shadow-black transition-shadow">
       {/* Meta Info */}
-      <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
-        <span className="inline-block px-3 py-1 bg-gray-100 rounded-full text-xs font-medium text-gray-700">
+      <div className="flex items-center justify-between mb-4 text-sm text-gray-400">
+        <span className="inline-block px-3 py-1 bg-gray-900 rounded-full text-xs font-medium text-gray-200">
           {post.category}
         </span>
         <span>{post.readTime} min read</span>
       </div>
 
       {/* Title */}
-      <h3 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
+      <h3 className="text-xl font-bold text-white mb-3 leading-tight">
         {post.title}
       </h3>
 
       {/* Excerpt */}
-      <p className="text-gray-600 mb-4 flex-grow">
+      <p className="text-gray-400 mb-4 flex-grow">
         {post.excerpt}
       </p>
 
@@ -35,7 +35,7 @@ export function BlogPostCard({ post }: { post: BlogPost }) {
       {/* Read More Link */}
       <Link
         href={`/blog/${post.slug}`}
-        className="inline-flex items-center gap-2 text-gray-900 font-semibold group"
+        className="inline-flex items-center gap-2 text-white font-semibold group hover:text-gray-300 transition-colors"
       >
         Read Article
         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
