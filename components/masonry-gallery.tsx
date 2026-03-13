@@ -1,6 +1,7 @@
 'use client';
 
 import { portfolioImages } from '@/lib/portfolio-data';
+import { optimizeCloudinaryUrl } from '@/lib/utils';
 import { useState } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
@@ -61,7 +62,7 @@ export function MasonryGallery() {
             >
               <div className="relative bg-gray-200 dark:bg-gray-700 overflow-hidden rounded-lg">
                 <img
-                  src={image.cloudinaryUrl}
+                  src={optimizeCloudinaryUrl(image.cloudinaryUrl)}
                   alt={image.title}
                   width={image.width}
                   height={image.height}
@@ -106,7 +107,7 @@ export function MasonryGallery() {
 
               {/* Image */}
               <img
-                src={selectedImage.cloudinaryUrl}
+                src={optimizeCloudinaryUrl(selectedImage.cloudinaryUrl)}
                 alt={selectedImage.title}
                 className="w-full h-auto rounded-lg"
               />
