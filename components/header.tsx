@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 // Custom Instagram Icon with brand colors
 function InstagramIcon() {
@@ -86,13 +87,14 @@ export function Header() {
             </a>
           </div>
 
-          <button
+          <Button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            size="icon"
+            className="bg-transparent border-white text-white hover:bg-white hover:text-black md:hidden"
             aria-label="Toggle menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </Button>
         </div>
 
         {/* Mobile Navigation */}

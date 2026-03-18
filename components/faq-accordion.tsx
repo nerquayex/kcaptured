@@ -3,6 +3,7 @@
 import { FAQItem } from '@/lib/faq-data';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface FAQAccordionProps {
   items: FAQItem[];
@@ -36,22 +37,23 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
                 key={item.id}
                 className="border border-gray-200 rounded-lg overflow-hidden"
               >
-                <button
+                <Button
                   onClick={() =>
                     setOpenId(openId === item.id ? null : item.id)
                   }
-                  className="w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-gray-50 transition-colors text-left"
+                  className="w-full justify-between text-left"
+                  variant="default"
                 >
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-white">
                     {item.question}
                   </span>
                   <ChevronDown
                     size={20}
-                    className={`flex-shrink-0 text-gray-600 transition-transform ${
+                    className={`flex-shrink-0 text-white transition-transform ${
                       openId === item.id ? 'rotate-180' : ''
                     }`}
                   />
-                </button>
+                </Button>
 
                 {openId === item.id && (
                   <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">

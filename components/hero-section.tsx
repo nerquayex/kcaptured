@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 export function HeroSection() {
   const [displayedText, setDisplayedText] = useState('');
@@ -88,12 +89,9 @@ export function HeroSection() {
           </motion.a>
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href="/portfolio"
-              className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-black transition-colors"
-            >
-              View Portfolio
-            </Link>
+            <Button asChild>
+              <Link href="/portfolio">View Portfolio</Link>
+            </Button>
           </motion.div>
         </motion.div>
       </motion.div>

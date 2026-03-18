@@ -123,4 +123,16 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  button {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white bg-transparent text-white font-semibold transition-colors;
+  }
+
+  button:hover {
+    @apply bg-white text-black;
+  }
+
+  button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
 }

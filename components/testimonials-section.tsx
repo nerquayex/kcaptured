@@ -3,6 +3,7 @@
 import { testimonials } from '@/lib/testimonials-data';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function TestimonialsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -70,13 +71,14 @@ export function TestimonialsSection() {
 
           {/* Navigation */}
           <div className="flex items-center justify-center gap-4">
-            <button
+            <Button
               onClick={prev}
-              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              size="icon"
+              className="bg-transparent border-white text-white hover:bg-white hover:text-black"
               aria-label="Previous testimonial"
             >
-              <ChevronLeft size={24} className="text-white" />
-            </button>
+              <ChevronLeft size={24} />
+            </Button>
 
             <div className="flex gap-2">
               {testimonials.map((_, idx) => (
@@ -91,13 +93,14 @@ export function TestimonialsSection() {
               ))}
             </div>
 
-            <button
+            <Button
               onClick={next}
-              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              size="icon"
+              className="bg-transparent border-white text-white hover:bg-white hover:text-black"
               aria-label="Next testimonial"
             >
-              <ChevronRight size={24} className="text-white" />
-            </button>
+              <ChevronRight size={24} />
+            </Button>
           </div>
         </div>
       </div>

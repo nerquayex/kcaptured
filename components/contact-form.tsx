@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,14 +108,10 @@ export function ContactForm() {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-black dark:bg-white text-white dark:text-black font-semibold py-3 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:bg-gray-600 dark:disabled:bg-gray-600 transition-colors flex items-center justify-center gap-2"
-          >
+          <Button type="submit" disabled={isSubmitting} className="w-full">
             <Mail size={20} />
             {isSubmitting ? 'Sending...' : 'Send Message'}
-          </button>
+          </Button>
 
           {submitted && (
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-center">

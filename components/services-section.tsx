@@ -4,8 +4,10 @@ import { services } from '@/lib/services-data';
 import { CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 export function ServicesSection() {
+  const MotionButton = motion(Button);
   const [selectedCategory, setSelectedCategory] = useState<'lifestyle' | 'studio' | 'all'>('all');
 
   const filteredServices = selectedCategory === 'all' 
@@ -67,7 +69,7 @@ export function ServicesSection() {
             { label: 'Lifestyle', value: 'lifestyle' },
             { label: 'Studio', value: 'studio' },
           ].map((cat) => (
-            <motion.button
+            <MotionButton
               key={cat.value}
               onClick={() => setSelectedCategory(cat.value as 'lifestyle' | 'studio' | 'all')}
               whileHover={{ scale: 1.05 }}
@@ -75,11 +77,11 @@ export function ServicesSection() {
               className={`px-6 py-2 rounded-lg font-medium transition-all ${
                 selectedCategory === cat.value
                   ? 'bg-white text-black'
-                  : 'bg-gray-700 text-white hover:bg-gray-600'
+                  : 'bg-transparent text-white'
               }`}
             >
               {cat.label}
-            </motion.button>
+            </MotionButton>
           ))}
         </div>
 

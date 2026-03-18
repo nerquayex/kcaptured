@@ -6,8 +6,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 export function MasonryGallery() {
+  const MotionButton = motion(Button);
+
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'lifestyle' | 'studio'>('all');
   const [selectedImage, setSelectedImage] = useState<typeof portfolioImages[0] | null>(null);
 
@@ -27,19 +30,19 @@ export function MasonryGallery() {
       {/* Category Filters */}
       <div className="flex justify-center gap-4 mb-12">
         {categories.map((cat) => (
-          <motion.button
+          <MotionButton
             key={cat.value}
             onClick={() => setSelectedCategory(cat.value)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={`px-6 py-2 rounded-lg font-medium transition-all ${
               selectedCategory === cat.value
-                ? 'bg-black dark:bg-white text-white dark:text-black'
-                : 'bg-gray-200 dark:bg-gray-800 text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700'
+                ? 'bg-white text-black'
+                : 'bg-transparent text-white'
             }`}
           >
             {cat.label}
-          </motion.button>
+          </MotionButton>
         ))}
       </div>
 
@@ -100,15 +103,16 @@ export function MasonryGallery() {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
-              <motion.button
+              <MotionButton
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setSelectedImage(null)}
-                className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+                size="icon"
+                className="absolute -top-10 right-0 bg-transparent border-white text-white hover:bg-white hover:text-black"
                 aria-label="Close lightbox"
               >
                 <X size={32} />
-              </motion.button>
+              </MotionButton>
 
               {/* Image */}
               <Image
