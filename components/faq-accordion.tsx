@@ -41,15 +41,15 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
                   onClick={() =>
                     setOpenId(openId === item.id ? null : item.id)
                   }
-                  className="w-full justify-between text-left"
+                  className="w-full justify-between text-left bg-black/50 backdrop-blur-sm border-gray-700 text-white hover:bg-white/90 hover:text-black"
                   variant="default"
                 >
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold">
                     {item.question}
                   </span>
                   <ChevronDown
                     size={20}
-                    className={`flex-shrink-0 text-white transition-transform ${
+                    className={`flex-shrink-0 transition-transform ${
                       openId === item.id ? 'rotate-180' : ''
                     }`}
                   />

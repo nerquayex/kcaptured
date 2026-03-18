@@ -45,13 +45,12 @@ export function HeroSection() {
   };
 
   return (
-    <section 
-      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-cover bg-center"
+    <section
+      className="relative min-h-[70vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden bg-center bg-contain md:bg-cover bg-local md:bg-fixed"
       style={{
         backgroundImage: 'url(https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773509980/IMG_2113_mozlnx.png)',
         backgroundColor: '#000000',
         opacity: 1.3,
-        backgroundAttachment: 'fixed',
       }}
     >
       {/* Dark overlay for text readability */}
