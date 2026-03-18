@@ -117,7 +117,7 @@ export function ServicesSection() {
                 </p>
               </div>
 
-              <ul className="space-y-3">
+              <ul className="space-y-3 mb-6">
                 {service.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3">
                     <CheckCircle size={18} className="text-white flex-shrink-0 mt-0.5" />
@@ -125,6 +125,16 @@ export function ServicesSection() {
                   </li>
                 ))}
               </ul>
+
+              <Button asChild className="w-full">
+                <a
+                  href="https://www.instagram.com/kcaptures_.1?igsh=MTc2c244bDZqOXRtbA=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Book Now on Instagram
+                </a>
+              </Button>
             </motion.div>
           ))}
         </motion.div>

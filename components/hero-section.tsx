@@ -68,25 +68,15 @@ export function HeroSection() {
           Photography That Tells Your Story
         </motion.h1> */}
 
-        <motion.div variants={itemVariants} className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+        <motion.div
+          variants={itemVariants}
+          className="hidden sm:block text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed"
+        >
           {displayedText}
           <span className="animate-pulse">|</span>
         </motion.div>
 
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-          <motion.a
-            href="https://www.instagram.com/kcaptures_.1?igsh=MTc2c244bDZqOXRtbA=="
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative inline-flex items-center justify-center px-8 py-4 bg-white text-black font-semibold rounded-lg overflow-hidden group transition-colors"
-          >
-            <span className="relative z-10">Book Now on Instagram</span>
-            <ArrowRight className="ml-2 relative z-10 group-hover:translate-x-1 transition-transform" size={20} />
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
-          </motion.a>
-
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button asChild>
               <Link href="/portfolio">View Portfolio</Link>
