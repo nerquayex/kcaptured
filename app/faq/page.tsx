@@ -34,7 +34,7 @@ export default function FAQPage() {
         </section>
 
         {/* Contact CTA */}
-        <section className="bg-gray-900 py-16 md:py-24">
+        {/* <section className="bg-gray-900 py-16 md:py-24">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Still have questions?
@@ -43,7 +43,7 @@ export default function FAQPage() {
               Don't see what you're looking for? Reach out and we'll be happy to help!
             </p>
           </div>
-        </section>
+        </section> */}
 
         {/* Contact Form */}
         <ContactForm />
