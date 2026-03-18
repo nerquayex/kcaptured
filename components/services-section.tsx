@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
 export function ServicesSection() {
-  const MotionButton = motion(Button);
+  const MotionButton = motion.create(Button);
   const [selectedCategory, setSelectedCategory] = useState<'lifestyle' | 'studio' | 'all'>('all');
 
   const filteredServices = selectedCategory === 'all' 
@@ -63,7 +63,7 @@ export function ServicesSection() {
         </motion.div>
 
         {/* Category Filter */}
-        <div className="flex justify-center gap-4 mb-12">
+        <div className="flex justify-center gap-2 sm:gap-4 mb-12 flex-wrap">
           {[
             { label: 'All Services', value: 'all' },
             { label: 'Lifestyle', value: 'lifestyle' },
@@ -74,7 +74,7 @@ export function ServicesSection() {
               onClick={() => setSelectedCategory(cat.value as 'lifestyle' | 'studio' | 'all')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              className={`px-3 sm:px-6 py-1 sm:py-2 text-sm sm:text-base rounded-lg font-medium transition-all ${
                 selectedCategory === cat.value
                   ? 'bg-white text-black'
                   : 'bg-transparent text-white'

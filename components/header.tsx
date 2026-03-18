@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ function TikTokIcon() {
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -41,6 +43,11 @@ export function Header() {
     { href: '/faq', label: 'FAQ' },
     { href: '/#contact', label: 'Contact' },
   ];
+
+  const isActive = (href: string) => {
+    if (href === '/#contact') return pathname === '/';
+    return pathname === href;
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-sm border-b border-gray-300 dark:border-gray-800">
@@ -56,7 +63,11 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors text-sm font-medium"
+              className={`text-sm font-medium transition-colors ${
+                isActive(link.href)
+                  ? 'text-black dark:text-white underline underline-offset-4'
+                  : 'text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white'
+              }`}
             >
               {link.label}
             </Link>
@@ -111,7 +122,11 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors font-medium"
+                  className={`font-medium transition-colors ${
+                    isActive(link.href)
+                      ? 'text-black dark:text-white underline underline-offset-4'
+                      : 'text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white'
+                  }`}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
@@ -124,7 +139,7 @@ export function Header() {
                   href="https://www.instagram.com/kcaptures_.1?igsh=MTc2c244bDZqOXRtbA=="
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:opacity-75 transition-opacity"
+                  className="text-gray-700 dark:text-white hover:opacity-75 transition-opacity"
                   aria-label="Follow on Instagram"
                 >
                   <InstagramIcon />
@@ -133,7 +148,7 @@ export function Header() {
                   href="https://www.tiktok.com/@yourusername"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:opacity-75 transition-opacity"
+                  className="text-gray-700 dark:text-white hover:opacity-75 transition-opacity"
                   aria-label="Follow on TikTok"
                 >
                   <TikTokIcon />

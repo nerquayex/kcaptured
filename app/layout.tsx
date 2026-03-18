@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -7,6 +7,16 @@ import './globals.css'
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+}
+
 export const metadata: Metadata = {
   title: 'KCAPTURED - Professional Photography | Lifestyle & Studio',
   description: 'Premium photography services specializing in authentic lifestyle and professional studio portraits. Capturing beautiful moments that tell your story.',
@@ -14,11 +24,6 @@ export const metadata: Metadata = {
   authors: [{ name: 'KCAPTURED' }],
   creator: 'KCAPTURED',
   publisher: 'KCAPTURED',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-icon.png',

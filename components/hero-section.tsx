@@ -19,7 +19,7 @@ export function HeroSection() {
       } else {
         clearInterval(timer);
       }
-    }, 50); // 50ms per letter
+    }, 30); // 50ms per letter
 
     return () => clearInterval(timer);
   }, []);
@@ -46,11 +46,10 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative min-h-[70vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden bg-center bg-contain md:bg-cover bg-local md:bg-fixed"
+      className="relative h-screen md:min-h-[90vh] flex md:items-center md:justify-center overflow-hidden bg-cover bg-center"
       style={{
         backgroundImage: 'url(https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773509980/IMG_2113_mozlnx.png)',
         backgroundColor: '#000000',
-        opacity: 1.3,
       }}
     >
       {/* Dark overlay for text readability */}
@@ -76,7 +75,7 @@ export function HeroSection() {
           <span className="animate-pulse">|</span>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center absolute bottom-[20%] left-1/2 -translate-x-1/2 md:relative md:bottom-auto md:left-auto md:translate-x-0 md:mt-12">
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button asChild>
               <Link href="/portfolio">View Portfolio</Link>

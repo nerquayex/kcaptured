@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
 export function MasonryGallery() {
-  const MotionButton = motion(Button);
+  const MotionButton = motion.create(Button);
 
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'lifestyle' | 'studio'>('all');
   const [selectedImage, setSelectedImage] = useState<typeof portfolioImages[0] | null>(null);
@@ -28,14 +28,14 @@ export function MasonryGallery() {
   return (
     <>
       {/* Category Filters */}
-      <div className="flex justify-center gap-4 mb-12">
+      <div className="flex justify-center gap-2 sm:gap-4 mb-12 flex-wrap">
         {categories.map((cat) => (
           <MotionButton
             key={cat.value}
             onClick={() => setSelectedCategory(cat.value)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={`px-6 py-2 rounded-lg font-medium transition-all ${
+            className={`px-3 sm:px-6 py-1 sm:py-2 text-sm sm:text-base rounded-lg font-medium transition-all ${
               selectedCategory === cat.value
                 ? 'bg-white text-black'
                 : 'bg-transparent text-white'
