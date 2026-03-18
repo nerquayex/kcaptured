@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773348310/35-2W1A0773__2_jjv1ug.jpg',
+        url: 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807344/43-1Z7A1338__2_uyue1r.jpg',
         width: 1200,
         height: 630,
         alt: 'KCAPTURED Photography',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     title: 'KCAPTURED - Professional Photography',
     description: 'Premium lifestyle and studio photography services',
     creator: '@kcaptured',
-    images: ['https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773348310/35-2W1A0773__2_jjv1ug.jpg'],
+    images: ['https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807344/43-1Z7A1338__2_uyue1r.jpg'],
   },
 }
 
