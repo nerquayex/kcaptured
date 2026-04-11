@@ -5,8 +5,14 @@ import { faqItems } from '@/lib/faq-data';
 import { ContactForm } from '@/components/contact-form';
 
 export const metadata = {
-  title: 'FAQ | Photography Studio',
-  description: 'Frequently asked questions about our photography services.',
+  title: 'FAQ | KCAPTURED DMV Photography',
+  description: 'Get answers to common questions about booking KCAPTURED photography services in Jessup, Maryland and the DMV area.',
+  keywords: [
+    'photography FAQ',
+    'DMV photographer questions',
+    'Jessup Maryland photography FAQ',
+    'KCAPTURED booking questions',
+  ],
 };
 
 export default function FAQPage() {

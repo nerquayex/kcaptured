@@ -3,8 +3,15 @@ import { Footer } from '@/components/footer';
 import { MasonryGallery } from '@/components/masonry-gallery';
 
 export const metadata = {
-  title: 'Portfolio | Photography Studio',
-  description: 'View our collection of lifestyle and studio photography work.',
+  title: 'Portfolio | KCAPTURED DMV Photography',
+  description: 'Explore the KCAPTURED portfolio with lifestyle, studio, portrait, and athletic photography from Jessup, Maryland and the DMV.',
+  keywords: [
+    'KCAPTURED portfolio',
+    'DMV photography portfolio',
+    'Jessup Maryland portraits',
+    'studio photography examples',
+    'lifestyle portrait photography',
+  ],
 };
 
 export const viewport = {

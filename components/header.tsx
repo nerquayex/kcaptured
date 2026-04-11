@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -34,18 +34,27 @@ function TikTokIcon() {
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState('');
   const pathname = usePathname();
+
+  useEffect(() => {
+    const updateHash = () => setActiveHash(window.location.hash || '');
+
+    updateHash();
+    window.addEventListener('hashchange', updateHash);
+    return () => window.removeEventListener('hashchange', updateHash);
+  }, []);
 
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/portfolio', label: 'Portfolio' },
-    { href: '/blog', label: 'Blog' },
+    { href: '/about', label: 'About' },
     { href: '/faq', label: 'FAQ' },
     { href: '/#contact', label: 'Contact' },
   ];
 
   const isActive = (href: string) => {
-    if (href === '/#contact') return pathname === '/';
+    if (href === '/#contact') return pathname === '/' && activeHash === '#contact';
     return pathname === href;
   };
 
