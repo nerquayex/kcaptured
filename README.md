@@ -225,9 +225,17 @@ The contact form uses Formspree for email delivery.
    - Create new form or use existing
    - Copy your Form ID
 
-2. **Update Contact Form:**
-   - Edit `components/contact-form.tsx`
-   - Replace `YOUR_FORM_ID` with your actual ID (line 75)
+2. **Configure Environment Variable:**
+   - Copy `.env.example` to `.env.local`:
+     ```bash
+     cp .env.example .env.local
+     ```
+   - Edit `.env.local` and add your Formspree ID:
+     ```env
+     NEXT_PUBLIC_FORMSPREE_ID=your_form_id_here
+     ```
+   - The form will be disabled until this variable is set
+   - Never commit `.env.local` (it's in `.gitignore`)
 
 ## Performance Optimization
 

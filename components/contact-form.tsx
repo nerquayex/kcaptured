@@ -4,6 +4,11 @@ import { useState } from 'react';
 import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const FORMSPREE_FORM_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID || '';
+const FORMSPREE_ENDPOINT = FORMSPREE_FORM_ID
+  ? `https://formspree.io/f/${FORMSPREE_FORM_ID}`
+  : '';
+
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -12,15 +17,51 @@ export function ContactForm() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      const formData = new FormData(e.currentTarget);
+    const formData = new FormData(e.currentTarget);
+    const honeypot = formData.get('website')?.toString().trim();
 
-      // Submit to Formspree
-      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+    if (honeypot) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    const name = formData.get('name')?.toString().trim() ?? '';
+    const email = formData.get('email')?.toString().trim() ?? '';
+    const subject = formData.get('subject')?.toString().trim() ?? '';
+    const message = formData.get('message')?.toString().trim() ?? '';
+
+    if (!FORMSPREE_ENDPOINT) {
+      console.error('Missing NEXT_PUBLIC_FORMSPREE_ID environment variable.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (
+      !name ||
+      !email ||
+      !subject ||
+      !message ||
+      name.length > 100 ||
+      subject.length > 150 ||
+      message.length > 2000
+    ) {
+      console.error('Contact form validation failed.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const submissionData = new FormData();
+    submissionData.append('name', name);
+    submissionData.append('email', email);
+    submissionData.append('subject', subject);
+    submissionData.append('message', message);
+
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
-        body: formData,
+        body: submissionData,
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
       });
 
@@ -51,6 +92,18 @@ export function ContactForm() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="sr-only">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              name="website"
+              type="text"
+              autoComplete="off"
+              tabIndex={-1}
+              className="pointer-events-none opacity-0 absolute"
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="name" className="block text-black dark:text-white font-medium mb-2">
@@ -61,6 +114,8 @@ export function ContactForm() {
                 id="name"
                 name="name"
                 placeholder="John Doe"
+                maxLength={100}
+                autoComplete="name"
                 required
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent"
               />
@@ -74,6 +129,8 @@ export function ContactForm() {
                 id="email"
                 name="email"
                 placeholder="john@example.com"
+                maxLength={254}
+                autoComplete="email"
                 required
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent"
               />
@@ -89,6 +146,7 @@ export function ContactForm() {
               id="subject"
               name="subject"
               placeholder="Photography Inquiry"
+              maxLength={150}
               required
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent"
             />
@@ -103,15 +161,22 @@ export function ContactForm() {
               name="message"
               placeholder="Tell us about your photography needs..."
               rows={6}
+              maxLength={2000}
               required
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent resize-none"
             />
           </div>
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button type="submit" disabled={isSubmitting || !FORMSPREE_ENDPOINT} className="w-full">
             <Mail size={20} />
             {isSubmitting ? 'Sending...' : 'Send Message'}
           </Button>
+
+          {!FORMSPREE_ENDPOINT ? (
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-center">
+              Contact form is disabled until NEXT_PUBLIC_FORMSPREE_ID is configured.
+            </div>
+          ) : null}
 
           {submitted && (
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-center">

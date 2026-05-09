@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
     // Enable image optimization for Cloudinary images
     remotePatterns: [
@@ -21,10 +18,10 @@ const nextConfig = {
     // Image sizes for srcSet generation
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  // Enable caching headers for static assets
+  // Enable caching headers for static assets only
   headers: async () => [
     {
-      source: '/:path*',
+      source: '/_next/static/:path*',
       headers: [
         {
           key: 'Cache-Control',
