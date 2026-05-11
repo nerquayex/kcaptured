@@ -59,10 +59,10 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-sm border-b border-gray-300 dark:border-gray-800">
+    <header className="sticky top-0 z-50 bg-black border-b border-white/10">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold text-black dark:text-white">
+        <Link href="/" className="text-2xl font-bold text-white">
           KCAPTURED
         </Link>
 
@@ -74,8 +74,8 @@ export function Header() {
               href={link.href}
               className={`text-sm font-medium transition-colors ${
                 isActive(link.href)
-                  ? 'text-black dark:text-white underline underline-offset-4'
-                  : 'text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white'
+                  ? 'text-white underline underline-offset-4'
+                  : 'text-gray-200 hover:text-white'
               }`}
             >
               {link.label}
@@ -124,7 +124,7 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 bg-white dark:bg-black border-b border-gray-300 dark:border-gray-800 md:hidden"
+            className="absolute top-full left-0 right-0 bg-black/95 border-b border-white/10 md:hidden"
           >
             <div className="flex flex-col p-4 gap-4">
               {navLinks.map((link) => (
@@ -133,8 +133,8 @@ export function Header() {
                   href={link.href}
                   className={`font-medium transition-colors ${
                     isActive(link.href)
-                      ? 'text-black dark:text-white underline underline-offset-4'
-                      : 'text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-white'
+                      ? 'text-white underline underline-offset-4'
+                      : 'text-gray-200 hover:text-white'
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
@@ -143,12 +143,12 @@ export function Header() {
               ))}
 
               {/* Mobile Social Media Links */}
-              <div className="flex items-center gap-4 pt-4 border-t border-gray-300 dark:border-gray-700">
+              <div className="flex items-center gap-4 pt-4 border-t border-white/10">
                 <a
                   href="https://www.instagram.com/kcaptures_.1?igsh=MTc2c244bDZqOXRtbA=="
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-700 dark:text-white hover:opacity-75 transition-opacity"
+                  className="text-white hover:opacity-75 transition-opacity"
                   aria-label="Follow on Instagram"
                 >
                   <InstagramIcon />
@@ -157,7 +157,7 @@ export function Header() {
                   href="https://www.tiktok.com/@yourusername"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-700 dark:text-white hover:opacity-75 transition-opacity"
+                  className="text-white hover:opacity-75 transition-opacity"
                   aria-label="Follow on TikTok"
                 >
                   <TikTokIcon />

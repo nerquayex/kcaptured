@@ -27,7 +27,7 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
     <div className="space-y-8">
       {Object.entries(groupedByCategory).map(([category, categoryItems]) => (
         <div key={category}>
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <h3 className="text-2xl font-bold text-white mb-4">
             {category}
           </h3>
 
@@ -35,13 +35,13 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
             {categoryItems.map((item) => (
               <div
                 key={item.id}
-                className="border border-gray-200 rounded-lg overflow-hidden"
+                className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 shadow-[0_30px_60px_-40px_rgba(255,255,255,0.2)]"
               >
                 <Button
                   onClick={() =>
                     setOpenId(openId === item.id ? null : item.id)
                   }
-                  className="w-full justify-between text-left bg-black/50 backdrop-blur-sm border-gray-700 text-white hover:bg-white/90 hover:text-black"
+                  className="w-full justify-between text-left bg-white/5 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10"
                   variant="default"
                 >
                   <span className="font-semibold">
@@ -56,8 +56,8 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
                 </Button>
 
                 {openId === item.id && (
-                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    <p className="text-gray-700 leading-relaxed">
+                  <div className="px-6 py-5 bg-black/60 border-t border-white/10">
+                    <p className="text-gray-300 leading-relaxed">
                       {item.answer}
                     </p>
                   </div>

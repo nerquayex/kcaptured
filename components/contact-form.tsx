@@ -78,17 +78,21 @@ export function ContactForm() {
   };
 
   return (
-    <section id="contact" className="py-16 md:py-24 bg-white dark:bg-black">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-black dark:text-white mb-4">
-            Get In Touch
-          </h2>
-          <p className="text-xl text-gray-700 dark:text-gray-300">
-            Have questions? We'd love to hear from you.
-          </p>
-        </div>
+    <section
+      id="contact"
+      className="relative py-16 md:py-24 bg-black bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_18%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.05),transparent_22%)]"
+    >
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_40px_120px_-80px_rgba(255,255,255,0.22)] backdrop-blur-xl">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Get In Touch
+            </h2>
+            <p className="text-xl text-gray-300">
+              Have questions? We'd love to hear from you.
+            </p>
+          </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -106,22 +110,22 @@ export function ContactForm() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="name" className="block text-black dark:text-white font-medium mb-2">
+              <label htmlFor="name" className="block text-white font-medium mb-2">
                 Your Name
               </label>
               <input
                 type="text"
                 id="name"
                 name="name"
-                placeholder="John Doe"
+                placeholder="Eg: John Solos"
                 maxLength={100}
                 autoComplete="name"
                 required
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent"
+                className="w-full px-4 py-3 border border-white/10 rounded-2xl bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent backdrop-blur-sm"
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-black dark:text-white font-medium mb-2">
+              <label htmlFor="email" className="block text-white font-medium mb-2">
                 Your Email
               </label>
               <input
@@ -132,13 +136,13 @@ export function ContactForm() {
                 maxLength={254}
                 autoComplete="email"
                 required
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent"
+                className="w-full px-4 py-3 border border-white/10 rounded-2xl bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent backdrop-blur-sm"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="subject" className="block text-black dark:text-white font-medium mb-2">
+            <label htmlFor="subject" className="block text-white font-medium mb-2">
               Subject
             </label>
             <input
@@ -148,12 +152,12 @@ export function ContactForm() {
               placeholder="Photography Inquiry"
               maxLength={150}
               required
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent"
+              className="w-full px-4 py-3 border border-white/10 rounded-2xl bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent backdrop-blur-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-black dark:text-white font-medium mb-2">
+            <label htmlFor="message" className="block text-white font-medium mb-2">
               Your Message
             </label>
             <textarea
@@ -163,28 +167,33 @@ export function ContactForm() {
               rows={6}
               maxLength={2000}
               required
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-white/10 rounded-2xl bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent resize-none backdrop-blur-sm"
             />
           </div>
 
-          <Button type="submit" disabled={isSubmitting || !FORMSPREE_ENDPOINT} className="w-full">
+          <Button
+            type="submit"
+            disabled={isSubmitting || !FORMSPREE_ENDPOINT}
+            className="w-full bg-white/10 border-white/10 text-white hover:bg-white/20"
+          >
             <Mail size={20} />
             {isSubmitting ? 'Sending...' : 'Send Message'}
           </Button>
 
-          {!FORMSPREE_ENDPOINT ? (
+          {/* {!FORMSPREE_ENDPOINT ? (
             <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-center">
               Contact form is disabled until NEXT_PUBLIC_FORMSPREE_ID is configured.
             </div>
-          ) : null}
+          ) : null} */}
 
           {submitted && (
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-center">
+            <div className="p-4 bg-white/10 border border-white/10 rounded-2xl text-gray-100 text-center">
               Thank you for your message! We'll get back to you soon.
             </div>
           )}
         </form>
       </div>
-    </section>
+    </div>
+  </section>
   );
 }

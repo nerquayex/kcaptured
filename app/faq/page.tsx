@@ -22,20 +22,24 @@ export default function FAQPage() {
 
       <main>
         {/* FAQ Section */}
-        <section className="py-16 md:py-24 bg-black">
+        <section
+          className="py-16 md:py-24 bg-black bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_18%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.04),transparent_22%)]"
+        >
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Page Header */}
-            <div className="text-center mb-16">
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-                Frequently Asked Questions
-              </h1>
-              <p className="text-xl text-gray-300">
-                Find answers to common questions about our services
-              </p>
-            </div>
+            <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_40px_120px_-80px_rgba(255,255,255,0.18)] backdrop-blur-xl">
+              {/* Page Header */}
+              <div className="text-center mb-16">
+                <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+                  Frequently Asked Questions
+                </h1>
+                <p className="text-xl text-gray-300">
+                  Find answers to common questions about our services
+                </p>
+              </div>
 
-            {/* Accordion */}
-            <FAQAccordion items={faqItems} />
+              {/* Accordion */}
+              <FAQAccordion items={faqItems} />
+            </div>
           </div>
         </section>
 
