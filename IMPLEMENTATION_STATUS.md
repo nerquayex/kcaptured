@@ -6,7 +6,6 @@
 - ✅ Homepage with hero section, services, testimonials
 - ✅ Portfolio gallery with masonry layout
 - ✅ Category filtering (All Work, Lifestyle, Studio)
-- ✅ Blog listing and individual post pages
 - ✅ FAQ section with accordion accordion
 - ✅ Contact form with Formspree integration
 - ✅ Responsive mobile/tablet/desktop design
@@ -37,7 +36,6 @@
 - ✅ Portfolio images (22 lifestyle + 8 studio)
 - ✅ Client testimonial videos (3 videos)
 - ✅ Service packages (6 packages)
-- ✅ Blog posts (3 sample posts, extensible)
 - ✅ FAQ items (12 questions)
 - ✅ Blurred background image
 

@@ -1,13 +1,12 @@
 # KCAPTURED - Professional Photography Portfolio
 
-A modern, high-performance photography portfolio website built with Next.js 15, React 19, Tailwind CSS, and Framer Motion. Features a masonry-style gallery, blog, FAQ section, testimonial videos, and contact form integration.
+A modern, high-performance photography portfolio website built with Next.js 15, React 19, Tailwind CSS, and Framer Motion. Features a masonry-style gallery, FAQ section, testimonial videos, and contact form integration.
 
 ## Features Implemented ✅
 
 ### Core Pages
 - ✅ **Homepage** - Hero section with background image, services showcase, testimonials carousel, contact CTA
 - ✅ **Portfolio Gallery** - Pinterest-style masonry layout with category filtering (Lifestyle/Studio)
-- ✅ **Blog** - Listing page and individual article pages with metadata
 - ✅ **FAQ** - Accordion-style questions organized by category
 - ✅ **Contact Form** - Formspree email integration with validation
 - ✅ **Responsive Navigation** - Sticky header with mobile menu and theme toggle
@@ -22,7 +21,7 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
 ### Performance & SEO
 - ✅ **Image Caching** - 365-day cache for Cloudinary images via Next.js Image Optimization
 - ✅ **Metadata** - Comprehensive Open Graph, Twitter Card, and structured data
-- ✅ **Sitemap** - Auto-generated XML sitemap with all pages and blog posts
+- ✅ **Sitemap** - Auto-generated XML sitemap with all pages
 - ✅ **Robots.txt** - Search engine crawling configuration
 - ✅ **Response Optimization** - Next.js automatic image optimization with WebP/AVIF formats
 
@@ -178,24 +177,6 @@ Update your service offerings:
 }
 ```
 
-#### Blog Posts
-**File:** `lib/blog-data.ts`
-
-Create new blog posts for photography tips and insights:
-```typescript
-{
-  id: 'post-slug',
-  slug: 'post-slug',
-  title: 'Blog Post Title',
-  excerpt: 'Short preview text',
-  content: 'Full HTML or markdown content',
-  author: 'Your Name',
-  category: 'Tips',
-  publishedDate: '2026-03-12',
-  readTime: 5,
-}
-```
-
 #### FAQ Items
 **File:** `lib/faq-data.ts`
 
@@ -284,9 +265,6 @@ Cloudinary images automatically receive:
   /robots.ts            - Robots.txt configuration
   /portfolio
     /page.tsx           - Portfolio gallery page
-  /blog
-    /page.tsx           - Blog listing
-    /[slug]/page.tsx    - Individual blog post
   /faq
     /page.tsx           - FAQ page
   /globals.css          - Global styles
@@ -297,7 +275,6 @@ Cloudinary images automatically receive:
   /services-section.tsx - Services with blurred background
   /testimonials-section.tsx - Video testimonials carousel
   /masonry-gallery.tsx  - Pinterest-style gallery
-  /blog-post-card.tsx   - Blog preview card
   /faq-accordion.tsx    - FAQ accordion
   /contact-form.tsx     - Formspree contact form
   /footer.tsx           - Site footer
@@ -307,7 +284,6 @@ Cloudinary images automatically receive:
   /portfolio-data.ts    - Portfolio images (add your images here)
   /services-data.ts     - Service packages
   /testimonials-data.ts - Client testimonials (add videos here)
-  /blog-data.ts         - Blog posts
   /faq-data.ts          - FAQ items
 
 /public

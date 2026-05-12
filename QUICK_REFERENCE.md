@@ -32,7 +32,6 @@ Step 3: Deploy
 | Portfolio images | `lib/portfolio-data.ts` | Image URLs, titles |
 | Testimonial videos | `lib/testimonials-data.ts` | Video URLs |
 | Services & pricing | `lib/services-data.ts` | Services, prices |
-| Blog posts | `lib/blog-data.ts` | Posts, content |
 | FAQ items | `lib/faq-data.ts` | Questions, answers |
 | Instagram handle | `components/header.tsx` | Instagram URL |
 | Contact emails | `app/layout.tsx` | Formspree ID |
@@ -100,10 +99,6 @@ Change: `title: 'Photography Studio | ...'`
 File: `lib/services-data.ts`
 Change: `price: 70` to your actual price
 
-### Add Blog Post
-File: `lib/blog-data.ts`
-Copy existing post object and update
-
 ---
 
 ## 🔧 Troubleshooting Quick Fixes
@@ -137,7 +132,7 @@ Copy existing post object and update
 Portfolio Images:    30 (22 lifestyle + 8 studio)
 Testimonial Videos:   3
 Service Packages:     6 (3 lifestyle + 3 studio)
-Blog Posts:          3 (sample posts)
+Blog Posts:          0
 FAQ Items:          12 (4 categories)
 Main Pages:          7
 Documentation:       6 files
