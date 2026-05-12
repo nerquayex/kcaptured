@@ -300,6 +300,14 @@ export const portfolioImages: PortfolioImage[] = [
   },
   // STUDIO IMAGES
   {
+    id: 'studio-0',
+    cloudinaryUrl: 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1778542506/kcp-new2_cp1r2l.png',
+    category: 'studio',
+    title: 'Studio 0',
+    width: 400,
+    height: 500,
+  },
+  {
     id: 'studio-1',
     cloudinaryUrl: 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807339/27-2W1A5906_koywbl.jpg',
     category: 'studio',
@@ -427,4 +435,12 @@ export const portfolioImages: PortfolioImage[] = [
     width: 400,
     height: 500,
   },
+  {
+    id: 'studio-17',
+    cloudinaryUrl: 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1778542505/kcp-new_vgopro.png',
+    category: 'studio',
+    title: 'Studio 17',
+    width: 400,
+    height: 500,
+  }
 ];

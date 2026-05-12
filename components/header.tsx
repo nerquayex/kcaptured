@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { InstagramPolicyModalContent } from '@/components/instagram-policy-modal';
 
 // Custom Instagram Icon with brand colors
 function InstagramIcon() {
@@ -34,6 +35,7 @@ function TikTokIcon() {
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeHash, setActiveHash] = useState('');
   const pathname = usePathname();
 
@@ -50,6 +52,7 @@ export function Header() {
     { href: '/portfolio', label: 'Portfolio' },
     { href: '/about', label: 'About' },
     { href: '/faq', label: 'FAQ' },
+    { href: '/policy', label: 'Policy' },
     { href: '/#contact', label: 'Contact' },
   ];
 
@@ -87,15 +90,13 @@ export function Header() {
         <div className="flex items-center gap-4">
           {/* Social Media Links */}
           <div className="hidden md:flex items-center gap-3">
-            <a
-              href="https://www.instagram.com/kcaptures_.1?igsh=dzM4aXk2eXcyc2V1"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => setIsModalOpen(true)}
               className="hover:opacity-75 transition-opacity"
-              aria-label="Follow on Instagram"
+              aria-label="Message on Instagram"
             >
               <InstagramIcon />
-            </a>
+            </button>
             <a
               href="https://www.tiktok.com/@kcaptured_?_r=1&_t=ZT-94fwHXHMN0o"
               target="_blank"
@@ -144,15 +145,16 @@ export function Header() {
 
               {/* Mobile Social Media Links */}
               <div className="flex items-center gap-4 pt-4 border-t border-white/10">
-                <a
-                  href="https://www.instagram.com/kcaptures_.1?igsh=MTc2c244bDZqOXRtbA=="
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsModalOpen(true);
+                  }}
                   className="text-white hover:opacity-75 transition-opacity"
-                  aria-label="Follow on Instagram"
+                  aria-label="Message on Instagram"
                 >
                   <InstagramIcon />
-                </a>
+                </button>
                 <a
                   href="https://www.tiktok.com/@yourusername"
                   target="_blank"
@@ -167,6 +169,9 @@ export function Header() {
           </motion.div>
         )}
       </nav>
+
+      {/* Instagram Policy Modal */}
+      <InstagramPolicyModalContent isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </header>
   );
 }

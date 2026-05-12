@@ -23,14 +23,21 @@ export default function PrivacyPolicyPage() {
             <section className="mb-6">
               <h2 className="text-2xl font-semibold mb-3">Information We Collect</h2>
               <p className="text-gray-300 leading-relaxed">
-                We may collect the information you provide directly, such as contact details when you send an inquiry. We also use standard analytics tools to understand site usage and improve performance.
+                We may collect the information you provide directly, such as your name, email, phone number, and payment details when you book a session or send an inquiry. We also use standard analytics tools to understand site usage and improve performance.
               </p>
             </section>
 
             <section className="mb-6">
               <h2 className="text-2xl font-semibold mb-3">How We Use Information</h2>
               <p className="text-gray-300 leading-relaxed">
-                Information is used to respond to inquiries, manage bookings, and improve the website experience. We do not sell or share personal information with third parties for marketing purposes.
+                Information is used to respond to inquiries, manage bookings, process payments, and improve the website experience. We may contact you via email or phone to confirm appointments and provide session details. We do not sell or share personal information with third parties for marketing purposes.
+              </p>
+            </section>
+
+            <section className="mb-6">
+              <h2 className="text-2xl font-semibold mb-3">Booking Information</h2>
+              <p className="text-gray-300 leading-relaxed">
+                When you book a session, we collect and store your contact information and session preferences. A $20 deposit is required to hold your date. Payment information is processed securely through accepted methods (cash, Cash App, Zelle). Your final payment is due on the day of your session.
               </p>
             </section>
 
@@ -51,7 +58,7 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-2xl font-semibold mb-3">Contact</h2>
               <p className="text-gray-300 leading-relaxed">
-                If you have questions about this policy, please reach out via email or the contact form on the site.
+                If you have questions about this policy, please reach out via Instagram (@kcaptures._), email, or the contact form on the site.
               </p>
             </section>
           </div>

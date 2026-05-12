@@ -29,13 +29,13 @@ export default function AboutPage() {
                 BIOGRAPHY
               </h1>
               <p className="text-base leading-relaxed text-gray-300 mb-6">
-                Welcome to Kcaptures Productions! As an athlete with a passion for art, I picked up a camera to capture the thrilling moments of basketball, even though it wasn't my strongest sport.
+                I'm Kenny Stevens, founder of KCAPTURED. Based in Maryland and serving the DMV, my mission is to make art with lifestyle — blending cinematic storytelling with everyday movement, confidence, and emotional truth to create images that feel both aspirational and authentic.
               </p>
               <p className="text-base leading-relaxed text-gray-300 mb-6">
-                What started as a hobby has blossomed into a love for helping others express their innermost art and feelings through photography. At the end of the day, I'm just a guy with a ready eye to showcase the beauty of every moment.
+                What began as a love for sports and motion became a full creative practice built around capturing real people in polished, personal moments. I help clients turn their lifestyle, energy, and bold ideas into photographs that look intentional, modern, and unforgettable.
               </p>
               <p className="text-base leading-relaxed text-gray-400">
-                I specialize in cinematic portraits and bold lifestyle sessions that bring confidence, movement, and emotion into every frame. Let’s create something unforgettable.
+                I specialize in cinematic portraits and lifestyle sessions that bring confidence, movement, and emotion into every frame. Let’s create something unforgettable in Maryland and beyond.
               </p>
             </div>
 

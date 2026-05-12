@@ -5,10 +5,12 @@ import { CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { InstagramPolicyModalContent } from '@/components/instagram-policy-modal';
 
 export function ServicesSection() {
   const MotionButton = motion.create(Button);
   const [selectedCategory, setSelectedCategory] = useState<'lifestyle' | 'studio' | 'all'>('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredServices = selectedCategory === 'all' 
     ? services 
@@ -126,19 +128,19 @@ export function ServicesSection() {
                 ))}
               </ul>
 
-              <Button asChild className="w-full">
-                <a
-                  href="https://www.instagram.com/kcaptures_.1?igsh=MTc2c244bDZqOXRtbA=="
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Book Now on Instagram
-                </a>
+              <Button 
+                className="w-full"
+                onClick={() => setIsModalOpen(true)}
+              >
+                Book Now on Instagram
               </Button>
             </motion.div>
           ))}
         </motion.div>
       </div>
+
+      {/* Instagram Policy Modal */}
+      <InstagramPolicyModalContent isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 }
