@@ -39,9 +39,15 @@ export const metadata: Metadata = {
   creator: 'KCAPTURED',
   publisher: 'KCAPTURED',
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-icon.png',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
     shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+    other: [
+      { rel: 'manifest', url: '/site.webmanifest' },
+    ],
   },
   openGraph: {
     title: 'KCAPTURED - DMV Photography Studio',

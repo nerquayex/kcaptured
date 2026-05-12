@@ -26,7 +26,7 @@ export function InstagramPolicyModalContent({ isOpen, onClose }: InstagramPolicy
 
   const modalContent = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-xl max-h-[90vh] overflow-hidden rounded-[2rem] border border-white/10 bg-black/95 shadow-2xl shadow-black/50">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-hidden rounded-[2rem] border border-white/10 bg-black/95 shadow-2xl shadow-black/50">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -58,33 +58,32 @@ export function InstagramPolicyModalContent({ isOpen, onClose }: InstagramPolicy
               <h3 className="text-lg font-semibold text-white mb-2">Cancellations & Late Policy</h3>
               <ul className="list-disc list-inside space-y-2 text-gray-300">
                 <li>Deposits are non-refundable.</li>
-                <li>Cancel within 24 hours and the booking fee is still due.</li>
-                <li>10–30 min late: $20 charge, 30+ min late: $45 charge.</li>
+                <li>10-30 min late: $20 charge, 30+ min late: $45 charge.</li>
               </ul>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <h3 className="text-lg font-semibold text-white mb-2">Delivery Timeline</h3>
               <p className="text-gray-300 leading-relaxed">
-                Final edits are delivered within 3–5 business days, with a review call shortly after your shoot.
+                Final edits are delivered within 3-5 business days, with a review call shortly after your shoot.
               </p>
             </div>
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:items-center">
             <Button
               onClick={handleProceed}
-              className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#f58529] via-[#dd2a7b] to-[#515bd4] text-white hover:brightness-110"
             >
               Continue to Instagram DM
             </Button>
-            <Button
+            {/* <Button
               onClick={onClose}
-              className="w-full border border-white/10 bg-white/10 text-white hover:bg-white/20"
+              className="w-full sm:w-auto px-6 py-3 border border-white/10 bg-white/10 text-white hover:bg-white/20"
             >
               Close
-            </Button>
+            </Button> */}
           </div>
 
           <p className="text-xs text-gray-400 text-center mt-4">
