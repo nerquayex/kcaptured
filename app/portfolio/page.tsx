@@ -22,8 +22,9 @@ export const viewport = {
   initialScale: 1,
 };
 
-// Revalidate every 30 seconds to fetch fresh uploads from Cloudinary
-export const revalidate = 30;
+// Always fetch fresh data - don't cache uploads
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 export default async function PortfolioPage() {
   const cloudinaryUploads = await getClientUploads();

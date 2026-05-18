@@ -4,13 +4,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const AUTH_TOKEN_KEY = 'uploadToken'
@@ -220,18 +213,18 @@ export default function UploadPage() {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-100">Category</label>
-                  <Select value={category} onValueChange={(value) => setCategory(value)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((item) => (
-                        <SelectItem key={item} value={item}>
-                          {item.charAt(0).toUpperCase() + item.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {/* Mobile: Native select, Desktop: Shadcn select */}
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  >
+                    {categories.map((item) => (
+                      <option key={item} value={item}>
+                        {item.charAt(0).toUpperCase() + item.slice(1)}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
