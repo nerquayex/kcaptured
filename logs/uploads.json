@@ -1,3 +1,36 @@
 [
-  
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-18T15:06:55.277Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-18T19:42:13.746Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "studio",
+    "fileName": "333.png",
+    "fileSize": 3362466,
+    "fileMimeType": "image/png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-18T19:42:20.553Z"
+  },
+  {
+    "type": "upload_success",
+    "fileName": "333.png",
+    "fileSize": 3362466,
+    "fileMimeType": "image/png",
+    "category": "studio",
+    "publicId": "client-uploads/studio/quxuqog2lyhpschlp1yu",
+    "url": "https://res.cloudinary.com/dq4tkpuu4/image/upload/v1779133350/client-uploads/studio/quxuqog2lyhpschlp1yu.png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-18T19:42:30.962Z"
+  }
 ]
