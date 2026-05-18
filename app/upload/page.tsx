@@ -114,8 +114,13 @@ export default function UploadPage() {
           return
         }
 
-        setSuccessMessage('Upload completed successfully.')
+        setSuccessMessage('Upload completed successfully. Redirecting home...')
         setFile(null)
+        setTimeout(() => {
+          window.sessionStorage.removeItem(AUTH_TOKEN_KEY)
+          window.sessionStorage.removeItem(AUTH_TOKEN_EXPIRY_KEY)
+          router.push('/')
+        }, 1500)
       } catch {
         setError('Upload failed. Please try again.')
       } finally {
@@ -162,11 +167,16 @@ export default function UploadPage() {
           return
         }
 
-        setSuccessMessage('Testimonial uploaded successfully!')
+        setSuccessMessage('Testimonial uploaded successfully! Redirecting home...')
         setTestimonialVideo(null)
         setClientName('')
         setClientRole('')
         setTestimonialContent('')
+        setTimeout(() => {
+          window.sessionStorage.removeItem(AUTH_TOKEN_KEY)
+          window.sessionStorage.removeItem(AUTH_TOKEN_EXPIRY_KEY)
+          router.push('/')
+        }, 1500)
       } catch {
         setError('Testimonial upload failed. Please try again.')
       } finally {
