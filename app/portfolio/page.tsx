@@ -1,6 +1,8 @@
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { MasonryGallery } from '@/components/masonry-gallery';
+import { portfolioImages } from '@/lib/portfolio-data';
+import { getClientUploads } from '@/lib/cloudinary-uploads';
 
 export const metadata = {
   title: 'Portfolio | KCAPTURED DMV Photography',
@@ -19,7 +21,10 @@ export const viewport = {
   initialScale: 1,
 };
 
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  const cloudinaryUploads = await getClientUploads();
+  const images = [...portfolioImages, ...cloudinaryUploads];
+
   return (
     <div className="min-h-screen bg-black">
       <Header />
@@ -28,13 +33,11 @@ export default function PortfolioPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Header */}
           <div className="text-center mb-16">
-            <p className="text-xl text-gray-300">
-              A selection of our recent work
-            </p>
+            <p className="text-xl text-gray-300">A selection of our recent work</p>
           </div>
 
           {/* Gallery */}
-          <MasonryGallery />
+          <MasonryGallery images={images} />
         </div>
       </main>
 

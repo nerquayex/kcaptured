@@ -1,35 +1,46 @@
 'use client';
 
-import { portfolioImages } from '@/lib/portfolio-data';
+import { PortfolioImage } from '@/lib/portfolio-data';
 import { optimizeCloudinaryUrl } from '@/lib/utils';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
-export function MasonryGallery() {
+interface MasonryGalleryProps {
+  images: PortfolioImage[]
+}
+
+export function MasonryGallery({ images }: MasonryGalleryProps) {
   const MotionButton = motion.create(Button);
 
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'lifestyle' | 'studio'>('all');
-  const [selectedImage, setSelectedImage] = useState<typeof portfolioImages[0] | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedImage, setSelectedImage] = useState<PortfolioImage | null>(null);
+
+  const categoryOptions = useMemo(() => {
+    const categories = Array.from(
+      new Set(images.map((image) => image.category)),
+    )
+    return [
+      { value: 'all', label: 'All Work' },
+      ...categories.map((category) => ({
+        value: category,
+        label: category.charAt(0).toUpperCase() + category.slice(1),
+      })),
+    ]
+  }, [images])
 
   const filteredImages =
     selectedCategory === 'all'
-      ? portfolioImages
-      : portfolioImages.filter((img) => img.category === selectedCategory);
-
-  const categories = [
-    { value: 'all' as const, label: 'All Work' },
-    { value: 'lifestyle' as const, label: 'Lifestyle' },
-    { value: 'studio' as const, label: 'Studio' },
-  ];
+      ? images
+      : images.filter((img) => img.category === selectedCategory)
 
   return (
     <>
       {/* Category Filters */}
       <div className="flex justify-center gap-2 sm:gap-4 mb-12 flex-wrap">
-        {categories.map((cat) => (
+        {categoryOptions.map((cat) => (
           <MotionButton
             key={cat.value}
             onClick={() => setSelectedCategory(cat.value)}

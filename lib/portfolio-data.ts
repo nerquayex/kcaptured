@@ -1,7 +1,7 @@
 export interface PortfolioImage {
   id: string;
   cloudinaryUrl: string;
-  category: 'lifestyle' | 'studio';
+  category: string;
   title: string;
   description?: string;
   width: number;

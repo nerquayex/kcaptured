@@ -1,5 +1,11 @@
+'use client'
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Mail, Lock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 // Custom Instagram Icon with brand colors
 function InstagramIcon() {
@@ -26,8 +32,80 @@ function TikTokIcon() {
   );
 }
 
+const UPLOAD_LOCK_KEY = 'uploadAuthLock'
+const UPLOAD_ENTRY_KEY = 'uploadEntryAllowed'
+const UPLOAD_TOKEN_KEY = 'uploadToken'
+const UPLOAD_TOKEN_EXPIRY_KEY = 'uploadTokenExpiry'
+const AUTH_WINDOW_MS = 5 * 60 * 1000
+
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const [showUploadInput, setShowUploadInput] = useState(false);
+  const [keyValue, setKeyValue] = useState('');
+  const [locked, setLocked] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const entries = (window.performance?.getEntriesByType?.('navigation') as
+      | PerformanceNavigationTiming[]
+      | undefined) ?? [];
+    const navigationType = entries[0]?.type ?? '';
+
+    if (navigationType === 'reload') {
+      sessionStorage.removeItem(UPLOAD_LOCK_KEY);
+      sessionStorage.removeItem(UPLOAD_TOKEN_KEY);
+      sessionStorage.removeItem(UPLOAD_TOKEN_EXPIRY_KEY);
+    }
+
+    const storedLock = sessionStorage.getItem(UPLOAD_LOCK_KEY);
+    if (!storedLock) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(storedLock) as { lockedUntil: number };
+      if (parsed.lockedUntil && Date.now() < parsed.lockedUntil) {
+        setLocked(true);
+      } else {
+        sessionStorage.removeItem(UPLOAD_LOCK_KEY);
+      }
+    } catch {
+      sessionStorage.removeItem(UPLOAD_LOCK_KEY);
+    }
+  }, []);
+
+  const handleKeySubmit = async () => {
+    if (!keyValue.trim() || locked) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/validate-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: keyValue.trim() }),
+      });
+
+      if (response.ok) {
+        const body = await response.json();
+        const token = String(body.token);
+        const expiresAt = Date.now() + AUTH_WINDOW_MS;
+        sessionStorage.setItem(UPLOAD_TOKEN_KEY, token);
+        sessionStorage.setItem(UPLOAD_TOKEN_EXPIRY_KEY, String(expiresAt));
+        sessionStorage.setItem(UPLOAD_ENTRY_KEY, 'true');
+        router.push('/upload');
+        return;
+      }
+    } catch {
+      // ignore network failures and lock on any invalid entry
+    }
+
+    const lockUntil = Date.now() + 60 * 60 * 1000;
+    sessionStorage.setItem(UPLOAD_LOCK_KEY, JSON.stringify({ lockedUntil: lockUntil }));
+    setLocked(true);
+    setShowUploadInput(false);
+    setKeyValue('');
+  };
 
   return (
     <footer className="bg-black text-white py-12 md:py-16">
@@ -107,13 +185,45 @@ export function Footer() {
                   <TikTokIcon />
                 </a>
               </div>
-              <Link
-                href="/upload"
-                className="text-gray-600 hover:text-white transition-colors p-1"
-                aria-label="Upload new pictures"
-              >
-                <Lock size={16} />
-              </Link>
+              <div className="flex items-center gap-2">
+                {!locked && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowUploadInput((current) => !current)}
+                      className="text-gray-600 hover:text-white transition-colors p-1"
+                      aria-label="Enter upload key"
+                    >
+                      <Lock size={16} />
+                    </button>
+
+                    {showUploadInput && (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="password"
+                          value={keyValue}
+                          onChange={(event) => setKeyValue(event.target.value)}
+                          placeholder="Upload key"
+                          className="min-w-[180px] text-white"
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                              event.preventDefault()
+                              handleKeySubmit()
+                            }
+                          }}
+                        />
+                        <Button
+                          size="sm"
+                          onClick={handleKeySubmit}
+                          disabled={!keyValue.trim()}
+                        >
+                          Go
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
           {/* Copyright Section */}

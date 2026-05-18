@@ -4,6 +4,7 @@ import { ServicesSection } from '@/components/services-section';
 import { TestimonialsSection } from '@/components/testimonials-section';
 import { ContactForm } from '@/components/contact-form';
 import { Footer } from '@/components/footer';
+import { ClearUploadAuth } from '@/components/clear-upload-auth';
 
 export const metadata = {
   title: 'KCAPTURED | DMV Photography in Jessup, Maryland',
@@ -24,6 +25,7 @@ export const metadata = {
 export default function Home() {
   return (
     <div className="min-h-screen bg-black">
+      <ClearUploadAuth />
       <Header />
       <HeroSection />
       <ServicesSection />

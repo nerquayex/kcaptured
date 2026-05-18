@@ -18,18 +18,24 @@ const nextConfig = {
     // Image sizes for srcSet generation
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  // Enable caching headers for static assets only
-  headers: async () => [
-    {
-      source: '/_next/static/:path*',
-      headers: [
-        {
-          key: 'Cache-Control',
-          value: 'public, max-age=31536000, immutable',
-        },
-      ],
-    },
-  ],
+  // Enable caching headers for static assets only in production
+  headers: async () => {
+    if (process.env.NODE_ENV !== 'production') {
+      return []
+    }
+
+    return [
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 export default nextConfig
