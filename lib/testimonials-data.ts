@@ -1,3 +1,6 @@
+import { readFileSync } from 'fs'
+import { join } from 'path'
+
 export interface Testimonial {
   id: string;
   clientName: string;
@@ -7,7 +10,7 @@ export interface Testimonial {
   imageUrl?: string;
 }
 
-export const testimonials: Testimonial[] = [
+const STATIC_TESTIMONIALS: Testimonial[] = [
   {
     id: '1',
     clientName: 'Happy Client',
@@ -33,3 +36,19 @@ export const testimonials: Testimonial[] = [
     imageUrl: 'https://via.placeholder.com/100x100',
   },
 ];
+
+export function getTestimonials(): Testimonial[] {
+  try {
+    const filePath = join(process.cwd(), 'lib', 'testimonials-data.json')
+    const content = readFileSync(filePath, 'utf-8')
+    const dynamicTestimonials = JSON.parse(content) as Testimonial[]
+    // Combine dynamic testimonials with static ones
+    return [...dynamicTestimonials, ...STATIC_TESTIMONIALS]
+  } catch {
+    // If file doesn't exist or can't be parsed, just return static testimonials
+    return STATIC_TESTIMONIALS
+  }
+}
+
+// Export as const for static imports
+export const testimonials: Testimonial[] = STATIC_TESTIMONIALS

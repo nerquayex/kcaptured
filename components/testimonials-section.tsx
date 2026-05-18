@@ -1,12 +1,54 @@
 'use client';
 
-import { testimonials } from '@/lib/testimonials-data';
-import { useState } from 'react';
+import { Testimonial } from '@/lib/testimonials-data';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function TestimonialsSection() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadTestimonials() {
+      try {
+        const response = await fetch('/api/testimonials');
+        const data = await response.json();
+        setTestimonials(data);
+      } catch (error) {
+        console.error('Failed to load testimonials:', error);
+        // Fallback to default testimonials
+        setTestimonials([
+          {
+            id: '1',
+            clientName: 'Happy Client',
+            clientRole: 'Lifestyle Session',
+            content: 'The photos are absolutely stunning! Perfect captures of our special moments.',
+            videoUrl: 'https://res.cloudinary.com/dq4tkpuu4/video/upload/v1773351713/IMG_4097_wpvm2t.mov',
+          },
+          {
+            id: '2',
+            clientName: 'Professional',
+            clientRole: 'Studio Session',
+            content: 'Amazing headshots! The quality and professionalism exceeded expectations.',
+            videoUrl: 'https://res.cloudinary.com/dq4tkpuu4/video/upload/v1773351707/IMG_1792_vankcs.mov',
+          },
+          {
+            id: '3',
+            clientName: 'Creative Director',
+            clientRole: 'Brand Shoot',
+            content: 'Fantastic work! The photographer really understood our vision and delivered brilliantly.',
+            videoUrl: 'https://res.cloudinary.com/dq4tkpuu4/video/upload/v1773351706/FAC3213C-DDD1-465F-A2D3-713549EC094E_n5hscs.mov',
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadTestimonials();
+  }, []);
 
   const next = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -15,6 +57,10 @@ export function TestimonialsSection() {
   const prev = () => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
+
+  if (loading || testimonials.length === 0) {
+    return null;
+  }
 
   const current = testimonials[currentIndex];
 
