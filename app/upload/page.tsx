@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,18 +10,11 @@ const AUTH_TOKEN_KEY = 'uploadToken'
 const AUTH_TOKEN_EXPIRY_KEY = 'uploadTokenExpiry'
 const AUTH_ENTRY_KEY = 'uploadEntryAllowed'
 const UPLOAD_SOURCE_HEADER_VALUE = 'kc-upload'
+// Categories must match backend - hardcoded since this is client component
+const CATEGORIES = ['studio', 'lifestyle']
 
 export default function UploadPage() {
   const router = useRouter()
-  const categories = useMemo(
-    () =>
-      (process.env.NEXT_PUBLIC_UPLOAD_CATEGORIES ??
-        'studio,lifestyle,event,portrait')
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean),
-    [],
-  )
 
   const [authorized, setAuthorized] = useState(false)
   const [checkedAuth, setCheckedAuth] = useState(false)
@@ -30,7 +23,7 @@ export default function UploadPage() {
   
   // Image upload state
   const [file, setFile] = useState<File | null>(null)
-  const [category, setCategory] = useState(categories[0] ?? 'studio')
+  const [category, setCategory] = useState('studio')
   
   // Testimonial upload state
   const [testimonialVideo, setTestimonialVideo] = useState<File | null>(null)
@@ -213,13 +206,12 @@ export default function UploadPage() {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-100">Category</label>
-                  {/* Mobile: Native select, Desktop: Shadcn select */}
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    className="w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
                   >
-                    {categories.map((item) => (
+                    {CATEGORIES.map((item) => (
                       <option key={item} value={item}>
                         {item.charAt(0).toUpperCase() + item.slice(1)}
                       </option>
