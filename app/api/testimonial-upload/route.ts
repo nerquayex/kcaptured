@@ -177,8 +177,13 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     }
 
-    // Add to testimonials file
-    await addTestimonialToFile(testimonialData)
+    // Add to testimonials file (best effort - don't fail if it errors)
+    try {
+      await addTestimonialToFile(testimonialData)
+    } catch (fileError) {
+      console.warn('[testimonial-upload] Failed to write testimonial file (this is OK on Vercel):', fileError)
+      // Continue anyway - video is already in Cloudinary
+    }
 
     await appendUploadLog({
       type: 'upload_success',
