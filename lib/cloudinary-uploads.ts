@@ -1,6 +1,15 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { PortfolioImage } from '@/lib/portfolio-data'
 
+export interface Testimonial {
+  id: string
+  clientName: string
+  clientRole: string
+  content: string
+  videoUrl: string
+  imageUrl?: string
+}
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -67,6 +76,38 @@ export async function getClientUploads(): Promise<PortfolioImage[]> {
     })
   } catch (error) {
     console.error('[cloudinary-uploads] failed to fetch client uploads', error)
+    return []
+  }
+}
+
+export async function getUploadedTestimonials(): Promise<Testimonial[]> {
+  if (
+    !process.env.CLOUDINARY_CLOUD_NAME ||
+    !process.env.CLOUDINARY_API_KEY ||
+    !process.env.CLOUDINARY_API_SECRET
+  ) {
+    return []
+  }
+
+  try {
+    const response = await cloudinary.api.resources({
+      type: 'upload',
+      prefix: 'testimonials',
+      max_results: 100,
+      resource_type: 'video',
+      direction: 'desc',
+    })
+
+    return (response.resources ?? []).map((resource: any, index: number) => ({
+      id: `cloudinary-testimonial-${resource.public_id}`,
+      clientName: resource.metadata?.client_name || `Client ${index + 1}`,
+      clientRole: resource.metadata?.client_role || 'Testimonial',
+      content: resource.metadata?.content || 'Client testimonial',
+      videoUrl: String(resource.secure_url),
+      imageUrl: 'https://via.placeholder.com/100x100',
+    }))
+  } catch (error) {
+    console.error('[cloudinary-uploads] failed to fetch testimonials', error)
     return []
   }
 }
