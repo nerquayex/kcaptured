@@ -148,13 +148,21 @@ export async function POST(request: Request) {
     const arrayBuffer = await videoFile.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary with metadata
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: 'testimonials',
           resource_type: 'video',
           public_id: `testimonial-${Date.now()}`,
+          // Store metadata on the resource for retrieval
+          metadata: {
+            client_name: clientName,
+            client_role: clientRole,
+            content: content,
+          },
+          // Also add as tags for organizational purposes
+          tags: ['client-testimonial', 'user-submitted'],
         },
         (error, result) => {
           if (error) reject(error)
