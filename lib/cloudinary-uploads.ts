@@ -98,14 +98,19 @@ export async function getUploadedTestimonials(): Promise<Testimonial[]> {
       direction: 'desc',
     })
 
-    return (response.resources ?? []).map((resource: any, index: number) => ({
-      id: `cloudinary-testimonial-${resource.public_id}`,
-      clientName: resource.metadata?.client_name || `Client ${index + 1}`,
-      clientRole: resource.metadata?.client_role || 'Testimonial',
-      content: resource.metadata?.content || 'Client testimonial',
-      videoUrl: String(resource.secure_url),
-      imageUrl: 'https://via.placeholder.com/100x100',
-    }))
+    return (response.resources ?? []).map((resource: any, index: number) => {
+      // Extract metadata from context (stored during upload)
+      const context = resource.context?.custom || {}
+      
+      return {
+        id: `cloudinary-testimonial-${resource.public_id}`,
+        clientName: context.client_name || `Client ${index + 1}`,
+        clientRole: context.client_role || 'Testimonial',
+        content: context.content || 'Client testimonial',
+        videoUrl: String(resource.secure_url),
+        imageUrl: 'https://via.placeholder.com/100x100',
+      }
+    })
   } catch (error) {
     console.error('[cloudinary-uploads] failed to fetch testimonials', error)
     return []

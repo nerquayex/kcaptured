@@ -155,8 +155,8 @@ export async function POST(request: Request) {
           folder: 'testimonials',
           resource_type: 'video',
           public_id: `testimonial-${Date.now()}`,
-          // Store metadata on the resource for retrieval
-          metadata: {
+          // Store metadata using context (proper Cloudinary way)
+          context: {
             client_name: clientName,
             client_role: clientRole,
             content: content,
