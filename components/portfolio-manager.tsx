@@ -27,7 +27,8 @@ export function PortfolioManager({ images }: PortfolioManagerProps) {
 
   useEffect(() => {
     if (images.length > 0) {
-      setUploadCategory(images[0].category)
+      const firstCategory = images.find((image) => image.category !== 'uncategorized')
+      setUploadCategory(firstCategory?.category ?? images[0].category)
     }
   }, [images])
 
@@ -166,7 +167,9 @@ export function PortfolioManager({ images }: PortfolioManagerProps) {
                       onChange={(event) => setUploadCategory(event.target.value)}
                       className="w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
                     >
-                      {Array.from(new Set(images.map((image) => image.category))).map((category) => (
+                      {Array.from(
+                        new Set(images.map((image) => image.category).filter((category) => category !== 'uncategorized')),
+                      ).map((category) => (
                         <option key={category} value={category}>
                           {category.charAt(0).toUpperCase() + category.slice(1)}
                         </option>

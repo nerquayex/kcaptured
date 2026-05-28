@@ -111,6 +111,7 @@ export async function POST(request: Request) {
       {
         folder: `client-uploads/${normalizedCategory}`,
         resource_type: 'image',
+        context: `category=${normalizedCategory}`,
         tags: [normalizedCategory, 'client-upload'],
       },
       (error, result) => {

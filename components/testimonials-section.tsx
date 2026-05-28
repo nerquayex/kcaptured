@@ -14,7 +14,13 @@ export function TestimonialsSection() {
     async function loadTestimonials() {
       try {
         const response = await fetch('/api/testimonials');
+        if (!response.ok) {
+          throw new Error('Failed to load testimonials');
+        }
         const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error('Unexpected testimonials response');
+        }
         setTestimonials(data);
       } catch (error) {
         console.error('Failed to load testimonials:', error);
@@ -100,19 +106,12 @@ export function TestimonialsSection() {
             </div>
           )}
 
-          {/* Testimonial Text */}
-          <div className="text-center mb-8">
-            <p className="text-xl text-gray-200 italic mb-6">
-              "{current.content}"
+          {/* Client info */}
+          <div className="text-center mb-8 space-y-1">
+            <p className="font-semibold text-lg text-white">
+              {current.clientName}
             </p>
-            <div className="space-y-1">
-              <p className="font-semibold text-lg text-white">
-                {current.clientName}
-              </p>
-              <p className="text-gray-400">
-                {current.clientRole}
-              </p>
-            </div>
+            <p className="text-gray-400">{current.clientRole}</p>
           </div>
 
           {/* Navigation */}

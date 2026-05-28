@@ -4,7 +4,7 @@ import { portfolioImages } from '@/lib/portfolio-data'
 export async function GET() {
   try {
     const cloudinaryUploads = await getClientUploads()
-    const images = [...portfolioImages, ...cloudinaryUploads]
+    const images = [...cloudinaryUploads, ...portfolioImages]
 
     return new Response(JSON.stringify(images), {
       status: 200,

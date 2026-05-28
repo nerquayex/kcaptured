@@ -9,7 +9,8 @@ export interface Testimonial {
   clientName: string
   clientRole: string
   content: string
-  videoUrl: string
+  videoUrl?: string
+  videoPublicId?: string
   imageUrl?: string
 }
 
@@ -18,6 +19,27 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
+
+function parseContextCategory(resource: any) {
+  const fallback = null
+  if (!resource?.context) return fallback
+
+  if (resource.context?.custom && typeof resource.context.custom === 'object') {
+    return String(resource.context.custom.category ?? '').trim() || fallback
+  }
+
+  if (typeof resource.context === 'string') {
+    const entries = String(resource.context)
+      .split('|')
+      .map((pair: string) => pair.split('=').map((part) => part.trim()))
+      .filter((pair) => pair.length === 2)
+
+    const data = Object.fromEntries(entries)
+    return String(data.category ?? '').trim() || fallback
+  }
+
+  return fallback
+}
 
 function parseCategoryFromResource(resource: any) {
   const prefix = 'client-uploads/'
@@ -33,6 +55,11 @@ function parseCategoryFromResource(resource: any) {
 
   if (publicId.startsWith(prefix)) {
     return publicId.slice(prefix.length).split('/')[0] || 'uncategorized'
+  }
+
+  const contextCategory = parseContextCategory(resource)
+  if (contextCategory) {
+    return contextCategory
   }
 
   const knownCategoryTag = tags.find((tag: string) =>
@@ -62,6 +89,8 @@ export async function getClientUploads(): Promise<PortfolioImage[]> {
       max_results: 200,
       resource_type: 'image',
       direction: 'desc',
+      context: true,
+      tags: true,
     })
 
     return (response.resources ?? []).map((resource: any) => {
@@ -172,6 +201,8 @@ export async function getUploadedTestimonials(): Promise<Testimonial[]> {
       max_results: 100,
       resource_type: 'video',
       direction: 'desc',
+      context: true,
+      tags: true,
     })
 
     return (response.resources ?? []).map((resource: any, index: number) => {

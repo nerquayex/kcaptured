@@ -28,7 +28,7 @@ export const fetchCache = 'force-no-store';
 
 export default async function PortfolioPage() {
   const cloudinaryUploads = await getClientUploads();
-  const images = [...portfolioImages, ...cloudinaryUploads];
+  const images = [...cloudinaryUploads, ...portfolioImages];
 
   return (
     <div className="min-h-screen bg-black text-white">

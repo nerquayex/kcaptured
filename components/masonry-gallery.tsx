@@ -20,7 +20,7 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
 
   const categoryOptions = useMemo(() => {
     const categories = Array.from(
-      new Set(images.map((image) => image.category)),
+      new Set(images.map((image) => image.category).filter((category) => category !== 'uncategorized')),
     )
     return [
       { value: 'all', label: 'All Work' },
