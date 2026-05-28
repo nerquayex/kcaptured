@@ -24,12 +24,21 @@ function parseContextCategory(resource: any) {
   const fallback = null
   if (!resource?.context) return fallback
 
-  if (resource.context?.custom && typeof resource.context.custom === 'object') {
-    return String(resource.context.custom.category ?? '').trim() || fallback
+  const context = resource.context
+  const custom = context.custom ?? context
+
+  if (custom && typeof custom === 'object') {
+    const categoryValue = custom.category ?? custom.Category ?? custom.category?.[0]
+    if (typeof categoryValue === 'string') {
+      return categoryValue.trim() || fallback
+    }
+    if (Array.isArray(categoryValue) && categoryValue.length > 0) {
+      return String(categoryValue[0]).trim() || fallback
+    }
   }
 
-  if (typeof resource.context === 'string') {
-    const entries = String(resource.context)
+  if (typeof context === 'string') {
+    const entries = String(context)
       .split('|')
       .map((pair: string) => pair.split('=').map((part) => part.trim()))
       .filter((pair) => pair.length === 2)

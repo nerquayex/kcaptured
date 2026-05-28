@@ -17,7 +17,7 @@ function getAllowedCategories() {
   return (process.env.NEXT_PUBLIC_UPLOAD_CATEGORIES ?? 'studio,lifestyle,event,portrait')
     .split(',')
     .map((item) => item.trim())
-    .filter(Boolean)
+    .filter((item) => /^[a-zA-Z0-9_-]+$/.test(item))
 }
 
 export async function POST(request: Request) {
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
       {
         folder: `client-uploads/${normalizedCategory}`,
         resource_type: 'image',
-        context: `category=${normalizedCategory}`,
+        context: { category: normalizedCategory },
         tags: [normalizedCategory, 'client-upload'],
       },
       (error, result) => {
