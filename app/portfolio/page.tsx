@@ -31,19 +31,16 @@ export default async function PortfolioPage() {
   const images = [...portfolioImages, ...cloudinaryUploads];
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black text-white">
       <Header />
 
       <main className="py-16 md:py-24 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Page Header */}
           <div className="text-center mb-16">
-            <p className="text-xl text-gray-300">
-              A selection of our recent work
-            </p>
+            <p className="text-xl text-gray-300">A selection of our recent work</p>
+            <h1 className="mt-4 text-4xl font-semibold text-white">Portfolio</h1>
           </div>
 
-          {/* Gallery */}
           <MasonryGallery images={images} />
         </div>
       </main>

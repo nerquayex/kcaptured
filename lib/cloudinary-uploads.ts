@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { PortfolioImage } from '@/lib/portfolio-data'
+import { kv } from '@/lib/kv'
 
 export interface Testimonial {
   id: string
@@ -82,7 +83,53 @@ export async function getClientUploads(): Promise<PortfolioImage[]> {
   }
 }
 
+function parseTestimonialMetadata(resource: any) {
+  const fallback = {
+    clientName: 'Client',
+    clientRole: 'Testimonial',
+    content: 'Video testimonial from our valued client',
+  }
+
+  if (!resource?.context) {
+    return fallback
+  }
+
+  const customContext = resource.context.custom
+  if (customContext && typeof customContext === 'object') {
+    return {
+      clientName: String(customContext.clientName ?? fallback.clientName),
+      clientRole: String(customContext.clientRole ?? fallback.clientRole),
+      content: String(customContext.content ?? fallback.content),
+    }
+  }
+
+  if (typeof resource.context === 'string') {
+    const entries = String(resource.context)
+      .split('|')
+      .map((pair: string) => pair.split('=').map((part) => part.trim()))
+      .filter((pair) => pair.length === 2)
+
+    const data = Object.fromEntries(entries)
+    return {
+      clientName: String(data.clientName ?? fallback.clientName),
+      clientRole: String(data.clientRole ?? fallback.clientRole),
+      content: String(data.content ?? fallback.content),
+    }
+  }
+
+  return fallback
+}
+
 export async function getUploadedTestimonials(): Promise<Testimonial[]> {
+  try {
+    const storedTestimonials = await kv.get<Testimonial[]>('testimonials')
+    if (Array.isArray(storedTestimonials) && storedTestimonials.length > 0) {
+      return storedTestimonials
+    }
+  } catch (kvError) {
+    console.warn('[cloudinary-uploads] Failed to load testimonials from KV:', kvError)
+  }
+
   // First, try to get testimonials from the stored JSON file
   try {
     const filePath = join(process.cwd(), 'lib', 'testimonials-data.json')
@@ -108,7 +155,7 @@ export async function getUploadedTestimonials(): Promise<Testimonial[]> {
     console.warn('[cloudinary-uploads] No stored testimonials found, fetching from Cloudinary only')
   }
 
-  // Fallback: get testimonials from Cloudinary (with basic data)
+  // Fallback: get testimonials from Cloudinary (with metadata extracted from context)
   if (
     !process.env.CLOUDINARY_CLOUD_NAME ||
     !process.env.CLOUDINARY_API_KEY ||
@@ -126,14 +173,17 @@ export async function getUploadedTestimonials(): Promise<Testimonial[]> {
       direction: 'desc',
     })
 
-    return (response.resources ?? []).map((resource: any, index: number) => ({
-      id: `cloudinary-testimonial-${resource.public_id}`,
-      clientName: `Client ${index + 1}`,
-      clientRole: 'Testimonial',
-      content: 'Video testimonial from our valued client',
-      videoUrl: String(resource.secure_url),
-      imageUrl: 'https://via.placeholder.com/100x100',
-    }))
+    return (response.resources ?? []).map((resource: any, index: number) => {
+      const parsed = parseTestimonialMetadata(resource)
+      return {
+        id: `cloudinary-testimonial-${resource.public_id}`,
+        clientName: parsed.clientName || `Client ${index + 1}`,
+        clientRole: parsed.clientRole || 'Testimonial',
+        content: parsed.content || 'Video testimonial from our valued client',
+        videoUrl: String(resource.secure_url),
+        imageUrl: 'https://via.placeholder.com/100x100',
+      }
+    })
   } catch (error) {
     console.error('[cloudinary-uploads] failed to fetch testimonials', error)
     return []

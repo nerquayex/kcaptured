@@ -32,5 +32,165 @@
     "ip": "::1",
     "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
     "timestamp": "2026-05-18T19:42:30.962Z"
+  },
+  {
+    "type": "key_failed",
+    "error": "Invalid upload key",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-19T16:47:54.422Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-19T16:48:12.579Z"
+  },
+  {
+    "type": "key_failed",
+    "error": "Invalid upload key",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.3.1 Safari/605.1.15",
+    "timestamp": "2026-05-23T19:02:31.891Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.3.1 Safari/605.1.15",
+    "timestamp": "2026-05-23T19:02:46.617Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-24T15:19:49.992Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T16:53:36.985Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T17:03:57.814Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T17:04:38.812Z"
+  },
+  {
+    "type": "upload_error",
+    "error": "Unauthorized upload request",
+    "uploadSource": "kc-upload",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T17:10:08.039Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T17:10:24.021Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "studio",
+    "fileName": "@thepapa’s_kitchen.png",
+    "fileSize": 1494556,
+    "fileMimeType": "image/png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T17:10:38.869Z"
+  },
+  {
+    "type": "upload_success",
+    "fileName": "@thepapa’s_kitchen.png",
+    "fileSize": 1494556,
+    "fileMimeType": "image/png",
+    "category": "studio",
+    "publicId": "client-uploads/studio/gvkgl5q3wirqsbotqdvi",
+    "url": "https://res.cloudinary.com/dq4tkpuu4/image/upload/v1779988242/client-uploads/studio/gvkgl5q3wirqsbotqdvi.png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T17:10:43.155Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "testimonial",
+    "fileName": "1.mov",
+    "fileSize": 4142524,
+    "fileMimeType": "video/quicktime",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T17:11:36.626Z"
+  },
+  {
+    "type": "upload_success",
+    "category": "testimonial",
+    "fileName": "1.mov",
+    "fileSize": 4142524,
+    "fileMimeType": "video/quicktime",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T17:11:43.568Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T17:16:10.888Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "lifestyle",
+    "fileName": "@thepapa’s_kitchen.png",
+    "fileSize": 1494556,
+    "fileMimeType": "image/png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T17:16:38.352Z"
+  },
+  {
+    "type": "upload_success",
+    "fileName": "@thepapa’s_kitchen.png",
+    "fileSize": 1494556,
+    "fileMimeType": "image/png",
+    "category": "lifestyle",
+    "publicId": "client-uploads/lifestyle/lopzpyokyfgao8mcy6xf",
+    "url": "https://res.cloudinary.com/dq4tkpuu4/image/upload/v1779988605/client-uploads/lifestyle/lopzpyokyfgao8mcy6xf.png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T17:16:45.751Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "testimonial",
+    "fileName": "2.mov",
+    "fileSize": 4314881,
+    "fileMimeType": "video/quicktime",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T17:17:13.962Z"
+  },
+  {
+    "type": "upload_success",
+    "category": "testimonial",
+    "fileName": "2.mov",
+    "fileSize": 4314881,
+    "fileMimeType": "video/quicktime",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T17:18:40.396Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T17:20:03.244Z"
   }
 ]

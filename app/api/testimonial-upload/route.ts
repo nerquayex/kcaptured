@@ -1,8 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { appendUploadLog, getClientIp } from '@/lib/logger'
 import { verifyUploadToken } from '@/lib/auth-utils'
-import { readFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
+import { kv } from '@/lib/kv'
 
 export const runtime = 'nodejs'
 
@@ -23,30 +22,6 @@ interface TestimonialData {
   createdAt: string
 }
 
-function getTestimonialsFilePath() {
-  return join(process.cwd(), 'lib', 'testimonials-data.json')
-}
-
-async function addTestimonialToFile(testimonial: TestimonialData) {
-  try {
-    const filePath = getTestimonialsFilePath()
-    let existing: TestimonialData[] = []
-
-    try {
-      const content = readFileSync(filePath, 'utf-8')
-      existing = JSON.parse(content)
-    } catch {
-      // File doesn't exist yet, start with empty array
-      existing = []
-    }
-
-    existing.push(testimonial)
-    writeFileSync(filePath, JSON.stringify(existing, null, 2))
-  } catch (error) {
-    console.error('Failed to write testimonial to file:', error)
-    throw error
-  }
-}
 
 export async function POST(request: Request) {
   const ip = getClientIp(request)
@@ -159,6 +134,7 @@ export async function POST(request: Request) {
           folder: 'testimonials',
           resource_type: 'video',
           public_id: publicId,
+          context: `clientName=${clientName}|clientRole=${clientRole}|content=${content}`,
           // Add tags for organization
           tags: ['client-testimonial', 'user-submitted'],
         },
@@ -183,12 +159,12 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     }
 
-    // Add to testimonials file (best effort - don't fail if it errors)
+    // Persist testimonial metadata in Vercel KV so Vercel can serve structured testimonial data.
     try {
-      await addTestimonialToFile(testimonialData)
-    } catch (fileError) {
-      console.warn('[testimonial-upload] Failed to write testimonial file (this is OK on Vercel):', fileError)
-      // Continue anyway - video is already in Cloudinary
+      const existingTestimonials = (await kv.get<TestimonialData[]>('testimonials')) ?? []
+      await kv.set('testimonials', [...existingTestimonials, testimonialData])
+    } catch (kvError) {
+      console.warn('[testimonial-upload] Failed to persist testimonial in KV:', kvError)
     }
 
     await appendUploadLog({

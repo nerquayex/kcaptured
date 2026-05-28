@@ -50,6 +50,7 @@ export function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/portfolio', label: 'Portfolio' },
+    { href: '/testimonials', label: 'Testimonials' },
     { href: '/about', label: 'About' },
     { href: '/faq', label: 'FAQ' },
     { href: '/policy', label: 'Policy' },
