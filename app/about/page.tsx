@@ -41,7 +41,7 @@ export default function AboutPage() {
 
             <div className="order-last relative overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl shadow-black/40">
               <img
-                src="https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807338/32-1Z7A1257__2_shyxak.jpg"
+                src="https://res.cloudinary.com/dq4tkpuu4/image/upload/v1779992592/Kenny_v7ay6n.png"
                 alt="About KCAPTURED Productions"
                 className="h-[520px] w-full object-cover object-center"
               />
