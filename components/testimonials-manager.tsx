@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { services } from '@/lib/services-data'
 
 const AUTH_TOKEN_KEY = 'uploadToken'
 const UPLOAD_SOURCE_HEADER_VALUE = 'kc-upload'
@@ -13,8 +13,8 @@ interface TestimonialData {
   id: string
   clientName: string
   clientRole: string
-  content: string
   videoUrl: string
+  videoPublicId?: string
   createdAt: string
 }
 
@@ -25,7 +25,6 @@ export function TestimonialsManager() {
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [clientName, setClientName] = useState('')
   const [clientRole, setClientRole] = useState('')
-  const [testimonialContent, setTestimonialContent] = useState('')
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -55,8 +54,8 @@ export function TestimonialsManager() {
 
     const token = window.sessionStorage.getItem(AUTH_TOKEN_KEY) ?? ''
 
-    if (!videoFile || !clientName || !clientRole || !testimonialContent) {
-      setError('Please fill in every testimonial field and attach a video.')
+    if (!videoFile || !clientName || !clientRole) {
+      setError('Please provide a name, choose a session type, and attach a video.')
       return
     }
 
@@ -72,7 +71,6 @@ export function TestimonialsManager() {
       formData.append('file', videoFile)
       formData.append('clientName', clientName)
       formData.append('clientRole', clientRole)
-      formData.append('content', testimonialContent)
 
       const response = await fetch('/api/testimonial-upload', {
         method: 'POST',
@@ -97,15 +95,18 @@ export function TestimonialsManager() {
         return
       }
 
-      setSuccess('Testimonial added successfully. Refreshing list...')
+      // If API returned the created testimonial, prepend it to the list so UI updates immediately
+      if (body?.testimonial) {
+        setTestimonials((prev) => [body.testimonial, ...(prev ?? [])])
+      }
+
+      setSuccess('Testimonial added successfully.')
       setVideoFile(null)
       setClientName('')
       setClientRole('')
-      setTestimonialContent('')
       setTimeout(() => {
         setDialogOpen(false)
-        fetchTestimonials()
-      }, 900)
+      }, 600)
     } catch (uploadError) {
       console.error(uploadError)
       setError('Testimonial upload failed. Please try again.')
@@ -113,6 +114,41 @@ export function TestimonialsManager() {
       setUploading(false)
     }
   }
+
+  const handleDelete = async (item: TestimonialData) => {
+    const ok = confirm('Are you sure you want to delete this testimonial? This action cannot be undone.')
+    if (!ok) return
+
+    const token = window.sessionStorage.getItem(AUTH_TOKEN_KEY) ?? ''
+    if (!token) {
+      alert('Upload key missing. Use the footer lock to request a session.')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/testimonial-delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          'x-upload-source': UPLOAD_SOURCE_HEADER_VALUE,
+        },
+        body: JSON.stringify({ id: item.id, videoPublicId: item.videoPublicId }),
+      })
+
+      if (!response.ok) {
+        const body = await response.json()
+        throw new Error(body?.error ?? 'Delete failed')
+      }
+
+      await fetchTestimonials()
+    } catch (e) {
+      console.error('Failed to delete testimonial', e)
+      alert('Failed to delete testimonial. Check console for details.')
+    }
+  }
+
+  const sessionOptions = Array.from(new Set(services.map((s) => s.name)))
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -122,7 +158,7 @@ export function TestimonialsManager() {
             <p className="text-sm uppercase tracking-[0.35em] text-primary">Testimonials</p>
             <h1 className="mt-3 text-4xl font-semibold">Client testimonials</h1>
             <p className="mt-3 max-w-2xl text-gray-300">
-              See what clients are saying and add new testimonial videos with text metadata.
+              Manage testimonial videos. Only the client name and session are required.
             </p>
           </div>
 
@@ -133,9 +169,6 @@ export function TestimonialsManager() {
             <DialogContent className="bg-slate-950 border border-white/10 p-6 shadow-2xl">
               <DialogHeader>
                 <DialogTitle>Add testimonial</DialogTitle>
-                <DialogDescription>
-                  Upload a client testimonial video and add the name, session type, and text.
-                </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-4 pt-4">
@@ -156,22 +189,19 @@ export function TestimonialsManager() {
                     placeholder="e.g. Jordan Smith"
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-100">Client role / session type</label>
-                  <Input
-                    type="text"
+                  <label className="block text-sm font-medium text-gray-100">Session type</label>
+                  <select
                     value={clientRole}
-                    onChange={(event) => setClientRole(event.target.value)}
-                    placeholder="e.g. Lifestyle Session"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-100">Testimonial text</label>
-                  <Textarea
-                    value={testimonialContent}
-                    onChange={(event) => setTestimonialContent(event.target.value)}
-                    placeholder="What did the client say about the shoot?"
-                  />
+                    onChange={(e) => setClientRole(e.target.value)}
+                    className="w-full rounded-md border border-gray-600 bg-gray-900 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+                  >
+                    <option value="">Select a session</option>
+                    {sessionOptions.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
                 </div>
 
                 {error && <p className="text-sm text-red-400">{error}</p>}
@@ -203,8 +233,17 @@ export function TestimonialsManager() {
             testimonials.map((testimonial) => (
               <article
                 key={testimonial.id}
-                className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-sm"
+                className="relative rounded-3xl border border-white/10 bg-white/5 p-6 shadow-sm"
               >
+                <div className="absolute right-4 bottom-4">
+                  <button
+                    onClick={() => handleDelete(testimonial)}
+                    className="cursor-pointer rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+
                 {testimonial.videoUrl && (
                   <div className="mb-4 overflow-hidden rounded-2xl bg-black">
                     <video
@@ -214,7 +253,7 @@ export function TestimonialsManager() {
                     />
                   </div>
                 )}
-                <p className="text-lg text-gray-200 italic mb-4">"{testimonial.content}"</p>
+
                 <div className="space-y-1">
                   <p className="font-semibold text-white">{testimonial.clientName}</p>
                   <p className="text-sm text-gray-400">{testimonial.clientRole}</p>

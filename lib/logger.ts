@@ -7,6 +7,7 @@ export type UploadLogType =
   | 'upload_attempt'
   | 'upload_success'
   | 'upload_error'
+  | 'upload_delete'
 
 export interface UploadLogEntry {
   timestamp: string

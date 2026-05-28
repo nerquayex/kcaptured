@@ -31,6 +31,39 @@ export function PortfolioManager({ images }: PortfolioManagerProps) {
     }
   }, [images])
 
+  const handleDelete = async (image: PortfolioImage) => {
+    const ok = confirm('Are you sure you want to delete this image? This action cannot be undone.')
+    if (!ok) return
+
+    const token = window.sessionStorage.getItem(AUTH_TOKEN_KEY) ?? ''
+    if (!token) {
+      alert('Upload key missing. Use the footer lock to request a session.')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/portfolio-delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          'x-upload-source': UPLOAD_SOURCE_HEADER_VALUE,
+        },
+        body: JSON.stringify({ id: image.id, publicId: (image as any).publicId }),
+      })
+
+      if (!response.ok) {
+        const body = await response.json()
+        throw new Error(body?.error ?? 'Delete failed')
+      }
+
+      router.refresh()
+    } catch (e) {
+      console.error('Failed to delete portfolio image', e)
+      alert('Failed to delete image. See console for details.')
+    }
+  }
+
   const handleUpload = async () => {
     setError('')
     setSuccess('')
@@ -161,8 +194,18 @@ export function PortfolioManager({ images }: PortfolioManagerProps) {
           {images.map((image) => (
             <div
               key={image.id}
-              className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
             >
+              <div className="absolute right-3 bottom-3 z-20">
+                <button
+                  onClick={() => handleDelete(image)}
+                  className="cursor-pointer rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white hover:bg-red-700"
+                  aria-label={`Delete ${image.title}`}
+                >
+                  Delete
+                </button>
+              </div>
+
               <div className="relative h-44 overflow-hidden bg-gray-950">
                 <Image
                   src={optimizeCloudinaryUrl(image.cloudinaryUrl)}

@@ -192,5 +192,63 @@
     "ip": "::1",
     "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
     "timestamp": "2026-05-28T17:20:03.244Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T18:07:20.325Z"
+  },
+  {
+    "type": "upload_delete",
+    "publicId": "cloudinary-testimonial-testimonials/testimonial-1779988633966",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T18:09:27.187Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T18:12:27.163Z"
+  },
+  {
+    "type": "upload_delete",
+    "publicId": "client-uploads/lifestyle/lopzpyokyfgao8mcy6xf",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T18:12:50.124Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T18:14:50.883Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "testimonial",
+    "fileName": "1.mov",
+    "fileSize": 4142524,
+    "fileMimeType": "video/quicktime",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T18:15:25.709Z"
+  },
+  {
+    "type": "upload_success",
+    "category": "testimonial",
+    "fileName": "1.mov",
+    "fileSize": 4142524,
+    "fileMimeType": "video/quicktime",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+    "timestamp": "2026-05-28T18:15:30.119Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.120.0 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36",
+    "timestamp": "2026-05-28T18:17:20.721Z"
   }
 ]

@@ -71,6 +71,7 @@ export async function getClientUploads(): Promise<PortfolioImage[]> {
       return {
         id: `cloudinary-${resource.public_id}`,
         cloudinaryUrl: String(resource.secure_url),
+        publicId: String(resource.public_id),
         category,
         title,
         width: Number(resource.width) || 800,
@@ -181,6 +182,7 @@ export async function getUploadedTestimonials(): Promise<Testimonial[]> {
         clientRole: parsed.clientRole || 'Testimonial',
         content: parsed.content || 'Video testimonial from our valued client',
         videoUrl: String(resource.secure_url),
+        videoPublicId: resource.public_id,
         imageUrl: 'https://via.placeholder.com/100x100',
       }
     })

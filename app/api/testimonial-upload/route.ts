@@ -17,8 +17,8 @@ interface TestimonialData {
   id: string
   clientName: string
   clientRole: string
-  content: string
   videoUrl: string
+  videoPublicId?: string
   createdAt: string
 }
 
@@ -48,7 +48,6 @@ export async function POST(request: Request) {
   const videoFile = formData.get('file')
   const clientName = String(formData.get('clientName') ?? '')
   const clientRole = String(formData.get('clientRole') ?? '')
-  const content = String(formData.get('content') ?? '')
 
   await appendUploadLog({
     type: 'upload_attempt',
@@ -108,9 +107,9 @@ export async function POST(request: Request) {
     })
   }
 
-  if (!clientName || !clientRole || !content) {
+  if (!clientName || !clientRole) {
     return new Response(
-      JSON.stringify({ error: 'Client name, role, and content are required' }),
+      JSON.stringify({ error: 'Client name and session type are required' }),
       {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -134,7 +133,7 @@ export async function POST(request: Request) {
           folder: 'testimonials',
           resource_type: 'video',
           public_id: publicId,
-          context: `clientName=${clientName}|clientRole=${clientRole}|content=${content}`,
+          context: `clientName=${clientName}|clientRole=${clientRole}`,
           // Add tags for organization
           tags: ['client-testimonial', 'user-submitted'],
         },
@@ -154,8 +153,8 @@ export async function POST(request: Request) {
       id: publicId,
       clientName,
       clientRole,
-      content,
       videoUrl: result.secure_url,
+      videoPublicId: (result as any).public_id,
       createdAt: new Date().toISOString(),
     }
 
