@@ -48,6 +48,10 @@ export async function POST(request: Request) {
   const videoFile = formData.get('file')
   const clientName = String(formData.get('clientName') ?? '')
   const clientRole = String(formData.get('clientRole') ?? '')
+  const fileName = String(videoFile instanceof File ? videoFile.name : '')
+  const allowedVideoExtensions = /\.(mp4|mov|m4v|3gp|avi|webm|quicktime)$/i
+  const isVideoMime = videoFile instanceof File && typeof videoFile.type === 'string' && videoFile.type.startsWith('video/')
+  const isVideoExtension = allowedVideoExtensions.test(fileName)
 
   await appendUploadLog({
     type: 'upload_attempt',
@@ -73,13 +77,13 @@ export async function POST(request: Request) {
     })
   }
 
-  if (!videoFile.type.startsWith('video/')) {
+  if (!isVideoMime && !isVideoExtension) {
     await appendUploadLog({
       type: 'upload_error',
-      error: `Invalid file type: ${videoFile.type}`,
-      fileName: videoFile.name,
-      fileSize: videoFile.size,
-      fileMimeType: videoFile.type,
+      error: `Invalid file type: ${videoFile instanceof File ? videoFile.type : 'unknown'}`,
+      fileName: videoFile instanceof File ? videoFile.name : fileName,
+      fileSize: videoFile instanceof File ? videoFile.size : undefined,
+      fileMimeType: videoFile instanceof File ? videoFile.type : undefined,
       category: 'testimonial',
       ip,
       userAgent,
@@ -136,6 +140,7 @@ export async function POST(request: Request) {
           context: `clientName=${clientName}|clientRole=${clientRole}`,
           // Add tags for organization
           tags: ['client-testimonial', 'user-submitted'],
+          eager: [{ format: 'mp4', quality: 'auto', fetch_format: 'auto' }],
         },
         (error, result) => {
           if (error) reject(error)
@@ -147,13 +152,16 @@ export async function POST(request: Request) {
     })
 
     const result = uploadResult as any
+    const videoUrl = Array.isArray(result.eager) && result.eager[0]?.secure_url
+      ? String(result.eager[0].secure_url)
+      : String(result.secure_url)
 
     // Create testimonial data
     const testimonialData: TestimonialData = {
       id: publicId,
       clientName,
       clientRole,
-      videoUrl: result.secure_url,
+      videoUrl,
       videoPublicId: (result as any).public_id,
       createdAt: new Date().toISOString(),
     }

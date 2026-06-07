@@ -101,7 +101,7 @@ export default function UploadPage() {
             <div className="rounded-3xl border border-white/10 bg-red-500/10 p-8 text-center text-red-200">
               <p className="text-lg font-semibold">Upload access expired.</p>
               <p className="mt-2 text-sm text-gray-300">
-                Use the footer padlock again to request a new 5-minute upload session.
+                Use the footer padlock again to request a new 10-minute upload session.
               </p>
             </div>
           )}

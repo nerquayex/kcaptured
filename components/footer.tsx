@@ -36,7 +36,7 @@ const UPLOAD_LOCK_KEY = 'uploadAuthLock'
 const UPLOAD_ENTRY_KEY = 'uploadEntryAllowed'
 const UPLOAD_TOKEN_KEY = 'uploadToken'
 const UPLOAD_TOKEN_EXPIRY_KEY = 'uploadTokenExpiry'
-const AUTH_WINDOW_MS = 5 * 60 * 1000
+const AUTH_WINDOW_MS = 10 * 60 * 1000
 
 export function Footer() {
   const currentYear = new Date().getFullYear();

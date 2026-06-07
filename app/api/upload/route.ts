@@ -113,6 +113,9 @@ export async function POST(request: Request) {
         resource_type: 'image',
         context: { category: normalizedCategory },
         tags: [normalizedCategory, 'client-upload'],
+        transformation: [
+          { width: 1200, crop: 'limit', gravity: 'auto', quality: 'auto', fetch_format: 'auto' },
+        ],
       },
       (error, result) => {
         if (error) {

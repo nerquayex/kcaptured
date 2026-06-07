@@ -27,8 +27,20 @@ export interface UploadLogEntry {
 const LOGS_DIR = path.join(process.cwd(), 'logs')
 const LOG_FILE = path.join(LOGS_DIR, 'uploads.json')
 const MAX_ENTRIES = 10000
+const CAN_WRITE_LOGS = process.env.VERCEL !== '1'
 
 export async function appendUploadLog(entry: Omit<UploadLogEntry, 'timestamp'>) {
+  const logEntry: UploadLogEntry = {
+    ...entry,
+    timestamp: new Date().toISOString(),
+  }
+
+  console.log('[upload-logger]', JSON.stringify(logEntry))
+
+  if (!CAN_WRITE_LOGS) {
+    return
+  }
+
   try {
     await fs.mkdir(LOGS_DIR, { recursive: true })
 
@@ -40,10 +52,7 @@ export async function appendUploadLog(entry: Omit<UploadLogEntry, 'timestamp'>) 
       logs = []
     }
 
-    logs.push({
-      ...entry,
-      timestamp: new Date().toISOString(),
-    })
+    logs.push(logEntry)
 
     if (logs.length > MAX_ENTRIES) {
       logs = logs.slice(-MAX_ENTRIES)
