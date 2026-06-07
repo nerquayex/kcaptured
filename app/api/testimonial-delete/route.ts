@@ -1,7 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { appendUploadLog, getClientIp } from '@/lib/logger'
 import { verifyUploadToken } from '@/lib/auth-utils'
-import { kv } from '@/lib/kv'
 
 export const runtime = 'nodejs'
 
@@ -44,15 +43,6 @@ export async function POST(request: Request) {
       } catch (cloudErr) {
         console.warn('[testimonial-delete] Cloudinary delete failed', cloudErr)
       }
-    }
-
-    // Remove from KV testimonials list
-    try {
-      const existing = (await kv.get<any[]>('testimonials')) ?? []
-      const filtered = existing.filter((t) => t.id !== id && t.videoPublicId !== videoPublicId)
-      await kv.set('testimonials', filtered)
-    } catch (kvErr) {
-      console.warn('[testimonial-delete] Failed to update KV', kvErr)
     }
 
     await appendUploadLog({ type: 'upload_delete', publicId: id ?? videoPublicId, ip, userAgent })

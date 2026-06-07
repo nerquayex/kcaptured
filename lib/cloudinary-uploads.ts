@@ -1,8 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary'
-import { readFileSync } from 'fs'
-import { join } from 'path'
 import { PortfolioImage } from '@/lib/portfolio-data'
-import { kv } from '@/lib/kv'
 
 export interface Testimonial {
   id: string
@@ -160,41 +157,6 @@ function parseTestimonialMetadata(resource: any) {
 }
 
 export async function getUploadedTestimonials(): Promise<Testimonial[]> {
-  try {
-    const storedTestimonials = await kv.get<Testimonial[]>('testimonials')
-    if (Array.isArray(storedTestimonials) && storedTestimonials.length > 0) {
-      return storedTestimonials
-    }
-  } catch (kvError) {
-    console.warn('[cloudinary-uploads] Failed to load testimonials from KV:', kvError)
-  }
-
-  // First, try to get testimonials from the stored JSON file
-  try {
-    const filePath = join(process.cwd(), 'lib', 'testimonials-data.json')
-    const content = readFileSync(filePath, 'utf-8')
-    const storedTestimonials = JSON.parse(content) as Array<{
-      id: string
-      clientName: string
-      clientRole: string
-      content: string
-      videoUrl: string
-      createdAt: string
-    }>
-    
-    return storedTestimonials.map((testimonial) => ({
-      id: `stored-${testimonial.id}`,
-      clientName: testimonial.clientName,
-      clientRole: testimonial.clientRole,
-      content: testimonial.content,
-      videoUrl: testimonial.videoUrl,
-      imageUrl: 'https://via.placeholder.com/100x100',
-    }))
-  } catch (fileError) {
-    console.warn('[cloudinary-uploads] No stored testimonials found, fetching from Cloudinary only')
-  }
-
-  // Fallback: get testimonials from Cloudinary (with metadata extracted from context)
   if (
     !process.env.CLOUDINARY_CLOUD_NAME ||
     !process.env.CLOUDINARY_API_KEY ||

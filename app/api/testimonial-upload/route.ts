@@ -1,7 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { appendUploadLog, getClientIp } from '@/lib/logger'
 import { verifyUploadToken } from '@/lib/auth-utils'
-import { kv } from '@/lib/kv'
 
 export const runtime = 'nodejs'
 
@@ -137,7 +136,7 @@ export async function POST(request: Request) {
           folder: 'testimonials',
           resource_type: 'video',
           public_id: publicId,
-          context: `clientName=${clientName}|clientRole=${clientRole}`,
+          context: { clientName, clientRole },
           // Add tags for organization
           tags: ['client-testimonial', 'user-submitted'],
           eager: [{ format: 'mp4', quality: 'auto', fetch_format: 'auto' }],
@@ -164,14 +163,6 @@ export async function POST(request: Request) {
       videoUrl,
       videoPublicId: (result as any).public_id,
       createdAt: new Date().toISOString(),
-    }
-
-    // Persist testimonial metadata in Vercel KV so Vercel can serve structured testimonial data.
-    try {
-      const existingTestimonials = (await kv.get<TestimonialData[]>('testimonials')) ?? []
-      await kv.set('testimonials', [...existingTestimonials, testimonialData])
-    } catch (kvError) {
-      console.warn('[testimonial-upload] Failed to persist testimonial in KV:', kvError)
     }
 
     await appendUploadLog({
