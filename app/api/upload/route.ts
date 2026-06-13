@@ -14,7 +14,7 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE = 50 * 1024 * 1024
 
 function getAllowedCategories() {
-  return (process.env.NEXT_PUBLIC_UPLOAD_CATEGORIES ?? 'studio,lifestyle,event,portrait')
+  return (process.env.NEXT_PUBLIC_UPLOAD_CATEGORIES ?? 'studio,lifestyle,event')
     .split(',')
     .map((item) => item.trim())
     .filter((item) => /^[a-zA-Z0-9_-]+$/.test(item))

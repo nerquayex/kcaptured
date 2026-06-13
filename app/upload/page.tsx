@@ -78,7 +78,7 @@ export default function UploadPage() {
 
           {authorized ? (
             <Tabs value={uploadMode} onValueChange={(value) => setUploadMode(value as 'portfolio' | 'testimonials')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 gap-2">
+                <TabsList className="grid w-full grid-cols-2 mb-6 gap-2">
                 <TabsTrigger value="portfolio">Portfolio images</TabsTrigger>
                 <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
               </TabsList>

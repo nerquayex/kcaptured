@@ -96,8 +96,15 @@ export function PortfolioManager({ images }: PortfolioManagerProps) {
         },
         body: formData,
       })
-
-      const body = await response.json()
+      // Read response text and attempt to parse JSON safely to avoid SyntaxError
+      const text = await response.text()
+      let body: any = {}
+      try {
+        body = text ? JSON.parse(text) : {}
+      } catch (parseErr) {
+        console.warn('[upload] failed to parse json response', parseErr)
+        body = {}
+      }
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -107,7 +114,7 @@ export function PortfolioManager({ images }: PortfolioManagerProps) {
           return
         }
 
-        setError(body?.error ?? 'Upload failed. Please try again.')
+        setError(body?.error ?? text ?? 'Upload failed. Please try again.')
         return
       }
 

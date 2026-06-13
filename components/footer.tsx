@@ -115,11 +115,13 @@ export function Footer() {
           {/* Main Footer Content */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
-          <div>
-            <h3 className="text-2xl font-bold mb-2">Kcaptured</h3>
-            <p className="text-gray-500 text-sm">
-              Professional photography specializing in lifestyle and studio portraits.
-            </p>
+          <div className="flex items-center gap-4">
+            <img src="/public/kcaptures-logo.png" alt="KCAPTURED" className="h-12 w-auto object-contain" />
+            <div>
+              <p className="text-gray-500 text-sm">
+                Professional photography specializing in lifestyle and studio portraits.
+              </p>
+            </div>
           </div>
 
           {/* Links */}
@@ -229,7 +231,7 @@ export function Footer() {
           {/* Copyright Section */}
           <div className="mb-8">
             <p className="text-gray-500 text-sm">
-              &copy; {currentYear} KCAPTURES. All rights reserved.
+              &copy; {currentYear} KCAPTURED. All rights reserved.
             </p>
           </div>
         </div>

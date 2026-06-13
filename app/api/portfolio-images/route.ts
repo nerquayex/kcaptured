@@ -1,10 +1,10 @@
 import { getClientUploads } from '@/lib/cloudinary-uploads'
-import { portfolioImages } from '@/lib/portfolio-data'
+import { portfolioImages, eventSamples } from '@/lib/portfolio-data'
 
 export async function GET() {
   try {
     const cloudinaryUploads = await getClientUploads()
-    const images = [...cloudinaryUploads, ...portfolioImages]
+    const images = [...cloudinaryUploads, ...portfolioImages, ...eventSamples]
 
     return new Response(JSON.stringify(images), {
       status: 200,

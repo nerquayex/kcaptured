@@ -445,3 +445,16 @@ export const portfolioImages: PortfolioImage[] = [
     height: 500,
   }
 ];
+
+// EVENT SAMPLE
+export const eventSamples = [
+  {
+    id: 'event-1',
+    cloudinaryUrl:
+      'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807338/32-1Z7A1257__2_shyxak.jpg',
+    category: 'event',
+    title: 'Event Sample',
+    width: 800,
+    height: 600,
+  },
+];
