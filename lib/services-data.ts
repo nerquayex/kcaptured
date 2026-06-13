@@ -12,7 +12,7 @@ export const services: Service[] = [
   {
     id: '1',
     category: 'lifestyle',
-    name: 'Basic Lifestyle Shoot',
+    name: 'Basic KC Lifestyle',
     duration: '30 min',
     price: 100,
     sampleUrl: 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807338/32-1Z7A1257__2_shyxak.jpg',

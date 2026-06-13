@@ -74,11 +74,6 @@ export function HeroSection() {
             KCAPTURED
           </motion.h1>
 
-          {/* <motion.div variants={itemVariants} className="mt-10 flex justify-center">
-            <Button className="px-10 py-4 text-lg font-semibold tracking-wide">
-              KCAPTURED
-            </Button>
-          </motion.div> */}
         </motion.div>
       </div>
     </section>
