@@ -116,7 +116,7 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div className="flex items-center gap-4">
-            <img src="/public/kcaptures-logo.png" alt="KCAPTURED" className="h-12 w-auto object-contain" />
+            <img src="/kcaptured-logo.png" alt="KCAPTURED" className="h-12 w-auto object-contain" />
             <div>
               <p className="text-gray-500 text-sm">
                 Professional photography specializing in lifestyle and studio portraits.
