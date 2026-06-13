@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'KCAPTURED - DMV Photography | Jessup, Maryland Portraits',
+  title: 'KCAPTURED STUDIOS',
   description: 'KCAPTURED offers affordable lifestyle, studio, and portrait photography in Jessup, Maryland and across the DMV. Book KCAPTURED Studios for creative portraits, athlete sessions, and event photography.',
   keywords: [
     'KCAPTURED',
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'KCAPTURED - DMV Photography Studio',
+    title: 'KCAPTURED STUDIOS',
     description: 'Affordable lifestyle, studio, and portrait photography in Jessup, Maryland and the DMV area.',
     url: 'https://kcaptured.com',
     siteName: 'KCAPTURED',
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'KCAPTURED - DMV Photography Studio',
+    title: 'KCAPTURED STUDIOS',
     description: 'Affordable lifestyle, studio, and portrait photography in Jessup, Maryland and the DMV area.',
     creator: '@kcaptured',
     images: ['https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807344/43-1Z7A1338__2_uyue1r.jpg'],

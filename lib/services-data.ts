@@ -101,8 +101,8 @@ export const services: Service[] = [
       '4-6 day turnaround',
       'Custom link for client and guests',
     ],
-    sampleUrl:
-      'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807338/32-1Z7A1257__2_shyxak.jpg',
+    // sampleUrl:
+    //   'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807338/32-1Z7A1257__2_shyxak.jpg',
   },
   {
     id: '8',
@@ -117,8 +117,8 @@ export const services: Service[] = [
       '4-6 day turnaround',
       'Custom link for client and guests',
     ],
-    sampleUrl:
-      'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807339/33-1Z7A1348__2_f8w7em.jpg',
+    // sampleUrl:
+    //   'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807339/33-1Z7A1348__2_f8w7em.jpg',
   },
   {
     id: '9',
@@ -133,7 +133,7 @@ export const services: Service[] = [
       '4-6 day turnaround',
       'Custom link for client and guests',
     ],
-    sampleUrl:
-      'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807344/43-1Z7A1338__2_uyue1r.jpg',
+    // sampleUrl:
+    //   'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773807344/43-1Z7A1338__2_uyue1r.jpg',
   },
 ];
