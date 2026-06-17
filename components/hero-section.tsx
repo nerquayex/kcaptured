@@ -51,7 +51,7 @@ export function HeroSection() {
   const imageUrl = 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1781263118/IMG_5187_hdozar.jpg';
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-black -mt-16">
+    <section ref={sectionRef} className="relative overflow-hidden bg-red -mt-16">
       <img
         src={imageUrl}
         alt="Hero"
@@ -69,9 +69,9 @@ export function HeroSection() {
         >
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight transparent-lx"
           >
-            KCAPTURED
+             KCAPTURED VISUALS
           </motion.h1>
 
         </motion.div>

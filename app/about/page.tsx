@@ -24,10 +24,10 @@ export default function AboutPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] items-start gap-12">
             <div className="order-first max-w-2xl">
-              <p className="text-sm uppercase tracking-[0.5em] text-gray-400 mb-6">KCAPTURED</p>
-              <h1 className="text-5xl md:text-6xl font-semibold uppercase tracking-[0.18em] text-white mb-8">
+              <h1 className="text-sm uppercase tracking-[0.5em] text-gray-400 mb-6">KCAPTURED STUDIOS </h1>
+              <h2 className="text-5xl md:text-6xl font-semibold uppercase tracking-[0.18em] text-white mb-8">
                 BIOGRAPHY
-              </h1>
+              </h2>
               <p className="text-base leading-relaxed text-gray-300 mb-6">
                 I'm Kenny Stevens, founder of KCAPTURED. Based in Maryland and serving the DMV, my mission is to make art with lifestyle — blending cinematic storytelling with everyday movement, confidence, and emotional truth to create images that feel both aspirational and authentic.
               </p>

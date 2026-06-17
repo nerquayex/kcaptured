@@ -5,6 +5,7 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
 ## Features Implemented ✅
 
 ### Core Pages
+
 - ✅ **Homepage** - Hero section with background image, services showcase, testimonials carousel, contact CTA
 - ✅ **Portfolio Gallery** - Pinterest-style masonry layout with category filtering (Lifestyle/Studio)
 - ✅ **FAQ** - Accordion-style questions organized by category
@@ -12,6 +13,7 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
 - ✅ **Responsive Navigation** - Sticky header with mobile menu and theme toggle
 
 ### Design & Experience
+
 - ✅ **Dark/Light Theme** - Automatic system detection with manual toggle
 - ✅ **Smooth Animations** - Framer Motion animations throughout (fade-in, scale, transitions)
 - ✅ **Blurred Background Sections** - Services and testimonials sections feature blurred background images with 75% dark overlay
@@ -19,6 +21,7 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
 - ✅ **Minimalist Design** - Clean black and white color scheme matching client brand
 
 ### Performance & SEO
+
 - ✅ **Image Caching** - 365-day cache for Cloudinary images via Next.js Image Optimization
 - ✅ **Metadata** - Comprehensive Open Graph, Twitter Card, and structured data
 - ✅ **Sitemap** - Auto-generated XML sitemap with all pages
@@ -45,18 +48,21 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
 1. **Clone or download the project**
 
 2. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
 
 3. **Set environment variables (optional):**
    Create `.env.local` file:
+
    ```
    NEXT_PUBLIC_BASE_URL=https://kcaptured.com
    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dq4tkpuu4
    ```
 
 4. **Run the development server:**
+
    ```bash
    pnpm dev
    ```
@@ -69,8 +75,10 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
 ### Branding & Logo Setup
 
 #### Logo Placement
+
 1. **Main Logo** - Place logo image at `/public/images/logo.png`
 2. **Update Header** - Edit `components/header.tsx`:
+
    ```tsx
    <Link href="/" className="...">
      <Image 
@@ -83,14 +91,17 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
    ```
 
 #### Favicon Setup
+
 1. **Favicon Files** - Add to `/public/`:
    - `favicon.ico` - Browser tab icon (32x32 or 64x64)
    - `apple-icon.png` - Apple devices (180x180)
 2. **Already configured** in `app/layout.tsx` metadata
 
 #### Social Media Share Image
+
 1. **Share Image** - Place at `/public/og-image.png` (1200x630 pixels)
 2. **Update in** `app/layout.tsx` if using different image:
+
    ```tsx
    images: [{
      url: '/og-image.png',
@@ -104,9 +115,11 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
 All images and videos come from Cloudinary. Your cloud name is: `dq4tkpuu4`
 
 #### Portfolio Images Setup
+
 **File:** `lib/portfolio-data.ts`
 
 Portfolio images display in a masonry (Pinterest-style) layout on the Portfolio page. Filter buttons allow visitors to view:
+
 - All Work
 - Lifestyle (casual, natural setting photos)
 - Studio (controlled environment, lit photography)
@@ -126,9 +139,11 @@ Portfolio images display in a masonry (Pinterest-style) layout on the Portfolio 
 **Important:** Accurate width/height values ensure proper masonry layout proportions.
 
 #### Testimonial Videos Setup
+
 **File:** `lib/testimonials-data.ts`
 
 Client testimonial videos display in the testimonials carousel on the homepage. Videos are formatted as:
+
 - Format: MP4, MOV, or WebM
 - Maximum size: 50MB recommended
 - Aspect ratio: 16:9 (landscape)
@@ -145,17 +160,21 @@ Client testimonial videos display in the testimonials carousel on the homepage. 
 ```
 
 #### Background Images
+
 **Services & Testimonials sections** use this blurred background:
 `https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773348310/35-2W1A0773__2_jjv1ug.jpg`
 
 To change it, edit:
+
 - `components/services-section.tsx` (line 40)
 - `components/testimonials-section.tsx` (line 27)
 
 #### Hero Section Image
+
 **File:** `components/hero-section.tsx`
 
 Update the background image URL (line 32):
+
 ```tsx
 backgroundImage: 'url(https://res.cloudinary.com/dq4tkpuu4/image/upload/FILENAME)',
 ```
@@ -163,9 +182,11 @@ backgroundImage: 'url(https://res.cloudinary.com/dq4tkpuu4/image/upload/FILENAME
 ### Content Configuration
 
 #### Services/Packages
+
 **File:** `lib/services-data.ts`
 
 Update your service offerings:
+
 ```typescript
 {
   id: 'lifestyle-basic',
@@ -178,9 +199,11 @@ Update your service offerings:
 ```
 
 #### FAQ Items
+
 **File:** `lib/faq-data.ts`
 
 Add frequently asked questions:
+
 ```typescript
 {
   id: 'faq-1',
@@ -191,7 +214,9 @@ Add frequently asked questions:
 ```
 
 ### Instagram Handle & Links
+
 Update your Instagram handle in:
+
 1. `components/hero-section.tsx` - "Book Now on Instagram" button
 2. `components/footer.tsx` - Footer social links
 3. Replace `https://instagram.com/your_handle` with your actual profile
@@ -199,6 +224,7 @@ Update your Instagram handle in:
 Search for `your_handle` in the codebase to find all locations.
 
 ### Email Setup (Contact Form)
+
 The contact form uses Formspree for email delivery.
 
 1. **Get Form ID:**
@@ -208,19 +234,24 @@ The contact form uses Formspree for email delivery.
 
 2. **Configure Environment Variable:**
    - Copy `.env.example` to `.env.local`:
+
      ```bash
      cp .env.example .env.local
      ```
+
    - Edit `.env.local` and add your Formspree ID:
+
      ```env
      NEXT_PUBLIC_FORMSPREE_ID=your_form_id_here
      ```
+
    - The form will be disabled until this variable is set
    - Never commit `.env.local` (it's in `.gitignore`)
 
 ## Performance Optimization
 
 ### Image Caching
+
 Images are cached for **365 days** (1 year) to ensure fast repeat visits:
 
 ```javascript
@@ -232,11 +263,13 @@ images: {
 ```
 
 Cloudinary images automatically receive:
+
 - WebP/AVIF format conversion for modern browsers
 - Responsive image sizes via srcSet
 - Lazy loading on scroll
 
 ### What's Cached
+
 - ✅ Cloudinary images (portfolio, testimonial backgrounds)
 - ✅ Static assets (logos, icons, fonts)
 - ✅ Next.js optimized images
@@ -299,6 +332,7 @@ Cloudinary images automatically receive:
 ### Deploy to Vercel (Recommended)
 
 1. **Push to GitHub:**
+
    ```bash
    git add .
    git commit -m "Update portfolio content"
@@ -315,9 +349,73 @@ Cloudinary images automatically receive:
    - Add domain in Vercel project settings
    - DNS configured automatically
 
+## Google Search Console / Publishing Guide
+
+### What to submit
+
+- Submit your sitemap: `https://<your-domain>/sitemap.xml`
+- Submit only public pages:
+  - `/`
+  - `/portfolio`
+  - `/about`
+  - `/faq`
+  - `/policy`
+  - `/privacy`
+  - `/terms`
+  - `/testimonials`
+
+### Pages and routes that should stay private
+
+- `/upload` — upload dashboard / client admin page
+- `/api/auth/validate-key` — upload key validation
+- `/api/upload` — client upload endpoint
+- `/api/portfolio-delete` — delete endpoint for portfolio images
+- `/api/testimonial-upload` — testimonial upload endpoint
+- `/api/testimonial-delete` — delete endpoint for testimonials
+- `/api/portfolio-images` — backend portfolio image data source
+
+> These routes should not be indexed or listed in Search Console.
+
+### Namecheap-specific notes
+
+- If your domain is hosted on Namecheap, verify DNS ownership in Search Console using the Namecheap DNS TXT record method.
+- Make sure `NEXT_PUBLIC_BASE_URL` is set to your actual domain.
+- Confirm your site is accessible over HTTPS before submitting.
+- After deployment, verify `https://<your-domain>/robots.txt` is correct and that `/upload` and `/api` are disallowed.
+
+### Quick Search Console steps
+
+1. Add a new property in Google Search Console.
+2. Verify ownership using Namecheap DNS or HTML file upload.
+3. Submit the sitemap URL.
+4. Use the URL inspection tool only for public pages.
+5. Monitor coverage and fix any indexing issues.
+
+### Recommended public landing pages
+
+- Homepage: `/`
+- Portfolio: `/portfolio`
+- About: `/about`
+- FAQ: `/faq`
+- Policies: `/policy`, `/privacy`, `/terms`
+- Testimonials: `/testimonials`
+
+### Keep private pages out of search
+
+- Don’t add `/upload` to Search Console.
+- Don’t manually submit `/api` endpoints.
+- Use `robots.txt` to keep crawlers away from admin and API routes.
+
+### If you want to use Namecheap hosting
+
+- Confirm the app is deployed on a service that supports Next.js.
+- If Namecheap only provides static hosting, use a Node-capable host or Vercel instead.
+- Point your Namecheap domain to the correct host via DNS.
+
 ### Environment Variables
 
 For production, set these in Vercel:
+
 ```
 NEXT_PUBLIC_BASE_URL=https://kcaptured.com
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dq4tkpuu4
@@ -326,20 +424,24 @@ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dq4tkpuu4
 ## Troubleshooting
 
 ### Gallery filtering not showing content
+
 - Ensure `AnimatePresence` mode is set to `popLayout` in masonry-gallery.tsx
 - Check browser console for animation errors
 
 ### Videos not playing
+
 - Verify video URLs are correct in testimonials-data.ts
 - Check video format is supported (MP4, MOV, WebM)
 - Ensure videos are under 50MB
 
 ### Images not loading
+
 - Verify Cloudinary URLs are correct
 - Check image exists in your Cloudinary account
 - Verify image width/height in portfolio-data.ts
 
 ### Contact form not sending emails
+
 - Verify Formspree Form ID in contact-form.tsx
 - Check email configuration in Formspree dashboard
 - Test form submission in browser console
@@ -347,6 +449,7 @@ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dq4tkpuu4
 ## Support & Updates
 
 For issues or updates:
+
 1. Check documentation files (README.md, UPDATES.md, CLOUDINARY_SETUP.md)
 2. Review Vercel deployment logs
 3. Test in browser DevTools console

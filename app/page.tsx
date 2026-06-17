@@ -20,7 +20,7 @@ export const metadata = {
     'free pictures',
     'lifestyle photography',
     'Award Winning Photographer',
-    'Kenny '
+  'KCAPTURED STUDIOS',
   ],
 };
 

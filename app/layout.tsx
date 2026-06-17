@@ -35,9 +35,9 @@ export const metadata: Metadata = {
     'affordable portraits',
     'lifestyle photography',
   ],
-  authors: [{ name: 'KCAPTURED' }],
-  creator: 'KCAPTURED',
-  publisher: 'KCAPTURED',
+  authors: [{ name: 'KCAPTURED STUDIO' }],
+  creator: 'KCAPTURED STUDIO',
+  publisher: 'KCAPTURED STUDIO',
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: 'KCAPTURED STUDIOS',
     description: 'Affordable lifestyle, studio, and portrait photography in Jessup, Maryland and the DMV area.',
     url: 'https://kcaptured.com',
-    siteName: 'KCAPTURED',
+    siteName: 'KCAPTURED STUDIOS',
     type: 'website',
     images: [
       {
