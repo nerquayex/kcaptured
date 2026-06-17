@@ -56,7 +56,7 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
 3. **Set environment variables (optional):**
    Create `.env.local` file:
 
-   ```
+   ```text
    NEXT_PUBLIC_BASE_URL=https://kcaptured.com
    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dq4tkpuu4
    ```
@@ -290,7 +290,7 @@ Cloudinary images automatically receive:
 
 ## File Structure
 
-```
+```text
 /app
   /layout.tsx           - Root layout with metadata
   /page.tsx             - Homepage
@@ -416,7 +416,7 @@ Cloudinary images automatically receive:
 
 For production, set these in Vercel:
 
-```
+```text
 NEXT_PUBLIC_BASE_URL=https://kcaptured.com
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dq4tkpuu4
 ```
