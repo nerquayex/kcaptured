@@ -4,8 +4,7 @@ import { PortfolioImage } from '@/lib/portfolio-data';
 import { optimizeCloudinaryUrl } from '@/lib/utils';
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
 interface MasonryGalleryProps {
@@ -16,7 +15,6 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
   const MotionButton = motion.create(Button);
 
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedImage, setSelectedImage] = useState<PortfolioImage | null>(null);
 
   const categoryOptions = useMemo(() => {
     const categories = Array.from(
@@ -57,87 +55,26 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
         ))}
       </div>
 
-      {/* Masonry Grid */}
-      <motion.div
-        layout
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-      >
-        <AnimatePresence mode="popLayout">
-          {filteredImages.map((image) => (
-            <motion.div
-              key={image.id}
-              layout
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-              className="cursor-pointer group overflow-hidden rounded-lg"
-              onClick={() => setSelectedImage(image)}
-            >
-              <div
-                className="relative bg-gray-200 dark:bg-gray-700 overflow-hidden rounded-lg"
-                style={{ aspectRatio: image.width / image.height }}
-              >
+      {/* Grid */}
+      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
+        {filteredImages.map((image) => (
+          <div key={image.id} className="overflow-hidden">
+            <div className="relative w-full h-[300px] overflow-hidden bg-black">
+              {image.cloudinaryUrl ? (
                 <Image
                   src={optimizeCloudinaryUrl(image.cloudinaryUrl)}
                   alt={image.title}
                   fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   priority={filteredImages.indexOf(image) < 3}
                   unoptimized
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover object-center transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
-            onClick={() => setSelectedImage(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="relative max-w-4xl w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close Button */}
-              <MotionButton
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setSelectedImage(null)}
-                size="icon"
-                className="absolute -top-10 right-0 bg-transparent border-white text-white hover:bg-white hover:text-black"
-                aria-label="Close lightbox"
-              >
-                <X size={32} />
-              </MotionButton>
-
-              {/* Image */}
-              <Image
-                src={optimizeCloudinaryUrl(selectedImage.cloudinaryUrl)}
-                alt={selectedImage.title}
-                width={selectedImage.width}
-                height={selectedImage.height}
-                unoptimized
-                className="w-full h-auto max-h-[80vh] max-w-2xl rounded-lg mx-auto"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              ) : null}
+            </div>
+          </div>
+        ))}
+      </div>
     </>
   );
 }

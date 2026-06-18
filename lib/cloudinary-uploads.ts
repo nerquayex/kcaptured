@@ -88,6 +88,12 @@ export async function getClientUploads(): Promise<PortfolioImage[]> {
     return []
   }
 
+  const allowedCategories = (process.env.NEXT_PUBLIC_UPLOAD_CATEGORIES ?? 'studio,lifestyle,event')
+    .split(',')
+    .map((c) => c.trim())
+    .filter(Boolean)
+
+
   try {
     const response = await cloudinary.api.resources({
       type: 'upload',
@@ -99,20 +105,22 @@ export async function getClientUploads(): Promise<PortfolioImage[]> {
       tags: true,
     })
 
-    return (response.resources ?? []).map((resource: any) => {
-      const category = parseCategoryFromResource(resource)
-      const title = String(resource.public_id).split('/').pop() ?? String(resource.public_id)
+    return (response.resources ?? [])
+      .map((resource: any) => {
+        const category = parseCategoryFromResource(resource)
+        const title = String(resource.public_id).split('/').pop() ?? String(resource.public_id)
 
-      return {
-        id: `cloudinary-${resource.public_id}`,
-        cloudinaryUrl: String(resource.secure_url),
-        publicId: String(resource.public_id),
-        category,
-        title,
-        width: Number(resource.width) || 800,
-        height: Number(resource.height) || 600,
-      }
-    })
+        return {
+          id: `cloudinary-${resource.public_id}`,
+          cloudinaryUrl: String(resource.secure_url),
+          publicId: String(resource.public_id),
+          category,
+          title,
+          width: Number(resource.width) || 800,
+          height: Number(resource.height) || 600,
+        }
+      })
+      .filter((img: PortfolioImage) => allowedCategories.includes(img.category))
   } catch (error) {
     console.error('[cloudinary-uploads] failed to fetch client uploads', error)
     return []

@@ -9,7 +9,7 @@ import { InstagramPolicyModalContent } from '@/components/instagram-policy-modal
 
 export function ServicesSection() {
   const MotionButton = motion.create(Button);
-  const [selectedCategory, setSelectedCategory] = useState<'lifestyle' | 'studio' | 'event' | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<'lifestyle' | 'studio' | 'event' | 'graduation' | 'all'>('all');
   const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -70,6 +70,7 @@ export function ServicesSection() {
               { label: 'Lifestyle', value: 'lifestyle' },
               { label: 'Studio', value: 'studio' },
               { label: 'Events', value: 'event' },
+              { label: 'Graduation', value: 'graduation' },
             ].map((cat) => (
               <MotionButton
                 key={cat.value}
