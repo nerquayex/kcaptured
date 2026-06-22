@@ -14,20 +14,37 @@ interface MasonryGalleryProps {
 export function MasonryGallery({ images }: MasonryGalleryProps) {
   const MotionButton = motion.create(Button);
 
-  const [selectedCategory, setSelectedCategory] = useState('all');
-
-  const categoryOptions = useMemo(() => {
-    const categories = Array.from(
+  const categoryOrder = ['lifestyle', 'studio', 'event', 'portrait', 'graduation'];
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(
       new Set(images.map((image) => image.category).filter((category) => category !== 'uncategorized')),
     )
-    return [
-      { value: 'all', label: 'All Work' },
-      ...categories.map((category) => ({
-        value: category,
-        label: category.charAt(0).toUpperCase() + category.slice(1),
-      })),
-    ]
-  }, [images])
+
+    return uniqueCategories.sort((a, b) => {
+      const indexA = categoryOrder.indexOf(a);
+      const indexB = categoryOrder.indexOf(b);
+
+      if (indexA !== -1 || indexB !== -1) {
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+      }
+
+      return a.localeCompare(b);
+    });
+  }, [images]);
+
+  const [selectedCategory, setSelectedCategory] = useState(
+    categories.includes('lifestyle') ? 'lifestyle' : 'all',
+  );
+
+  const categoryOptions = useMemo(() => [
+    ...categories.map((category) => ({
+      value: category,
+      label: category.charAt(0).toUpperCase() + category.slice(1),
+    })),
+    { value: 'all', label: 'All' },
+  ], [categories]);
 
   const filteredImages =
     selectedCategory === 'all'
