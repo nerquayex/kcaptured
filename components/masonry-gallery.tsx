@@ -56,10 +56,10 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
       </div>
 
       {/* Grid */}
-      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
         {filteredImages.map((image) => (
-          <div key={image.id} className="overflow-hidden">
-            <div className="relative w-full h-[300px] overflow-hidden bg-black">
+          <div key={image.id} className="overflow-hidden w-full max-w-[398px]">
+            <div className="relative w-full aspect-[319/398] overflow-hidden bg-black">
               {image.cloudinaryUrl ? (
                 <Image
                   src={optimizeCloudinaryUrl(image.cloudinaryUrl)}
@@ -68,7 +68,7 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   priority={filteredImages.indexOf(image) < 3}
                   unoptimized
-                  className="object-cover object-center transition-transform duration-300"
+                  className="object-cover object-center transition-transform duration-300 hover:scale-105"
                 />
               ) : null}
             </div>
