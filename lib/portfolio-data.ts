@@ -195,7 +195,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-2',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723287/1Z7A1257__2_if9k20.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718702/2W1A9852-2__2_e315px.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 2',
     width: 1200,
@@ -203,7 +203,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-3',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723286/2W1A9175_m2eum3.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718698/2W1A9858__2_wsqjgm.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 3',
     width: 1200,
@@ -211,7 +211,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-4',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723284/2W1A9614__2_n8otde.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718695/2W1A9329__2_nes1py.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 4',
     width: 1200,
@@ -219,7 +219,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-5',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723284/2W1A9467__2_ja0ueu.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718694/2W1A9921__2_kf2ake.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 5',
     width: 1200,
@@ -227,7 +227,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-6',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723284/2W1A9345__2_lwduxn.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718681/2W1A9890__2_pa6r3l.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 6',
     width: 1200,
@@ -235,7 +235,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-7',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723283/2W1A9618__2_f792oz.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718673/2W1A9496__2_tb2lae.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 7',
     width: 1200,
@@ -243,7 +243,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-8',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723282/2W1A0687__2_srhst1.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718671/2W1A9507__2_ozidcj.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 8',
     width: 1200,
@@ -251,7 +251,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-9',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723279/2W1A0449_uruoaf.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718667/2W1A9540__2_pniw8h.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 9',
     width: 1200,
@@ -475,7 +475,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-37',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718702/2W1A9852-2__2_e315px.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723287/1Z7A1257__2_if9k20.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 37',
     width: 1200,
@@ -483,7 +483,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-38',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718698/2W1A9858__2_wsqjgm.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723286/2W1A9175_m2eum3.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 38',
     width: 1200,
@@ -491,7 +491,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-39',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718695/2W1A9329__2_nes1py.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723284/2W1A9614__2_n8otde.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 39',
     width: 1200,
@@ -499,7 +499,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-40',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718694/2W1A9921__2_kf2ake.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723284/2W1A9467__2_ja0ueu.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 40',
     width: 1200,
@@ -507,7 +507,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-41',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718681/2W1A9890__2_pa6r3l.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723284/2W1A9345__2_lwduxn.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 41',
     width: 1200,
@@ -515,7 +515,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-42',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718673/2W1A9496__2_tb2lae.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723283/2W1A9618__2_f792oz.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 42',
     width: 1200,
@@ -523,7 +523,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-43',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718671/2W1A9507__2_ozidcj.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723282/2W1A0687__2_srhst1.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 43',
     width: 1200,
@@ -531,7 +531,7 @@ export const portfolioImages: PortfolioImage[] = [
   },
   {
     id: 'lifestyle-44',
-    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718667/2W1A9540__2_pniw8h.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781723279/2W1A0449_uruoaf.png',
     category: 'lifestyle',
     title: 'kcapturedstudios lifestyle 44',
     width: 1200,
