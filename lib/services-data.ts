@@ -40,7 +40,7 @@ export const services: Service[] = [
     category: 'lifestyle',
     name: 'Premium KC Lifestyle',
     duration: '1 hr 30 min',
-    price: 200,
+    price: 270,
     sampleUrl: 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1781359745/premium-lifestyle_oqrz5y.jpg',
     features: [
       '1.5-hour shoot at 2 locations if opted',
