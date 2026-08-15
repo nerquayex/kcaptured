@@ -1,6 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { appendUploadLog, getClientIp } from '@/lib/logger'
 import { verifyUploadToken } from '@/lib/auth-utils'
+import db, { pool } from '@/lib/db'
+import { portfolioItems } from '@/db/schema'
+import { randomUUID } from 'crypto'
 
 export const runtime = 'nodejs'
 
@@ -44,6 +47,9 @@ export async function POST(request: Request) {
   const formData = await request.formData()
   const fileEntry = formData.get('file')
   const category = String(formData.get('category') ?? 'uncategorized')
+  const title = String(formData.get('title') ?? '')
+  const caption = formData.get('caption') ? String(formData.get('caption')) : null
+  const featured = formData.get('featured') === 'true'
   const allowedCategories = getAllowedCategories()
 
   await appendUploadLog({
@@ -160,15 +166,51 @@ export async function POST(request: Request) {
     userAgent,
   })
 
-  return new Response(
-    JSON.stringify({
-      success: true,
-      url: uploadResult.secure_url,
-      publicId: uploadResult.public_id,
-    }),
-    {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    },
-  )
+  // Determine next sort_order
+  let nextOrder = 1
+  try {
+    const res = await pool.query('SELECT COALESCE(MAX(sort_order), 0) as max FROM portfolio_items')
+    const max = res?.rows?.[0]?.max ?? 0
+    nextOrder = Number(max) + 1
+  } catch (e) {
+    console.warn('[upload] failed to compute next sort_order', e)
+  }
+
+  // Persist portfolio item
+  const id = randomUUID()
+  const inserted = await db.insert(portfolioItems).values({
+    id,
+    public_id: String(uploadResult.public_id),
+    cloudinary_url: String(uploadResult.secure_url),
+    category: normalizedCategory,
+    title: title || (fileEntry.name ?? String(uploadResult.public_id)),
+    caption: caption,
+    sort_order: nextOrder,
+    featured: featured,
+    active: true,
+    width: Number(uploadResult.width) || null,
+    height: Number(uploadResult.height) || null,
+  }).returning()
+
+  const persisted = Array.isArray(inserted) ? inserted[0] : inserted
+
+  const mapped = {
+    id: persisted.id,
+    publicId: persisted.public_id,
+    cloudinaryUrl: persisted.cloudinary_url,
+    category: persisted.category,
+    title: persisted.title,
+    caption: persisted.caption,
+    width: persisted.width,
+    height: persisted.height,
+    featured: persisted.featured,
+    active: persisted.active,
+    sort_order: persisted.sort_order,
+    created_at: persisted.created_at,
+  }
+
+  return new Response(JSON.stringify({ success: true, url: uploadResult.secure_url, publicId: uploadResult.public_id, item: mapped }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  })
 }

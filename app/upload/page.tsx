@@ -66,45 +66,13 @@ export default function UploadPage() {
 
   return (
     <div className="min-h-screen bg-black py-16 text-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-white/5 p-8 shadow-xl shadow-black/20 sm:p-10">
-          <div className="mb-8 space-y-3 text-center">
-            <p className="text-sm uppercase tracking-[0.35em] text-primary">Client upload</p>
-            <h1 className="text-4xl font-semibold">Upload dashboard</h1>
-            <p className="mx-auto max-w-2xl text-gray-300">
-              Use the footer upload key to manage portfolio images and testimonials from one place.
-            </p>
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center">
+          <h2 className="text-2xl font-semibold">Legacy Upload Page Retired</h2>
+          <p className="mt-4 text-gray-300">The old client upload dashboard has been replaced by a new admin area.</p>
+          <div className="mt-6">
+            <a href="/admin" className="inline-block rounded-md bg-blue-600 px-4 py-2 text-white">Go to Admin Dashboard</a>
           </div>
-
-          {authorized ? (
-            <Tabs value={uploadMode} onValueChange={(value) => setUploadMode(value as 'portfolio' | 'testimonials')} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6 gap-2">
-                <TabsTrigger value="portfolio">Portfolio images</TabsTrigger>
-                <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="portfolio" className="space-y-6">
-                {loadingImages ? (
-                  <div className="rounded-3xl border border-white/10 bg-black/70 p-8 text-center text-gray-300">
-                    Loading portfolio images...
-                  </div>
-                ) : (
-                  <PortfolioManager images={images} />
-                )}
-              </TabsContent>
-
-              <TabsContent value="testimonials" className="space-y-6">
-                <TestimonialsManager />
-              </TabsContent>
-            </Tabs>
-          ) : (
-            <div className="rounded-3xl border border-white/10 bg-red-500/10 p-8 text-center text-red-200">
-              <p className="text-lg font-semibold">Upload access expired.</p>
-              <p className="mt-2 text-sm text-gray-300">
-                Use the footer padlock again to request a new 10-minute upload session.
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

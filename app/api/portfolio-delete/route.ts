@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { appendUploadLog, getClientIp } from '@/lib/logger'
 import { verifyUploadToken } from '@/lib/auth-utils'
+import db, { pool } from '@/lib/db'
 
 export const runtime = 'nodejs'
 
@@ -42,6 +43,17 @@ export async function POST(request: Request) {
       } catch (cloudErr) {
         console.warn('[portfolio-delete] Cloudinary delete failed', cloudErr)
       }
+    }
+
+    // Remove DB record when present
+    try {
+      if (id) {
+        await pool.query('DELETE FROM portfolio_items WHERE id = $1', [id])
+      } else if (publicId) {
+        await pool.query('DELETE FROM portfolio_items WHERE public_id = $1', [publicId])
+      }
+    } catch (dbErr) {
+      console.warn('[portfolio-delete] DB delete failed', dbErr)
     }
 
     await appendUploadLog({ type: 'upload_delete', publicId: publicId ?? id, ip, userAgent })

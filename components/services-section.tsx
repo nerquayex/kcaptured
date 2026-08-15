@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { services } from '@/lib/services-data';
+import React, { useState } from 'react'
+import { services as staticServices } from '@/lib/services-data';
 import { CheckCircle, Grid, List } from 'lucide-react';
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { InstagramPolicyModalContent } from '@/components/instagram-policy-modal';
 
 export function ServicesSection() {
   const MotionButton = motion.create(Button);
+  const [services, setServices] = useState(staticServices)
   const [selectedCategory, setSelectedCategory] = useState<'lifestyle' | 'studio' | 'event' | 'graduation' | 'all'>('all');
   const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +17,25 @@ export function ServicesSection() {
   const filteredServices = selectedCategory === 'all'
     ? services
     : services.filter((service) => service.category === selectedCategory);
+
+  // Attempt to load DB-backed packages and fall back to static services
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/packages')
+        if (!res.ok) return
+        const data = await res.json()
+        if (mounted && Array.isArray(data) && data.length > 0) {
+          // normalize shapes
+          setServices(data.map((d: any) => ({ id: d.id, category: d.category, name: d.name, duration: d.duration, price: d.price, features: d.features || [], sampleUrl: d.sampleUrl || d.sample_url })))
+        }
+      } catch (e) {
+        // ignore and keep static
+      }
+    })()
+    return () => { mounted = false }
+  }, [])
 
   const containerVariants = {
     hidden: { opacity: 0 },

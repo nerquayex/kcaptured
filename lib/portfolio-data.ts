@@ -4,6 +4,8 @@ export interface PortfolioImage {
   category: string;
   title: string;
   description?: string;
+  caption?: string;
+  featured?: boolean;
   width: number;
   height: number;
   publicId?: string;
