@@ -1,41 +1,57 @@
 "use client";
 
-import React, { useState } from 'react'
-import { services as staticServices } from '@/lib/services-data';
-import { CheckCircle, Grid, List } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { InstagramPolicyModalContent } from '@/components/instagram-policy-modal';
+import React, { useState } from "react";
+import { services as staticServices } from "@/lib/services-data";
+import { CheckCircle, Grid, List } from "lucide-react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { InstagramPolicyModalContent } from "@/components/instagram-policy-modal";
 
 export function ServicesSection() {
   const MotionButton = motion.create(Button);
-  const [services, setServices] = useState(staticServices)
-  const [selectedCategory, setSelectedCategory] = useState<'lifestyle' | 'studio' | 'event' | 'graduation' | 'all'>('all');
-  const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
+  const [services, setServices] = useState(staticServices);
+  const [selectedCategory, setSelectedCategory] = useState<
+    "lifestyle" | "studio" | "event" | "graduation" | "all"
+  >("all");
+  const [displayMode, setDisplayMode] = useState<"grid" | "list">("grid");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingService, setPendingService] = useState<string | null>(null);
 
-  const filteredServices = selectedCategory === 'all'
-    ? services
-    : services.filter((service) => service.category === selectedCategory);
+  const filteredServices =
+    selectedCategory === "all"
+      ? services
+      : services.filter((service) => service.category === selectedCategory);
 
   // Attempt to load DB-backed packages and fall back to static services
   React.useEffect(() => {
-    let mounted = true
-    ;(async () => {
+    let mounted = true;
+    (async () => {
       try {
-        const res = await fetch('/api/packages')
-        if (!res.ok) return
-        const data = await res.json()
+        const res = await fetch("/api/packages");
+        if (!res.ok) return;
+        const data = await res.json();
         if (mounted && Array.isArray(data) && data.length > 0) {
           // normalize shapes
-          setServices(data.map((d: any) => ({ id: d.id, category: d.category, name: d.name, duration: d.duration, price: d.price, features: d.features || [], sampleUrl: d.sampleUrl || d.sample_url })))
+          setServices(
+            data.map((d: any) => ({
+              id: d.id,
+              category: d.category,
+              name: d.name,
+              duration: d.duration,
+              price: d.price,
+              features: d.features || [],
+              sampleUrl: d.sampleUrl || d.sample_url,
+            })),
+          );
         }
       } catch (e) {
         // ignore and keep static
       }
-    })()
-    return () => { mounted = false }
-  }, [])
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -61,10 +77,11 @@ export function ServicesSection() {
     <section
       className="py-16 md:py-24 relative"
       style={{
-        backgroundImage: 'url(https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773520574/kcompressed_iul9zi.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
+        backgroundImage:
+          "url(https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773520574/kcompressed_iul9zi.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
       }}
     >
       <div className="absolute inset-0 bg-black/80" />
@@ -86,21 +103,25 @@ export function ServicesSection() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-10">
           <div className="flex flex-wrap gap-2 sm:gap-3">
             {[
-              { label: 'All Services', value: 'all' },
-              { label: 'Lifestyle', value: 'lifestyle' },
-              { label: 'Studio', value: 'studio' },
-              { label: 'Events', value: 'event' },
-              { label: 'Graduation', value: 'graduation' },
+              { label: "All Services", value: "all" },
+              { label: "Lifestyle", value: "lifestyle" },
+              { label: "Studio", value: "studio" },
+              { label: "Events", value: "event" },
+              { label: "Graduation", value: "graduation" },
             ].map((cat) => (
               <MotionButton
                 key={cat.value}
-                onClick={() => setSelectedCategory(cat.value as 'lifestyle' | 'studio' | 'event' | 'all')}
+                onClick={() =>
+                  setSelectedCategory(
+                    cat.value as "lifestyle" | "studio" | "event" | "all",
+                  )
+                }
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 className={`px-4 py-2 text-sm font-medium rounded-full transition-all border ${
                   selectedCategory === cat.value
-                    ? 'bg-white text-black border-white'
-                    : 'bg-transparent text-white border-white/40 hover:bg-white/10'
+                    ? "bg-white text-black border-white"
+                    : "bg-transparent text-white border-white/40 hover:bg-white/10"
                 }`}
               >
                 {cat.label}
@@ -111,11 +132,11 @@ export function ServicesSection() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setDisplayMode('grid')}
+              onClick={() => setDisplayMode("grid")}
               className={`inline-flex items-center justify-center h-10 w-10 rounded-full border transition ${
-                displayMode === 'grid'
-                  ? 'bg-white text-black border-white'
-                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                displayMode === "grid"
+                  ? "bg-white text-black border-white"
+                  : "bg-white/10 text-white border-white/20 hover:bg-white/20"
               }`}
               aria-label="Grid view"
             >
@@ -123,11 +144,11 @@ export function ServicesSection() {
             </button>
             <button
               type="button"
-              onClick={() => setDisplayMode('list')}
+              onClick={() => setDisplayMode("list")}
               className={`inline-flex items-center justify-center h-10 w-10 rounded-full border transition ${
-                displayMode === 'list'
-                  ? 'bg-white text-black border-white'
-                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                displayMode === "list"
+                  ? "bg-white text-black border-white"
+                  : "bg-white/10 text-white border-white/20 hover:bg-white/20"
               }`}
               aria-label="List view"
             >
@@ -144,26 +165,34 @@ export function ServicesSection() {
           className="flex flex-col gap-6"
         >
           {filteredServices.map((service) => {
-            const isList = displayMode === 'list';
+            const isList = displayMode === "list";
 
             return (
               <motion.div
                 key={service.id}
                 variants={itemVariants}
                 className={`rounded-[32px] border border-white/10 bg-black/70 backdrop-blur-xl transition-shadow hover:shadow-[0_0_60px_rgba(255,255,255,0.12)] p-6 ${
-                  isList ? 'lg:flex lg:items-start lg:gap-6' : ''
+                  isList ? "lg:flex lg:items-start lg:gap-6" : ""
                 }`}
               >
-                <div className={isList ? 'lg:flex-1' : ''}>
-                  <div className={`grid gap-6 ${isList ? 'lg:grid-cols-[1fr_30%]' : 'lg:grid-cols-[40%_60%]'} items-center`}>
+                <div className={isList ? "lg:flex-1" : ""}>
+                  <div
+                    className={`grid gap-6 ${isList ? "lg:grid-cols-[1fr_30%]" : "lg:grid-cols-[40%_60%]"} items-center`}
+                  >
                     <div className="space-y-4">
                       <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-2xl font-bold text-white">${service.price}</p>
+                        <p className="text-2xl font-bold text-white">
+                          ${service.price}
+                        </p>
                       </div>
 
                       <div>
-                        <h3 className="text-3xl font-semibold text-white mb-2">{service.name}</h3>
-                        <p className="text-sm text-gray-300">{service.duration}</p>
+                        <h3 className="text-3xl font-semibold text-white mb-2">
+                          {service.name}
+                        </h3>
+                        <p className="text-sm text-gray-300">
+                          {service.duration}
+                        </p>
                       </div>
 
                       <div className="border-b border-white/10 my-4" />
@@ -172,14 +201,19 @@ export function ServicesSection() {
                         {service.features.map((feature, idx) => (
                           <li key={idx} className="flex items-start gap-3">
                             <span className="mt-1 text-white/80">•</span>
-                            <span className="text-sm text-gray-300">{feature}</span>
+                            <span className="text-sm text-gray-300">
+                              {feature}
+                            </span>
                           </li>
                         ))}
                       </ul>
 
                       <Button
                         className="w-full md:w-auto px-6 py-3 text-sm font-semibold"
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                          setPendingService(service.name);
+                          setIsModalOpen(true);
+                        }}
                       >
                         Book Now on Instagram
                       </Button>
@@ -202,7 +236,14 @@ export function ServicesSection() {
         </motion.div>
       </div>
 
-      <InstagramPolicyModalContent isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <InstagramPolicyModalContent
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setPendingService(null);
+        }}
+        sessionType={pendingService}
+      />
     </section>
   );
 }

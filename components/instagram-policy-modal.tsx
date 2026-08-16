@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BookingForm } from "./booking-form";
 
 interface InstagramPolicyModalContentProps {
   isOpen: boolean;
   onClose: () => void;
+  sessionType?: string | null;
 }
 
-export function InstagramPolicyModalContent({ isOpen, onClose }: InstagramPolicyModalContentProps) {
+export function InstagramPolicyModalContent({
+  isOpen,
+  onClose,
+  sessionType,
+}: InstagramPolicyModalContentProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -19,7 +25,11 @@ export function InstagramPolicyModalContent({ isOpen, onClose }: InstagramPolicy
 
   const handleProceed = () => {
     onClose();
-    window.open('https://www.instagram.com/kcaptures_.1', '_blank', 'noopener,noreferrer');
+    window.open(
+      "https://www.instagram.com/kcaptures_.1",
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
   if (!isOpen || !isMounted) return null;
@@ -42,7 +52,8 @@ export function InstagramPolicyModalContent({ isOpen, onClose }: InstagramPolicy
             Quick Policy Highlights
           </h2>
           <p className="text-gray-300 mb-6 text-base sm:text-lg">
-            Before you message us on Instagram, please review these key booking policies:
+            Before you message us on Instagram, please review these key booking
+            policies:
           </p>
 
           {/* Policy Summary */}
@@ -50,12 +61,15 @@ export function InstagramPolicyModalContent({ isOpen, onClose }: InstagramPolicy
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <h3 className="text-lg font-semibold text-white mb-2">Deposit</h3>
               <p className="text-gray-300 leading-relaxed">
-                A $20 deposit is required to secure your shoot date. Final payment is due on the day of the session.
+                A $20 deposit is required to secure your shoot date. Final
+                payment is due on the day of the session.
               </p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <h3 className="text-lg font-semibold text-white mb-2">Cancellations & Late Policy</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Cancellations & Late Policy
+              </h3>
               <ul className="list-disc list-inside space-y-2 text-gray-300">
                 <li>Deposits are non-refundable.</li>
                 <li>10-30 min late: $20 charge, 30+ min late: $45 charge.</li>
@@ -63,31 +77,26 @@ export function InstagramPolicyModalContent({ isOpen, onClose }: InstagramPolicy
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <h3 className="text-lg font-semibold text-white mb-2">Delivery Timeline</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Delivery Timeline
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Final edits are delivered within 3-5 business days, with a review call shortly after your shoot.
+                Final edits are delivered within 3-5 business days, with a
+                review call shortly after your shoot.
               </p>
             </div>
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:items-center">
-            <Button
-              onClick={handleProceed}
-              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#f58529] via-[#dd2a7b] to-[#515bd4] text-white hover:brightness-110"
-            >
-              Continue to Instagram DM
-            </Button>
-            {/* <Button
-              onClick={onClose}
-              className="w-full sm:w-auto px-6 py-3 border border-white/10 bg-white/10 text-white hover:bg-white/20"
-            >
-              Close
-            </Button> */}
-          </div>
+          {/* Booking capture form */}
+          <BookingForm sessionType={sessionType} onClose={onClose} />
 
           <p className="text-xs text-gray-400 text-center mt-4">
-            For full details, visit our <a href="/policy" className="underline hover:text-gray-200">policy page</a>.
+            For full details, visit our{" "}
+            <a href="/policy" className="underline hover:text-gray-200">
+              policy page
+            </a>
+            .
           </p>
         </div>
       </div>

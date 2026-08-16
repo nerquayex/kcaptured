@@ -1,82 +1,83 @@
-import { v2 as cloudinary } from 'cloudinary'
-import { PortfolioImage } from '@/lib/portfolio-data'
+import { v2 as cloudinary } from "cloudinary";
+import { PortfolioImage } from "@/lib/portfolio-data";
 
 export interface Testimonial {
-  id: string
-  clientName: string
-  clientRole: string
-  content: string
-  videoUrl?: string
-  videoPublicId?: string
-  imageUrl?: string
+  id: string;
+  clientName: string;
+  clientRole: string;
+  content: string;
+  videoUrl?: string;
+  videoPublicId?: string;
+  imageUrl?: string;
 }
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
-})
+});
 
 function parseContextCategory(resource: any) {
-  const fallback = null
-  if (!resource?.context) return fallback
+  const fallback = null;
+  if (!resource?.context) return fallback;
 
-  const context = resource.context
-  const custom = context.custom ?? context
+  const context = resource.context;
+  const custom = context.custom ?? context;
 
-  if (custom && typeof custom === 'object') {
-    const categoryValue = custom.category ?? custom.Category ?? custom.category?.[0]
-    if (typeof categoryValue === 'string') {
-      return categoryValue.trim() || fallback
+  if (custom && typeof custom === "object") {
+    const categoryValue =
+      custom.category ?? custom.Category ?? custom.category?.[0];
+    if (typeof categoryValue === "string") {
+      return categoryValue.trim() || fallback;
     }
     if (Array.isArray(categoryValue) && categoryValue.length > 0) {
-      return String(categoryValue[0]).trim() || fallback
+      return String(categoryValue[0]).trim() || fallback;
     }
   }
 
-  if (typeof context === 'string') {
+  if (typeof context === "string") {
     const entries = String(context)
-      .split('|')
-      .map((pair: string) => pair.split('=').map((part) => part.trim()))
-      .filter((pair) => pair.length === 2)
+      .split("|")
+      .map((pair: string) => pair.split("=").map((part) => part.trim()))
+      .filter((pair) => pair.length === 2);
 
-    const data = Object.fromEntries(entries)
-    return String(data.category ?? '').trim() || fallback
+    const data = Object.fromEntries(entries);
+    return String(data.category ?? "").trim() || fallback;
   }
 
-  return fallback
+  return fallback;
 }
 
 function parseCategoryFromResource(resource: any) {
-  const prefix = 'client-uploads/'
-  const folder = String(resource.folder ?? '')
-  const publicId = String(resource.public_id ?? '')
+  const prefix = "client-uploads/";
+  const folder = String(resource.folder ?? "");
+  const publicId = String(resource.public_id ?? "");
   const tags = Array.isArray(resource.tags)
     ? (resource.tags as string[]).map(String)
-    : []
+    : [];
 
   if (folder.startsWith(prefix)) {
-    return folder.slice(prefix.length).split('/')[0] || 'uncategorized'
+    return folder.slice(prefix.length).split("/")[0] || null;
   }
 
   if (publicId.startsWith(prefix)) {
-    return publicId.slice(prefix.length).split('/')[0] || 'uncategorized'
+    return publicId.slice(prefix.length).split("/")[0] || null;
   }
 
-  const contextCategory = parseContextCategory(resource)
+  const contextCategory = parseContextCategory(resource);
   if (contextCategory) {
-    return contextCategory
+    return contextCategory;
   }
 
   const knownCategoryTag = tags.find((tag: string) =>
-    ['studio', 'lifestyle', 'event', 'portrait'].includes(tag),
-  )
+    ["studio", "lifestyle", "event", "graduation"].includes(tag),
+  );
 
   if (knownCategoryTag) {
-    return knownCategoryTag
+    return knownCategoryTag;
   }
 
-  return 'uncategorized'
+  return null;
 }
 
 export async function getClientUploads(): Promise<PortfolioImage[]> {
@@ -85,30 +86,34 @@ export async function getClientUploads(): Promise<PortfolioImage[]> {
     !process.env.CLOUDINARY_API_KEY ||
     !process.env.CLOUDINARY_API_SECRET
   ) {
-    return []
+    return [];
   }
 
-  const allowedCategories = (process.env.NEXT_PUBLIC_UPLOAD_CATEGORIES ?? 'studio,lifestyle,event')
-    .split(',')
+  const allowedCategories = (
+    process.env.NEXT_PUBLIC_UPLOAD_CATEGORIES ??
+    "studio,lifestyle,event,graduation"
+  )
+    .split(",")
     .map((c) => c.trim())
-    .filter(Boolean)
-
+    .filter(Boolean);
 
   try {
     const response = await cloudinary.api.resources({
-      type: 'upload',
-      prefix: 'client-uploads',
+      type: "upload",
+      prefix: "client-uploads",
       max_results: 200,
-      resource_type: 'image',
-      direction: 'desc',
+      resource_type: "image",
+      direction: "desc",
       context: true,
       tags: true,
-    })
+    });
 
     return (response.resources ?? [])
       .map((resource: any) => {
-        const category = parseCategoryFromResource(resource)
-        const title = String(resource.public_id).split('/').pop() ?? String(resource.public_id)
+        const category = parseCategoryFromResource(resource);
+        const title =
+          String(resource.public_id).split("/").pop() ??
+          String(resource.public_id);
 
         return {
           id: `cloudinary-${resource.public_id}`,
@@ -118,50 +123,52 @@ export async function getClientUploads(): Promise<PortfolioImage[]> {
           title,
           width: Number(resource.width) || 800,
           height: Number(resource.height) || 600,
-        }
+        };
       })
-      .filter((img: PortfolioImage) => allowedCategories.includes(img.category))
+      .filter((img: PortfolioImage) =>
+        allowedCategories.includes(img.category),
+      );
   } catch (error) {
-    console.error('[cloudinary-uploads] failed to fetch client uploads', error)
-    return []
+    console.error("[cloudinary-uploads] failed to fetch client uploads", error);
+    return [];
   }
 }
 
 function parseTestimonialMetadata(resource: any) {
   const fallback = {
-    clientName: 'Client',
-    clientRole: 'Testimonial',
-    content: 'Video testimonial from our valued client',
-  }
+    clientName: "Client",
+    clientRole: "Testimonial",
+    content: "Video testimonial from our valued client",
+  };
 
   if (!resource?.context) {
-    return fallback
+    return fallback;
   }
 
-  const customContext = resource.context.custom
-  if (customContext && typeof customContext === 'object') {
+  const customContext = resource.context.custom;
+  if (customContext && typeof customContext === "object") {
     return {
       clientName: String(customContext.clientName ?? fallback.clientName),
       clientRole: String(customContext.clientRole ?? fallback.clientRole),
       content: String(customContext.content ?? fallback.content),
-    }
+    };
   }
 
-  if (typeof resource.context === 'string') {
+  if (typeof resource.context === "string") {
     const entries = String(resource.context)
-      .split('|')
-      .map((pair: string) => pair.split('=').map((part) => part.trim()))
-      .filter((pair) => pair.length === 2)
+      .split("|")
+      .map((pair: string) => pair.split("=").map((part) => part.trim()))
+      .filter((pair) => pair.length === 2);
 
-    const data = Object.fromEntries(entries)
+    const data = Object.fromEntries(entries);
     return {
       clientName: String(data.clientName ?? fallback.clientName),
       clientRole: String(data.clientRole ?? fallback.clientRole),
       content: String(data.content ?? fallback.content),
-    }
+    };
   }
 
-  return fallback
+  return fallback;
 }
 
 export async function getUploadedTestimonials(): Promise<Testimonial[]> {
@@ -170,34 +177,34 @@ export async function getUploadedTestimonials(): Promise<Testimonial[]> {
     !process.env.CLOUDINARY_API_KEY ||
     !process.env.CLOUDINARY_API_SECRET
   ) {
-    return []
+    return [];
   }
 
   try {
     const response = await cloudinary.api.resources({
-      type: 'upload',
-      prefix: 'testimonials',
+      type: "upload",
+      prefix: "testimonials",
       max_results: 100,
-      resource_type: 'video',
-      direction: 'desc',
+      resource_type: "video",
+      direction: "desc",
       context: true,
       tags: true,
-    })
+    });
 
     return (response.resources ?? []).map((resource: any, index: number) => {
-      const parsed = parseTestimonialMetadata(resource)
+      const parsed = parseTestimonialMetadata(resource);
       return {
         id: `cloudinary-testimonial-${resource.public_id}`,
         clientName: parsed.clientName || `Client ${index + 1}`,
-        clientRole: parsed.clientRole || 'Testimonial',
-        content: parsed.content || 'Video testimonial from our valued client',
+        clientRole: parsed.clientRole || "Testimonial",
+        content: parsed.content || "Video testimonial from our valued client",
         videoUrl: String(resource.secure_url),
         videoPublicId: resource.public_id,
-        imageUrl: 'https://via.placeholder.com/100x100',
-      }
-    })
+        imageUrl: "https://via.placeholder.com/100x100",
+      };
+    });
   } catch (error) {
-    console.error('[cloudinary-uploads] failed to fetch testimonials', error)
-    return []
+    console.error("[cloudinary-uploads] failed to fetch testimonials", error);
+    return [];
   }
 }

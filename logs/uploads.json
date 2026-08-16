@@ -271,5 +271,126 @@
     "ip": "::1",
     "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
     "timestamp": "2026-08-15T16:35:04.571Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-15T22:45:23.004Z"
+  },
+  {
+    "type": "upload_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-15T22:45:36.254Z"
+  },
+  {
+    "type": "upload_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-15T22:45:38.768Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-15T23:57:39.682Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "testimonial",
+    "fileName": "3.mov",
+    "fileSize": 3915109,
+    "fileMimeType": "video/quicktime",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-15T23:58:25.513Z"
+  },
+  {
+    "type": "upload_success",
+    "category": "testimonial",
+    "fileName": "3.mov",
+    "fileSize": 3915109,
+    "fileMimeType": "video/quicktime",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-15T23:58:35.531Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:20:00.849Z"
+  },
+  {
+    "type": "upload_delete",
+    "publicId": "testimonial-1786838305517",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:20:19.722Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:33:28.771Z"
+  },
+  {
+    "type": "reorder",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:35:41.533Z"
+  },
+  {
+    "type": "reorder",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:35:44.869Z"
+  },
+  {
+    "type": "reorder",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:35:45.953Z"
+  },
+  {
+    "type": "reorder",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:35:46.838Z"
+  },
+  {
+    "type": "upload_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:36:30.693Z"
+  },
+  {
+    "type": "upload_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:36:45.790Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T00:37:13.288Z"
+  },
+  {
+    "type": "upload_error",
+    "category": "booking",
+    "error": "error: relation \"bookings\" does not exist",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T11:02:23.247Z"
+  },
+  {
+    "type": "upload_error",
+    "category": "booking",
+    "error": "error: relation \"bookings\" does not exist",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-16T11:03:10.418Z"
   }
 ]
