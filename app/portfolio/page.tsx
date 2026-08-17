@@ -1,8 +1,7 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { MasonryGallery } from "@/components/masonry-gallery";
-import { portfolioImages } from "@/lib/portfolio-data";
-import { getClientUploads } from "@/lib/cloudinary-uploads";
+import { pool } from "@/lib/db";
 
 export const metadata = {
   title: "Portfolio | KCAPTURED DMV Photography",
@@ -27,8 +26,18 @@ export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
 export default async function PortfolioPage() {
-  const cloudinaryUploads = await getClientUploads();
-  const images = [...cloudinaryUploads, ...portfolioImages];
+  // Fetch portfolio items from database in their configured sort order
+  const portfolioRes = await pool.query('SELECT * FROM portfolio_items WHERE active = true ORDER BY sort_order ASC');
+  const images = (portfolioRes?.rows ?? []).map((r: any) => ({
+    id: r.id,
+    cloudinaryUrl: r.cloudinary_url,
+    publicId: r.public_id,
+    category: r.category,
+    title: r.title,
+    description: r.caption ?? undefined,
+    width: r.width ?? 1200,
+    height: r.height ?? 800,
+  }));
 
   return (
     <div className="min-h-screen bg-black text-white">

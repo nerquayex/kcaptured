@@ -51,14 +51,6 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
       ? images
       : images.filter((img) => img.category === selectedCategory)
 
-  const orderedImages = useMemo(() => {
-    if (selectedCategory !== 'lifestyle' || filteredImages.length <= 1) {
-      return filteredImages;
-    }
-
-    return [...filteredImages.slice(1), filteredImages[0]];
-  }, [filteredImages, selectedCategory]);
-
   return (
     <>
       {/* Category Filters */}
@@ -82,7 +74,7 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
 
       {/* Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
-        {orderedImages.map((image) => (
+        {filteredImages.map((image) => (
           <div key={image.id} className="overflow-hidden w-full max-w-[398px]">
             <div className="relative w-full aspect-[319/398] overflow-hidden bg-black">
               {image.cloudinaryUrl ? (
@@ -91,7 +83,7 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
                   alt={image.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  priority={orderedImages.indexOf(image) < 3}
+                  priority={filteredImages.indexOf(image) < 3}
                   unoptimized
                   className="object-cover object-center transition-transform duration-300 hover:scale-105"
                 />
