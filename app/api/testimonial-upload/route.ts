@@ -1,6 +1,8 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { appendUploadLog, getClientIp } from '@/lib/logger'
 import { verifyUploadToken } from '@/lib/auth-utils'
+import { pool } from '@/lib/db'
+import { randomUUID } from 'crypto'
 
 export const runtime = 'nodejs'
 
@@ -155,9 +157,15 @@ export async function POST(request: Request) {
       ? String(result.eager[0].secure_url)
       : String(result.secure_url)
 
+    const databaseId = randomUUID()
+    await pool.query(
+      `INSERT INTO testimonials (id, client_name, client_role, content, video_url, video_public_id, rating, published, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,5,false,now(),now())`,
+      [databaseId, clientName, clientRole, '', videoUrl, String(result.public_id)],
+    )
+
     // Create testimonial data
     const testimonialData: TestimonialData = {
-      id: publicId,
+      id: databaseId,
       clientName,
       clientRole,
       videoUrl,

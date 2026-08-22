@@ -40,12 +40,22 @@ const AUTH_WINDOW_MS = 10 * 60 * 1000
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const [contactEmail, setContactEmail] = useState('');
+  const [instagramHandle, setInstagramHandle] = useState('kcaptures_.1');
   const [showUploadInput, setShowUploadInput] = useState(false);
   const [keyValue, setKeyValue] = useState('');
   const [locked, setLocked] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    fetch('/api/settings')
+      .then((response) => response.ok ? response.json() : null)
+      .then((settings) => {
+        if (settings?.email) setContactEmail(settings.email)
+        if (settings?.instagramHandle) setInstagramHandle(String(settings.instagramHandle).replace(/^@/, ''))
+      })
+      .catch(() => {})
+
     const entries = (window.performance?.getEntriesByType?.('navigation') as
       | PerformanceNavigationTiming[]
       | undefined) ?? [];
@@ -161,7 +171,7 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Connect</h4>
             <div className="flex flex-col gap-3">
               <a
-                href="mailto:hello@studio.com"
+                href={contactEmail ? `mailto:${contactEmail}` : undefined}
                 className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-sm"
               >
                 <Mail size={16} />
@@ -169,7 +179,7 @@ export function Footer() {
               </a>
               <div className="flex gap-3">
                 <a
-                  href="https://www.instagram.com/kcaptures_.1?igsh=dzM4aXk2eXcyc2V1"
+                  href={`https://www.instagram.com/${instagramHandle}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:opacity-75 transition-opacity"

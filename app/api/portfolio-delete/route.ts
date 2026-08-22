@@ -31,10 +31,15 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json()
-    const { id, publicId } = body as { id?: string; publicId?: string }
+    let { id, publicId } = body as { id?: string; publicId?: string }
 
     if (!id && !publicId) {
       return new Response(JSON.stringify({ error: 'Missing id or publicId' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    }
+
+    if (id && !publicId) {
+      const existing = await pool.query('SELECT public_id FROM portfolio_items WHERE id = $1', [id])
+      publicId = existing.rows[0]?.public_id
     }
 
     if (publicId && process.env.CLOUDINARY_API_KEY) {

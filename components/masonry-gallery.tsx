@@ -81,6 +81,9 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
       </div>
 
       {/* Grid */}
+      {orderedImages.length === 0 ? (
+        <div className="py-16 text-center text-sm text-gray-400">No portfolio images available.</div>
+      ) : (
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
         {orderedImages.map((image) => (
           <div key={image.id} className="overflow-hidden w-full max-w-[398px]">
@@ -100,6 +103,7 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
           </div>
         ))}
       </div>
+      )}
     </>
   );
 }

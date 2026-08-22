@@ -271,5 +271,70 @@
     "ip": "::1",
     "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
     "timestamp": "2026-08-15T16:35:04.571Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-22T16:16:45.606Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-22T16:23:29.011Z"
+  },
+  {
+    "type": "upload_error",
+    "error": "Unauthorized portfolio delete request",
+    "uploadSource": "kc-upload",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-22T17:31:34.644Z"
+  },
+  {
+    "type": "upload_success",
+    "ip": "::ffff:127.0.0.1",
+    "userAgent": "node",
+    "timestamp": "2026-08-22T17:49:08.207Z"
+  },
+  {
+    "type": "upload_success",
+    "ip": "::ffff:127.0.0.1",
+    "userAgent": "node",
+    "timestamp": "2026-08-22T17:49:11.517Z"
+  },
+  {
+    "type": "upload_error",
+    "error": "Unauthorized portfolio delete request",
+    "uploadSource": "kc-upload",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-22T17:51:12.376Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-22T17:52:03.864Z"
+  },
+  {
+    "type": "upload_delete",
+    "publicId": "client-uploads/test/q2wl3zmdeugxdo6kk9a2",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-22T17:52:34.730Z"
+  },
+  {
+    "type": "upload_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-22T17:53:11.731Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "timestamp": "2026-08-22T18:20:33.933Z"
   }
 ]

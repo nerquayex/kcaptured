@@ -1,5 +1,7 @@
 import { appendUploadLog, getClientIp } from '@/lib/logger'
 import { generateUploadToken } from '@/lib/auth-utils'
+import { pool } from '@/lib/db'
+import { randomUUID } from 'crypto'
 
 export const runtime = 'nodejs'
 
@@ -41,6 +43,7 @@ export async function POST(request: Request) {
 
   if (providedKey === secretKey) {
     const token = generateUploadToken()
+    await pool.query('INSERT INTO audit_logs (id, action, entity_type, description, actor, created_at) VALUES ($1,$2,$3,$4,$5,now())', [randomUUID(), 'login', 'System', 'Admin login', 'admin'])
     await appendUploadLog({
       type: 'key_success',
       ip,

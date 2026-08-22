@@ -1,0 +1,1 @@
+ALTER TABLE "testimonials" ALTER COLUMN "content" DROP NOT NULL;
