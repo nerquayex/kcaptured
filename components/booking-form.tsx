@@ -45,7 +45,8 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
     submittingRef.current = true
     setSubmitting(true)
     setError('')
-    const form = new FormData(event.currentTarget)
+    const formElement = event.currentTarget
+    const form = new FormData(formElement)
     const body = {
       clientName: String(form.get('clientName') ?? '').trim(),
       email: String(form.get('email') ?? '').trim(),
@@ -111,13 +112,13 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
           body: responseText,
           result,
         })
-        event.currentTarget.reset()
+        formElement.reset()
         setSavedMessage('Your request reached the server, but the confirmation response was incomplete. Please do not submit it again. We will review your request shortly.')
         setSaved(true)
         return
       }
 
-      event.currentTarget.reset()
+      formElement.reset()
       setSavedMessage(result.alreadyCreated ? 'Your booking request was already saved. We will review it and get back to you.' : 'Your booking request was saved successfully. We will review it and get back to you.')
       setSaved(true)
     } catch (requestError) {
@@ -142,7 +143,7 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
         {saved ? (
           <div className="space-y-5 text-center">
             <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-5 text-emerald-200">
-              {savedMessage || 'Your booking request was saved successfully. We will review it and get back to you.'}
+              {savedMessage || 'Your booking request was saved successfully. Continue tto instagram to confirm Booking'}
             </div>
             <Button type="button" onClick={onSaved} className="w-full">Continue to Instagram</Button>
           </div>
