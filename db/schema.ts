@@ -24,10 +24,64 @@ export const packages = pgTable('packages', {
 	duration: text('duration'),
 	price: integer('price').notNull().default(0),
 	features: json('features').$type<string[]>().notNull().default([]),
+	description: text('description'),
+	edited_images: integer('edited_images'),
 	sample_url: text('sample_url'),
 	sort_order: integer('sort_order').notNull().default(0),
 	active: boolean('active').notNull().default(true),
 	created_at: timestamp('created_at').defaultNow().notNull(),
 	updated_at: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const bookings = pgTable('bookings', {
+	id: text('id').primaryKey(),
+	client_name: text('client_name').notNull(),
+	email: text('email').notNull(),
+	phone: text('phone').notNull(),
+	package_name: text('package_name').notNull(),
+	preferred_date: timestamp('preferred_date', { withTimezone: true }),
+	request_date: timestamp('request_date', { withTimezone: true }).defaultNow().notNull(),
+	status: text('status').notNull().default('pending'),
+	notes: text('notes'),
+	created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+	updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+	idempotency_key: text('idempotency_key').unique(),
+})
+
+export const testimonials = pgTable('testimonials', {
+	id: text('id').primaryKey(),
+	client_name: text('client_name').notNull(),
+	client_role: text('client_role'),
+	content: text('content'),
+	testimonial_date: text('testimonial_date'),
+	video_url: text('video_url'),
+	video_public_id: text('video_public_id'),
+	image_url: text('image_url'),
+	rating: integer('rating').notNull().default(5),
+	published: boolean('published').notNull().default(false),
+	created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+	updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
+export const siteSettings = pgTable('site_settings', {
+	id: text('id').primaryKey().default('site-settings'),
+	studio_name: text('studio_name').notNull().default('KCAPTURED'),
+	email: text('email'),
+	phone: text('phone'),
+	instagram_handle: text('instagram_handle'),
+	booking_email: text('booking_email'),
+	max_concurrent_bookings: integer('max_concurrent_bookings').notNull().default(10),
+	created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+	updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
+export const auditLogs = pgTable('audit_logs', {
+	id: text('id').primaryKey(),
+	action: text('action').notNull(),
+	entity_type: text('entity_type').notNull(),
+	entity_id: text('entity_id'),
+	description: text('description').notNull(),
+	actor: text('actor'),
+	created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 

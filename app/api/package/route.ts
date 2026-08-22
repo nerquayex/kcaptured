@@ -18,14 +18,14 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json()
-    const { id, category, name, duration, price, features, sampleUrl } = body as any
+    const { id, category, name, duration, price, features, sampleUrl, description, editedImages } = body as any
     if (!id || !category || !name) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
     }
 
-    const sql = `INSERT INTO packages (id, category, name, duration, price, features, sample_url, sort_order, active, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, now(), now()) RETURNING *`
+    const sql = `INSERT INTO packages (id, category, name, duration, price, features, description, edited_images, sample_url, sort_order, active, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11, now(), now()) RETURNING *`
     // set sort_order to a high number to append
-    const params = [id, category, name, duration || null, Number(price) || 0, JSON.stringify(features || []), sampleUrl || null, 9999, true]
+    const params = [id, category, name, duration || null, Number(price) || 0, JSON.stringify(features || []), description || null, editedImages == null ? null : Number(editedImages), sampleUrl || null, 9999, true]
     const res = await pool.query(sql, params)
     const row = res?.rows?.[0]
 
@@ -52,7 +52,7 @@ export async function PATCH(request: Request) {
 
   try {
     const body = await request.json()
-    const { id, category, name, duration, price, features, sampleUrl, active } = body as any
+    const { id, category, name, duration, price, features, sampleUrl, active, description, editedImages } = body as any
     if (!id) return new Response(JSON.stringify({ error: 'Missing id' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
 
     const sets = []
@@ -63,6 +63,8 @@ export async function PATCH(request: Request) {
     if (duration !== undefined) { sets.push(`duration = $${idx++}`); vals.push(duration) }
     if (price !== undefined) { sets.push(`price = $${idx++}`); vals.push(Number(price) || 0) }
     if (features !== undefined) { sets.push(`features = $${idx++}`); vals.push(JSON.stringify(features || [])) }
+    if (description !== undefined) { sets.push(`description = $${idx++}`); vals.push(description || null) }
+    if (editedImages !== undefined) { sets.push(`edited_images = $${idx++}`); vals.push(editedImages == null ? null : Number(editedImages)) }
     if (sampleUrl !== undefined) { sets.push(`sample_url = $${idx++}`); vals.push(sampleUrl) }
     if (active !== undefined) { sets.push(`active = $${idx++}`); vals.push(Boolean(active)) }
 

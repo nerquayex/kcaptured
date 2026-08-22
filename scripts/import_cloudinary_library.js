@@ -76,14 +76,21 @@ async function process() {
     if (includeStatic) {
       try {
         const staticFile = require('fs').readFileSync(require('path').join(__dirname, '..', 'lib', 'portfolio-data.ts'), 'utf8')
-        const urlRegex = /cloudinaryUrl:\s*'([^']+)'/g
+        const objectRegex = /\{\s*id:\s*'([^']+)'([\s\S]*?)\n\s*\},/g
         let m
-        while ((m = urlRegex.exec(staticFile)) !== null) {
-          const url = m[1]
+        while ((m = objectRegex.exec(staticFile)) !== null) {
+          const object = m[2]
+          const urlMatch = object.match(/cloudinaryUrl:\s*'([^']+)'/)
+          if (!urlMatch) continue
+          const url = urlMatch[1]
           // derive public id from URL by stripping version and extension
           const publicId = derivePublicIdFromUrl(url)
           const secure = url
-          toInsert.push({ public_id: publicId, secure_url: secure, width: null, height: null, category: null, title: publicId })
+          const category = object.match(/category:\s*'([^']+)'/)?.[1] || 'uncategorized'
+          const title = object.match(/title:\s*'([^']+)'/)?.[1] || publicId
+          const width = Number(object.match(/width:\s*(\d+)/)?.[1]) || null
+          const height = Number(object.match(/height:\s*(\d+)/)?.[1]) || null
+          toInsert.push({ public_id: publicId, secure_url: secure, width, height, category, title })
         }
       } catch (e) {
         console.warn('Could not parse static portfolio-data.ts', e && e.message ? e.message : e)

@@ -55,9 +55,6 @@ async function main() {
 
     console.log('Parsed services count:', services.length)
 
-    // Ensure table exists (safe to run even if migrations are run separately)
-    await pool.query(fs.readFileSync(path.join(__dirname, '..', 'drizzle', 'migrations', '0001_create_packages.sql'), 'utf8'))
-
     let inserted = 0
     let updated = 0
     for (const s of services) {

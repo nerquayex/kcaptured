@@ -35,8 +35,11 @@ console.log('Running drizzle migrations (using .env.local values, not displayed)
 
 // Use the local script so the installed `drizzle-kit` in this repo is used
 // Call the local drizzle-kit binary directly so arguments are passed as expected
-const cmd = './node_modules/.bin/drizzle-kit migrate --config ./drizzle.config.ts'
-const child = spawn('sh', ['-lc', cmd], {
+const command = process.platform === 'win32' ? 'cmd.exe' : 'sh'
+const args = process.platform === 'win32'
+  ? ['/d', '/s', '/c', 'node_modules\\.bin\\drizzle-kit.cmd migrate --config ./drizzle.config.ts']
+  : ['-lc', './node_modules/.bin/drizzle-kit migrate --config ./drizzle.config.ts']
+const child = spawn(command, args, {
   stdio: 'inherit',
   env: process.env,
 })
