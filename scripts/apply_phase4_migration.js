@@ -17,7 +17,7 @@ function loadEnv() {
 }
 
 loadEnv()
-const migrations = ['0001_add_testimonials.sql', '0002_allow_testimonial_content_null.sql', '0003_phase4_optional_fields.sql', '0004_phase5_audit_logs.sql']
+const migrations = ['0001_add_testimonials.sql', '0002_allow_testimonial_content_null.sql', '0003_phase4_optional_fields.sql', '0004_phase5_audit_logs.sql', '0005_booking_idempotency.sql']
   .map((file) => fs.readFileSync(path.join(__dirname, '..', 'drizzle', file), 'utf8'))
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 

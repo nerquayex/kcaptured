@@ -103,7 +103,7 @@ export function Footer() {
         sessionStorage.setItem(UPLOAD_TOKEN_KEY, token);
         sessionStorage.setItem(UPLOAD_TOKEN_EXPIRY_KEY, String(expiresAt));
         sessionStorage.setItem(UPLOAD_ENTRY_KEY, 'true');
-        router.push('/upload');
+        router.push('/admin');
         return;
       }
     } catch {

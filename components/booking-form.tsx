@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -21,10 +21,18 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
   const [packageName, setPackageName] = useState(initialPackage)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [saved, setSaved] = useState(false)
+  const [savedMessage, setSavedMessage] = useState('')
+  const submittingRef = useRef(false)
+  const requestKeyRef = useRef(crypto.randomUUID())
 
   useEffect(() => {
     if (!isOpen) return
     setPackageName(initialPackage)
+    setSaved(false)
+    setSavedMessage('')
+    setError('')
+    requestKeyRef.current = crypto.randomUUID()
     fetch('/api/packages')
       .then((response) => response.ok ? response.json() : [])
       .then((rows) => setPackages(Array.isArray(rows) ? rows : []))
@@ -33,6 +41,8 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submittingRef.current) return
+    submittingRef.current = true
     setSubmitting(true)
     setError('')
     const form = new FormData(event.currentTarget)
@@ -43,6 +53,7 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
       packageName: packageName.trim(),
       preferredDate: String(form.get('preferredDate') ?? '').trim(),
       notes: String(form.get('notes') ?? '').trim(),
+      idempotencyKey: requestKeyRef.current,
     }
 
     try {
@@ -51,17 +62,70 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
-      const result = await response.json()
+      const contentType = response.headers.get('content-type') ?? ''
+      const responseText = await response.text()
+      let result: { booking?: { id?: string }; alreadyCreated?: boolean; error?: string } = {}
+
+      if (responseText.trim() && contentType.toLowerCase().includes('application/json')) {
+        try {
+          result = JSON.parse(responseText)
+        } catch (parseError) {
+          console.error('[booking-form] failed to parse JSON response', {
+            status: response.status,
+            ok: response.ok,
+            contentType,
+            body: responseText,
+            parseError,
+          })
+        }
+      } else if (responseText.trim()) {
+        console.error('[booking-form] received non-JSON booking response', {
+          status: response.status,
+          ok: response.ok,
+          contentType,
+          body: responseText,
+        })
+      }
+
+      console.info('[booking-form] booking response', {
+        status: response.status,
+        ok: response.ok,
+        contentType,
+        hasBody: Boolean(responseText.trim()),
+        result,
+      })
+
       if (!response.ok) {
-        setError(result?.error ?? 'Booking could not be submitted.')
+        console.error('[booking-form] booking API returned an error', {
+          status: response.status,
+          body: responseText,
+          result,
+        })
         return
       }
+
+      if (!result.booking?.id) {
+        console.error('[booking-form] successful HTTP response did not include booking.id', {
+          status: response.status,
+          contentType,
+          body: responseText,
+          result,
+        })
+        event.currentTarget.reset()
+        setSavedMessage('Your request reached the server, but the confirmation response was incomplete. Please do not submit it again. We will review your request shortly.')
+        setSaved(true)
+        return
+      }
+
       event.currentTarget.reset()
-      onSaved()
-    } catch {
-      setError('Booking could not be submitted. Please try again.')
+      setSavedMessage(result.alreadyCreated ? 'Your booking request was already saved. We will review it and get back to you.' : 'Your booking request was saved successfully. We will review it and get back to you.')
+      setSaved(true)
+    } catch (requestError) {
+      console.error('[booking-form] booking request failed before a response was processed', requestError)
     } finally {
+      submittingRef.current = false
       setSubmitting(false)
+      onSaved()
     }
   }
 
@@ -75,7 +139,14 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
         </button>
         <h2 className="mb-2 text-2xl font-bold">Request a booking</h2>
         <p className="mb-6 text-gray-300">Send your details and we will confirm availability.</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {saved ? (
+          <div className="space-y-5 text-center">
+            <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-5 text-emerald-200">
+              {savedMessage || 'Your booking request was saved successfully. We will review it and get back to you.'}
+            </div>
+            <Button type="button" onClick={onSaved} className="w-full">Continue to Instagram</Button>
+          </div>
+        ) : <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="booking-client" className="mb-1 block text-sm font-medium">Name</label>
             <input id="booking-client" name="clientName" required maxLength={120} className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 outline-none focus:border-white/40" />
@@ -107,7 +178,7 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
           </div>
           {error && <p className="text-sm text-red-300">{error}</p>}
           <Button type="submit" disabled={submitting} className="w-full">{submitting ? 'Submitting...' : 'Submit booking request'}</Button>
-        </form>
+        </form>}
       </div>
     </div>
   )

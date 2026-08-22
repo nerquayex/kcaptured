@@ -5,7 +5,6 @@ import type { Service } from '@/lib/services-data';
 import { CheckCircle, Grid, List } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { InstagramPolicyModalContent } from '@/components/instagram-policy-modal';
 import { BookingForm } from '@/components/booking-form';
 
 export function ServicesSection() {
@@ -13,7 +12,6 @@ export function ServicesSection() {
   const [services, setServices] = useState<Service[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('');
 
@@ -208,8 +206,7 @@ export function ServicesSection() {
         </motion.div>
       </div>
 
-      <BookingForm isOpen={bookingOpen} initialPackage={selectedPackage} onClose={() => setBookingOpen(false)} onSaved={() => { setBookingOpen(false); setIsModalOpen(true) }} />
-      <InstagramPolicyModalContent isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <BookingForm isOpen={bookingOpen} initialPackage={selectedPackage} onClose={() => setBookingOpen(false)} onSaved={() => { window.location.href = 'https://www.instagram.com/kcaptures_.1' }} />
     </section>
   );
 }

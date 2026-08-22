@@ -45,6 +45,7 @@ export const bookings = pgTable('bookings', {
 	notes: text('notes'),
 	created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 	updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+	idempotency_key: text('idempotency_key').unique(),
 })
 
 export const testimonials = pgTable('testimonials', {

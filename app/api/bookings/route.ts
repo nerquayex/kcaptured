@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 import { pool } from '@/lib/db'
 import { verifyUploadToken } from '@/lib/auth-utils'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 
@@ -15,15 +16,15 @@ function isAdmin(request: Request) {
 
 function mapRow(row: any) {
   return {
-    id: row.id,
-    client: row.client_name,
-    email: row.email,
-    phone: row.phone,
-    package: row.package_name,
-    preferredDate: row.preferred_date,
-    requestDate: row.request_date,
-    status: row.status,
-    notes: row.notes,
+    id: row?.id == null ? '' : String(row.id),
+    client: row?.client_name == null ? '' : String(row.client_name),
+    email: row?.email == null ? '' : String(row.email),
+    phone: row?.phone == null ? '' : String(row.phone),
+    package: row?.package_name == null ? '' : String(row.package_name),
+    preferredDate: row?.preferred_date == null ? null : new Date(row.preferred_date).toISOString(),
+    requestDate: row?.request_date == null ? null : new Date(row.request_date).toISOString(),
+    status: row?.status == null ? 'pending' : String(row.status),
+    notes: row?.notes == null ? null : String(row.notes),
   }
 }
 
@@ -44,6 +45,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const rate = checkRateLimit(`booking:${getClientIp(request)}`, 5, 10 * 60 * 1000)
+    if (!rate.allowed) return new Response(JSON.stringify({ error: 'Too many booking attempts. Please try again later.' }), { status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': String(Math.ceil(rate.retryAfter / 1000)) } })
     const body = await request.json()
     const clientName = String(body.clientName ?? '').trim()
     const email = String(body.email ?? '').trim()
@@ -51,12 +54,23 @@ export async function POST(request: Request) {
     if (!clientName || (!email && !phone)) return json({ error: 'Name and at least one contact method are required' }, 400)
     if (clientName.length > 120 || email.length > 254 || phone.length > 40 || String(body.notes ?? '').length > 2000) return json({ error: 'Booking details are too long' }, 400)
     if (email && !/^\S+@\S+\.\S+$/.test(email)) return json({ error: 'Enter a valid email address' }, 400)
+    const idempotencyKey = String(body.idempotencyKey ?? '').trim()
+    if (!idempotencyKey || idempotencyKey.length > 100) return json({ error: 'Invalid booking request. Please refresh and try again.' }, 400)
+    const existing = await pool.query('SELECT * FROM bookings WHERE idempotency_key = $1 LIMIT 1', [idempotencyKey])
+    if (existing.rows[0]) return json({ booking: mapRow(existing.rows[0]), alreadyCreated: true })
     const status = 'pending'
-    const result = await pool.query(
-      `INSERT INTO bookings (id, client_name, email, phone, package_name, preferred_date, request_date, status, notes, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,now(),$7,$8,now(),now()) RETURNING *`,
-      [randomUUID(), clientName, email, phone, body.packageName ? String(body.packageName).trim() : '', body.preferredDate ? new Date(body.preferredDate) : null, status, body.notes ? String(body.notes).trim() : null],
-    )
-    return json({ booking: mapRow(result.rows[0]) }, 201)
+    try {
+      const result = await pool.query(
+        `INSERT INTO bookings (id, client_name, email, phone, package_name, preferred_date, request_date, status, notes, idempotency_key, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,now(),$7,$8,$9,now(),now()) RETURNING *`,
+        [randomUUID(), clientName, email, phone, body.packageName ? String(body.packageName).trim() : '', body.preferredDate ? new Date(body.preferredDate) : null, status, body.notes ? String(body.notes).trim() : null, idempotencyKey],
+      )
+      return json({ booking: mapRow(result.rows[0]) }, 201)
+    } catch (error: any) {
+      if (error?.code !== '23505') throw error
+      const duplicate = await pool.query('SELECT * FROM bookings WHERE idempotency_key = $1 LIMIT 1', [idempotencyKey])
+      if (duplicate.rows[0]) return json({ booking: mapRow(duplicate.rows[0]), alreadyCreated: true })
+      throw error
+    }
   } catch (error) {
     console.error('[bookings][POST] error', error)
     return json({ error: 'Failed to create booking' }, 500)
