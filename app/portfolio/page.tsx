@@ -24,7 +24,7 @@ export const viewport = {
 
 // Always fetch fresh data - don't cache uploads
 export const revalidate = 0;
-export const fetchCache = 'force-no-store';
+export const fetchCache = "force-no-store";
 
 export default async function PortfolioPage() {
   let images: PortfolioImage[] = [];
@@ -52,11 +52,15 @@ export default async function PortfolioPage() {
     <div className="min-h-screen bg-black text-white">
       <Header />
 
-      <main className="py-16 md:py-24 bg-black">
+      <main className="pt-8 pb-16 md:pt-12 md:pb-24 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-xl text-gray-300">A selection of our recent work</p>
-            <h1 className="mt-4 text-4xl font-semibold text-white">Portfolio</h1>
+            <p className="text-xl text-gray-300">
+              A selection of our recent work
+            </p>
+            <h1 className="mt-4 text-4xl font-semibold text-white">
+              Portfolio
+            </h1>
           </div>
 
           <MasonryGallery images={images} />
