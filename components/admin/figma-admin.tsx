@@ -18,6 +18,7 @@ import {
   GripVertical,
   X,
   Upload,
+  LoaderCircle,
   Eye,
   EyeOff,
   Clock,
@@ -35,7 +36,7 @@ type Section =
   | "bookings"
   | "trail"
   | "settings";
-type BookingStatus = "Pending" | "To Confirm" | "Confirmed";
+type BookingStatus = "Pending" | "To Confirm" | "Confirmed" | "Cancelled";
 type AuditType =
   | "create"
   | "edit"
@@ -104,6 +105,17 @@ const RED = "#E50914";
 const MONO = "'JetBrains Mono', monospace";
 const CONDENSED = "'Barlow Condensed', sans-serif";
 const SANS = "'Outfit', system-ui, sans-serif";
+type AdminFeedback = {
+  notify: (message: string) => void;
+};
+
+const AdminFeedbackContext = React.createContext<AdminFeedback | null>(null);
+
+function useAdminFeedback() {
+  const feedback = React.useContext(AdminFeedbackContext);
+  if (!feedback) throw new Error("Admin feedback is unavailable");
+  return feedback;
+}
 
 const AUDIT_STYLES: Record<
   AuditType,
@@ -126,6 +138,7 @@ const BOOKING_STYLES: Record<BookingStatus, string> = {
   Pending: "bg-amber-500/10 text-amber-400 border border-amber-500/25",
   "To Confirm": "bg-orange-500/10 text-orange-400 border border-orange-500/25",
   Confirmed: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25",
+  Cancelled: "bg-zinc-500/10 text-zinc-400 border border-zinc-500/25",
 };
 
 function PageHeader({
@@ -159,6 +172,7 @@ function Btn({
   size = "sm",
   className = "",
   type = "button",
+  disabled = false,
 }: {
   onClick?: () => void;
   children: React.ReactNode;
@@ -166,6 +180,7 @@ function Btn({
   size?: "sm" | "xs";
   className?: string;
   type?: "button" | "submit";
+  disabled?: boolean;
 }) {
   const base =
     "inline-flex cursor-pointer select-none items-center gap-1.5 rounded border font-medium transition-all";
@@ -183,7 +198,8 @@ function Btn({
     <button
       type={type}
       onClick={onClick}
-      className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}
+      disabled={disabled}
+      className={`${base} ${sizes[size]} ${variants[variant]} ${disabled ? "cursor-not-allowed opacity-50" : ""} ${className}`}
       style={variant === "red" ? { background: RED } : undefined}
     >
       {children}
@@ -369,11 +385,15 @@ function ConfirmModal({
   onClose,
   onConfirm,
   name,
+  loading = false,
+  closeOnConfirm = true,
 }: {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
   name: string;
+  loading?: boolean;
+  closeOnConfirm?: boolean;
 }) {
   return (
     <Modal open={open} onClose={onClose} title="Confirm Deletion" maxW="380px">
@@ -387,12 +407,21 @@ function ConfirmModal({
           <Btn onClick={onClose}>Cancel</Btn>
           <Btn
             variant="red"
+            disabled={loading}
             onClick={() => {
+              if (loading) return;
               onConfirm();
-              onClose();
+              if (closeOnConfirm) onClose();
             }}
           >
-            Delete
+            {loading ? (
+              <>
+                <LoaderCircle size={13} className="animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete"
+            )}
           </Btn>
         </div>
       </div>
@@ -758,6 +787,12 @@ function PortfolioPage({
   const [previewUrl, setPreviewUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [saveError, setSaveError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [reorderingId, setReorderingId] = useState<string | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(
+    () => new Set(),
+  );
   const fileRef = useRef<HTMLInputElement>(null);
   const categories = Array.from(
     new Set(portfolio.map((image) => image.category)),
@@ -803,9 +838,13 @@ function PortfolioPage({
 
   const handleSave = async () => {
     setSaveError("");
+    setSaving(true);
     try {
       if (isAdding) {
-        if (!selectedFile) return;
+        if (!selectedFile) {
+          setSaving(false);
+          return;
+        }
         const uploadData = new FormData();
         uploadData.append("file", selectedFile);
         uploadData.append("category", form.category.toLowerCase());
@@ -917,24 +956,32 @@ function PortfolioPage({
       closeForm();
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDelete = async (img: PortfolioImage) => {
-    const response = await fetch("/api/portfolio-delete", {
-      method: "POST",
-      headers: { ...adminHeaders(), "Content-Type": "application/json" },
-      body: JSON.stringify({ id: img.id }),
-    });
-    if (!response.ok) return;
-    setPortfolio((prev) => prev.filter((p) => p.id !== img.id));
-    addAudit({
-      activity: "Portfolio Image Deleted",
-      description: `"${img.title}" removed from ${img.category}`,
-      section: "Portfolio",
-      type: "delete",
-      prev: img.title,
-    });
+    setDeletingId(img.id);
+    try {
+      const response = await fetch("/api/portfolio-delete", {
+        method: "POST",
+        headers: { ...adminHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ id: img.id }),
+      });
+      if (!response.ok) return;
+      setPortfolio((prev) => prev.filter((p) => p.id !== img.id));
+      addAudit({
+        activity: "Portfolio Image Deleted",
+        description: `"${img.title}" removed from ${img.category}`,
+        section: "Portfolio",
+        type: "delete",
+        prev: img.title,
+      });
+      setDeleting(null);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const moveItem = async (id: string, dir: -1 | 1) => {
@@ -943,19 +990,24 @@ function PortfolioPage({
     const j = i + dir;
     if (j < 0 || j >= reordered.length) return;
     [reordered[i], reordered[j]] = [reordered[j], reordered[i]];
-    const response = await fetch("/api/portfolio-reorder", {
-      method: "POST",
-      headers: { ...adminHeaders(), "Content-Type": "application/json" },
-      body: JSON.stringify({ ids: reordered.map((item) => item.id) }),
-    });
-    if (!response.ok) return;
-    setPortfolio(reordered.map((p, idx) => ({ ...p, order: idx + 1 })));
-    addAudit({
-      activity: "Portfolio Reordered",
-      description: "Portfolio image order updated",
-      section: "Portfolio",
-      type: "edit",
-    });
+    setReorderingId(id);
+    try {
+      const response = await fetch("/api/portfolio-reorder", {
+        method: "POST",
+        headers: { ...adminHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: reordered.map((item) => item.id) }),
+      });
+      if (!response.ok) return;
+      setPortfolio(reordered.map((p, idx) => ({ ...p, order: idx + 1 })));
+      addAudit({
+        activity: "Portfolio Reordered",
+        description: "Portfolio image order updated",
+        section: "Portfolio",
+        type: "edit",
+      });
+    } finally {
+      setReorderingId(null);
+    }
   };
 
   return (
@@ -1026,10 +1078,21 @@ function PortfolioPage({
                   className="relative bg-zinc-900"
                   style={{ aspectRatio: "4/3" }}
                 >
+                  {!loadedImages.has(img.id) && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
+                      <LoaderCircle
+                        size={18}
+                        className="animate-spin text-zinc-600"
+                      />
+                    </div>
+                  )}
                   <img
                     src={img.src}
                     alt={img.title}
-                    className="h-full w-full object-cover"
+                    onLoad={() =>
+                      setLoadedImages((current) => new Set(current).add(img.id))
+                    }
+                    className={`h-full w-full object-cover transition-opacity ${loadedImages.has(img.id) ? "opacity-100" : "opacity-0"}`}
                   />
                   <div
                     className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-opacity group-hover:opacity-100"
@@ -1100,11 +1163,24 @@ function PortfolioPage({
                     className="border-b border-[#181818] transition-colors hover:bg-[#191919]"
                   >
                     <td className="px-4 py-3">
-                      <img
-                        src={img.src}
-                        alt={img.title}
-                        className="h-9 w-14 rounded bg-zinc-900 object-cover"
-                      />
+                      <div className="relative h-9 w-14 overflow-hidden rounded bg-zinc-900">
+                        {!loadedImages.has(`table-${img.id}`) && (
+                          <LoaderCircle
+                            size={12}
+                            className="absolute inset-0 m-auto animate-spin text-zinc-600"
+                          />
+                        )}
+                        <img
+                          src={img.src}
+                          alt={img.title}
+                          onLoad={() =>
+                            setLoadedImages((current) =>
+                              new Set(current).add(`table-${img.id}`),
+                            )
+                          }
+                          className={`h-full w-full object-cover transition-opacity ${loadedImages.has(`table-${img.id}`) ? "opacity-100" : "opacity-0"}`}
+                        />
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="text-sm text-white">{img.title}</div>
@@ -1134,12 +1210,14 @@ function PortfolioPage({
                         <div className="flex flex-col gap-0.5">
                           <button
                             onClick={() => moveItem(img.id, -1)}
+                            disabled={reorderingId === img.id}
                             className="text-zinc-600 transition-colors hover:text-white"
                           >
                             <ArrowUp size={10} />
                           </button>
                           <button
                             onClick={() => moveItem(img.id, 1)}
+                            disabled={reorderingId === img.id}
                             className="text-zinc-600 transition-colors hover:text-white"
                           >
                             <ArrowDown size={10} />
@@ -1279,9 +1357,17 @@ function PortfolioPage({
             <Btn
               variant="red"
               onClick={handleSave}
+              disabled={saving}
               className="flex-1 justify-center"
             >
-              Save Image
+              {saving ? (
+                <>
+                  <LoaderCircle size={13} className="animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Image"
+              )}
             </Btn>
           </div>
         </div>
@@ -1292,6 +1378,8 @@ function PortfolioPage({
         onClose={() => setDeleting(null)}
         onConfirm={() => deleting && handleDelete(deleting)}
         name={deleting?.title || ""}
+        loading={!!deleting && deletingId === deleting.id}
+        closeOnConfirm={false}
       />
     </div>
   );
@@ -1320,6 +1408,8 @@ function PackagesPage({
   const [editing, setEditing] = useState<PackageItem | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [deleting, setDeleting] = useState<PackageItem | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyPkgForm());
 
   const openAdd = () => {
@@ -1353,68 +1443,79 @@ function PackagesPage({
   });
 
   const handleSave = async () => {
-    const features = form.features
-      .split("\n")
-      .map((f) => f.trim())
-      .filter(Boolean);
-    const response = await fetch("/api/package", {
-      method: isAdding ? "POST" : "PATCH",
-      headers: adminHeaders(),
-      body: JSON.stringify({
-        id: editing?.id ?? crypto.randomUUID(),
-        category: form.category,
-        name: form.name,
-        price: form.price,
-        duration: form.duration,
-        description: form.description,
-        editedImages: form.images,
-        features,
-        active: form.status === "active",
-      }),
-    });
-    if (!response.ok) return;
-    const body = await response.json();
-    const item = body.item;
-    const mapped = {
-      id: String(item.id),
-      category: item.category,
-      name: item.name,
-      price: Number(item.price),
-      duration: item.duration ?? undefined,
-      description: item.description ?? undefined,
-      images:
-        item.edited_images == null ? undefined : Number(item.edited_images),
-      features: Array.isArray(item.features) ? item.features : [],
-      status: item.active ? ("active" as const) : ("inactive" as const),
-    };
-    setPackages((prev) =>
-      isAdding
-        ? [...prev, mapped]
-        : prev.map((p) => (p.id === editing?.id ? mapped : p)),
-    );
-    addAudit({
-      activity: isAdding ? "Package Added" : "Package Edited",
-      description: `"${form.name}" ${isAdding ? "created" : "updated"}`,
-      section: "Packages",
-      type: isAdding ? "create" : "edit",
-    });
-    closeForm();
+    setSaving(true);
+    try {
+      const features = form.features
+        .split("\n")
+        .map((f) => f.trim())
+        .filter(Boolean);
+      const response = await fetch("/api/package", {
+        method: isAdding ? "POST" : "PATCH",
+        headers: adminHeaders(),
+        body: JSON.stringify({
+          id: editing?.id ?? crypto.randomUUID(),
+          category: form.category,
+          name: form.name,
+          price: form.price,
+          duration: form.duration,
+          description: form.description,
+          editedImages: form.images,
+          features,
+          active: form.status === "active",
+        }),
+      });
+      if (!response.ok) return;
+      const body = await response.json();
+      const item = body.item;
+      const mapped = {
+        id: String(item.id),
+        category: item.category,
+        name: item.name,
+        price: Number(item.price),
+        duration: item.duration ?? undefined,
+        description: item.description ?? undefined,
+        images:
+          item.edited_images == null ? undefined : Number(item.edited_images),
+        features: Array.isArray(item.features) ? item.features : [],
+        status: item.active ? ("active" as const) : ("inactive" as const),
+      };
+      setPackages((prev) =>
+        isAdding
+          ? [...prev, mapped]
+          : prev.map((p) => (p.id === editing?.id ? mapped : p)),
+      );
+      addAudit({
+        activity: isAdding ? "Package Added" : "Package Edited",
+        description: `"${form.name}" ${isAdding ? "created" : "updated"}`,
+        section: "Packages",
+        type: isAdding ? "create" : "edit",
+      });
+      closeForm();
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async (pkg: PackageItem) => {
-    const response = await fetch("/api/package-delete", {
-      method: "POST",
-      headers: adminHeaders(),
-      body: JSON.stringify({ id: pkg.id }),
-    });
-    if (!response.ok) return;
-    setPackages((prev) => prev.filter((p) => p.id !== pkg.id));
-    addAudit({
-      activity: "Package Deleted",
-      description: `"${pkg.name}" package removed`,
-      section: "Packages",
-      type: "delete",
-    });
+    setDeletingId(pkg.id);
+    try {
+      const response = await fetch("/api/package-delete", {
+        method: "POST",
+        headers: adminHeaders(),
+        body: JSON.stringify({ id: pkg.id }),
+      });
+      if (!response.ok) return;
+      setPackages((prev) => prev.filter((p) => p.id !== pkg.id));
+      addAudit({
+        activity: "Package Deleted",
+        description: `"${pkg.name}" package removed`,
+        section: "Packages",
+        type: "delete",
+      });
+      setDeleting(null);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -1618,9 +1719,16 @@ function PackagesPage({
             <Btn
               variant="red"
               onClick={handleSave}
+              disabled={saving}
               className="flex-1 justify-center"
             >
-              Save Package
+              {saving ? (
+                <>
+                  <LoaderCircle size={13} className="animate-spin" /> Saving...
+                </>
+              ) : (
+                "Save Package"
+              )}
             </Btn>
           </div>
         </div>
@@ -1631,6 +1739,8 @@ function PackagesPage({
         onClose={() => setDeleting(null)}
         onConfirm={() => deleting && handleDelete(deleting)}
         name={deleting?.name || ""}
+        loading={!!deleting && deletingId === deleting.id}
+        closeOnConfirm={false}
       />
     </div>
   );
@@ -1657,6 +1767,9 @@ function TestimonialsPage({
   const [editing, setEditing] = useState<Testimonial | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [deleting, setDeleting] = useState<Testimonial | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [publishingId, setPublishingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyTestiForm());
 
   const openAdd = () => {
@@ -1688,86 +1801,102 @@ function TestimonialsPage({
   });
 
   const handleSave = async () => {
-    const payload = {
-      clientName: form.client,
-      imageUrl: form.avatar,
-      content: form.text,
-      rating: form.rating,
-      date: form.date,
-      clientRole: "",
-      published: form.published,
-    };
-    const response = await fetch("/api/testimonials", {
-      method: isAdding ? "POST" : "PATCH",
-      headers: adminHeaders(),
-      body: JSON.stringify(
-        isAdding ? payload : { ...payload, id: editing?.id },
-      ),
-    });
-    const body = await response.json();
-    if (!response.ok || !body.testimonial) return;
-    setTestimonials((prev) =>
-      isAdding
-        ? [
-            ...prev,
-            {
-              id: body.testimonial.id,
-              client: body.testimonial.clientName,
-              avatar: body.testimonial.imageUrl ?? "",
-              text: body.testimonial.content,
-              rating: body.testimonial.rating,
-              date:
-                body.testimonial.date ??
-                String(body.testimonial.createdAt).slice(0, 10),
-              published: body.testimonial.published,
-            },
-          ]
-        : prev.map((t) => (t.id === editing?.id ? { ...t, ...form } : t)),
-    );
-    addAudit({
-      activity: isAdding ? "Testimonial Added" : "Testimonial Edited",
-      description: `${form.client}'s testimonial ${isAdding ? "created" : "updated"}`,
-      section: "Testimonials",
-      type: isAdding ? "create" : "edit",
-    });
-    closeForm();
+    setSaving(true);
+    try {
+      const payload = {
+        clientName: form.client,
+        imageUrl: form.avatar,
+        content: form.text,
+        rating: form.rating,
+        date: form.date,
+        clientRole: "",
+        published: form.published,
+      };
+      const response = await fetch("/api/testimonials", {
+        method: isAdding ? "POST" : "PATCH",
+        headers: adminHeaders(),
+        body: JSON.stringify(
+          isAdding ? payload : { ...payload, id: editing?.id },
+        ),
+      });
+      const body = await response.json();
+      if (!response.ok || !body.testimonial) return;
+      setTestimonials((prev) =>
+        isAdding
+          ? [
+              ...prev,
+              {
+                id: body.testimonial.id,
+                client: body.testimonial.clientName,
+                avatar: body.testimonial.imageUrl ?? "",
+                text: body.testimonial.content,
+                rating: body.testimonial.rating,
+                date:
+                  body.testimonial.date ??
+                  String(body.testimonial.createdAt).slice(0, 10),
+                published: body.testimonial.published,
+              },
+            ]
+          : prev.map((t) => (t.id === editing?.id ? { ...t, ...form } : t)),
+      );
+      addAudit({
+        activity: isAdding ? "Testimonial Added" : "Testimonial Edited",
+        description: `${form.client}'s testimonial ${isAdding ? "created" : "updated"}`,
+        section: "Testimonials",
+        type: isAdding ? "create" : "edit",
+      });
+      closeForm();
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async (t: Testimonial) => {
-    const response = await fetch("/api/testimonials", {
-      method: "DELETE",
-      headers: adminHeaders(),
-      body: JSON.stringify({ id: t.id }),
-    });
-    if (!response.ok) return;
-    setTestimonials((prev) => prev.filter((x) => x.id !== t.id));
-    addAudit({
-      activity: "Testimonial Deleted",
-      description: `${t.client}'s testimonial removed`,
-      section: "Testimonials",
-      type: "delete",
-    });
+    setDeletingId(t.id);
+    try {
+      const response = await fetch("/api/testimonials", {
+        method: "DELETE",
+        headers: adminHeaders(),
+        body: JSON.stringify({ id: t.id }),
+      });
+      if (!response.ok) return;
+      setTestimonials((prev) => prev.filter((x) => x.id !== t.id));
+      addAudit({
+        activity: "Testimonial Deleted",
+        description: `${t.client}'s testimonial removed`,
+        section: "Testimonials",
+        type: "delete",
+      });
+      setDeleting(null);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const togglePublish = async (t: Testimonial) => {
     const published = !t.published;
-    const response = await fetch("/api/testimonials", {
-      method: "PATCH",
-      headers: adminHeaders(),
-      body: JSON.stringify({ id: t.id, published }),
-    });
-    if (!response.ok) return;
-    setTestimonials((prev) =>
-      prev.map((x) => (x.id === t.id ? { ...x, published } : x)),
-    );
-    addAudit({
-      activity: "Testimonial Publication Changed",
-      description: `${t.client}'s testimonial ${t.published ? "unpublished" : "published"}`,
-      section: "Testimonials",
-      type: "edit",
-      prev: t.published ? "Published" : "Unpublished",
-      next: t.published ? "Unpublished" : "Published",
-    });
+    setPublishingId(t.id);
+    try {
+      const response = await fetch("/api/testimonials", {
+        method: "PATCH",
+        headers: adminHeaders(),
+        body: JSON.stringify({ id: t.id, published }),
+      });
+      if (!response.ok) return;
+      setTestimonials((prev) =>
+        prev.map((x) => (x.id === t.id ? { ...x, published } : x)),
+      );
+      addAudit({
+        activity: "Testimonial Publication Changed",
+        description: `${t.client}'s testimonial ${t.published ? "unpublished" : "published"}`,
+        section: "Testimonials",
+        type: "edit",
+        prev: t.published ? "Published" : "Unpublished",
+        next: t.published ? "Unpublished" : "Published",
+      });
+    } finally {
+      setPublishingId(null);
+    }
   };
 
   return (
@@ -1827,7 +1956,14 @@ function TestimonialsPage({
                   "{t.text}"
                 </p>
                 <div className="flex gap-2 border-t border-[#1e1e1e] pt-3">
-                  <Btn size="xs" onClick={() => togglePublish(t)}>
+                  <Btn
+                    size="xs"
+                    onClick={() => togglePublish(t)}
+                    disabled={publishingId === t.id}
+                  >
+                    {publishingId === t.id && (
+                      <LoaderCircle size={11} className="animate-spin" />
+                    )}
                     {t.published ? <EyeOff size={11} /> : <Eye size={11} />}
                     {t.published ? "Unpublish" : "Publish"}
                   </Btn>
@@ -1903,9 +2039,16 @@ function TestimonialsPage({
             <Btn
               variant="red"
               onClick={handleSave}
+              disabled={saving}
               className="flex-1 justify-center"
             >
-              Save Testimonial
+              {saving ? (
+                <>
+                  <LoaderCircle size={13} className="animate-spin" /> Saving...
+                </>
+              ) : (
+                "Save Testimonial"
+              )}
             </Btn>
           </div>
         </div>
@@ -1916,6 +2059,8 @@ function TestimonialsPage({
         onClose={() => setDeleting(null)}
         onConfirm={() => deleting && handleDelete(deleting)}
         name={deleting?.client || ""}
+        loading={!!deleting && deletingId === deleting.id}
+        closeOnConfirm={false}
       />
     </div>
   );
@@ -1930,6 +2075,8 @@ function BookingsPage({
   setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
   addAudit: (e: Omit<AuditEntry, "id" | "datetime">) => void;
 }) {
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
   const changeStatus = async (
     id: string,
     prev: BookingStatus,
@@ -1940,36 +2087,43 @@ function BookingsPage({
       Pending: "pending",
       "To Confirm": "to_confirm",
       Confirmed: "confirmed",
+      Cancelled: "cancelled",
     };
-    const response = await fetch("/api/bookings", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${window.sessionStorage.getItem("uploadToken") ?? ""}`,
-        "x-upload-source": "kc-upload",
-      },
-      body: JSON.stringify({ id, status: statusValues[next] }),
-    });
-    if (!response.ok) return;
-    setBookings((b) =>
-      b.map((bk) => (bk.id === id ? { ...bk, status: next } : bk)),
-    );
-    const bk = bookings.find((b) => b.id === id);
-    addAudit({
-      activity: "Booking Status Changed",
-      description: `${bk?.client} booking updated`,
-      section: "Bookings",
-      type: "status",
-      prev,
-      next,
-    });
+    setUpdatingId(id);
+    try {
+      const response = await fetch("/api/bookings", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${window.sessionStorage.getItem("uploadToken") ?? ""}`,
+          "x-upload-source": "kc-upload",
+        },
+        body: JSON.stringify({ id, status: statusValues[next] }),
+      });
+      if (!response.ok) return;
+      setBookings((b) =>
+        b.map((bk) => (bk.id === id ? { ...bk, status: next } : bk)),
+      );
+      const bk = bookings.find((b) => b.id === id);
+      addAudit({
+        activity: "Booking Status Changed",
+        description: `${bk?.client} booking updated`,
+        section: "Bookings",
+        type: "status",
+        prev,
+        next,
+      });
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <PageHeader title="Bookings" />
       <div className="flex-1 overflow-y-auto p-6">
-        {bookings.length === 0 ? (
+        {bookings.filter((booking) => booking.status !== "Cancelled").length ===
+        0 ? (
           <div className="flex min-h-48 items-center justify-center rounded border border-dashed border-[#2a2a2a] text-xs uppercase tracking-[0.2em] text-zinc-600">
             No bookings
           </div>
@@ -1996,69 +2150,88 @@ function BookingsPage({
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((bk) => (
-                  <tr
-                    key={bk.id}
-                    className="border-b border-[#181818] transition-colors hover:bg-[#191919]"
-                  >
-                    <td className="px-5 py-4">
-                      <div className="text-sm font-medium text-white">
-                        {bk.client}
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="text-xs text-zinc-400">{bk.email}</div>
-                      <div className="mt-0.5 text-xs text-zinc-600">
-                        {bk.phone}
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-sm text-zinc-300">
-                      {bk.package}
-                    </td>
-                    <td
-                      className="px-5 py-4 text-xs text-zinc-400"
-                      style={{ fontFamily: MONO }}
+                {bookings
+                  .filter((booking) => booking.status !== "Cancelled")
+                  .map((bk) => (
+                    <tr
+                      key={bk.id}
+                      className="border-b border-[#181818] transition-colors hover:bg-[#191919]"
                     >
-                      {bk.preferredDate}
-                    </td>
-                    <td
-                      className="px-5 py-4 text-xs text-zinc-500"
-                      style={{ fontFamily: MONO }}
-                    >
-                      {bk.requestDate}
-                    </td>
-                    <td className="px-5 py-4">
-                      <select
-                        value={bk.status}
-                        onChange={(e) =>
-                          changeStatus(
-                            bk.id,
-                            bk.status,
-                            e.target.value as BookingStatus,
-                          )
-                        }
-                        className={`cursor-pointer rounded border px-2.5 py-1.5 text-xs font-semibold outline-none transition-colors ${BOOKING_STYLES[bk.status]}`}
-                        style={{ background: "transparent" }}
+                      <td className="px-5 py-4">
+                        <div className="text-sm font-medium text-white">
+                          {bk.client}
+                        </div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="text-xs text-zinc-400">{bk.email}</div>
+                        <div className="mt-0.5 text-xs text-zinc-600">
+                          {bk.phone}
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-sm text-zinc-300">
+                        {bk.package}
+                      </td>
+                      <td
+                        className="px-5 py-4 text-xs text-zinc-400"
+                        style={{ fontFamily: MONO }}
                       >
-                        {(
-                          [
-                            "Pending",
-                            "To Confirm",
-                            "Confirmed",
-                          ] as BookingStatus[]
-                        ).map((s) => (
-                          <option
-                            key={s}
-                            value={s}
-                            style={{ background: "#141414", color: "#f2f2f2" }}
-                          >
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  </tr>
-                ))}
+                        {bk.preferredDate}
+                      </td>
+                      <td
+                        className="px-5 py-4 text-xs text-zinc-500"
+                        style={{ fontFamily: MONO }}
+                      >
+                        {bk.requestDate}
+                      </td>
+                      <td className="px-5 py-4">
+                        <select
+                          value={bk.status}
+                          onChange={(e) =>
+                            changeStatus(
+                              bk.id,
+                              bk.status,
+                              e.target.value as BookingStatus,
+                            )
+                          }
+                          disabled={updatingId === bk.id}
+                          className={`cursor-pointer rounded border px-2.5 py-1.5 text-xs font-semibold outline-none transition-colors ${BOOKING_STYLES[bk.status]}`}
+                          style={{ background: "transparent" }}
+                        >
+                          {updatingId === bk.id ? (
+                            <option
+                              value={bk.status}
+                              style={{
+                                background: "#141414",
+                                color: "#f2f2f2",
+                              }}
+                            >
+                              Saving...
+                            </option>
+                          ) : (
+                            (
+                              [
+                                "Pending",
+                                "To Confirm",
+                                "Confirmed",
+                                "Cancelled",
+                              ] as BookingStatus[]
+                            ).map((s) => (
+                              <option
+                                key={s}
+                                value={s}
+                                style={{
+                                  background: "#141414",
+                                  color: "#f2f2f2",
+                                }}
+                              >
+                                {s}
+                              </option>
+                            ))
+                          )}
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </SectionCard>
@@ -2283,6 +2456,7 @@ function SettingsPage({
 }) {
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     studioName: "KCAPTURED Studios",
@@ -2330,25 +2504,34 @@ function SettingsPage({
 
   const handleSave = async () => {
     setError("");
-    const response = await fetch("/api/settings", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${window.sessionStorage.getItem("uploadToken") ?? ""}`,
-        "x-upload-source": "kc-upload",
-      },
-      body: JSON.stringify({
-        studioName: form.studioName,
-        email: form.email,
-        phone: form.phone,
-        instagramHandle: form.instagram,
-        bookingEmail: form.bookingEmail,
-        maxConcurrentBookings: form.maxBookings,
-      }),
-    });
+    setSaving(true);
+    let response: Response;
+    try {
+      response = await fetch("/api/settings", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${window.sessionStorage.getItem("uploadToken") ?? ""}`,
+          "x-upload-source": "kc-upload",
+        },
+        body: JSON.stringify({
+          studioName: form.studioName,
+          email: form.email,
+          phone: form.phone,
+          instagramHandle: form.instagram,
+          bookingEmail: form.bookingEmail,
+          maxConcurrentBookings: form.maxBookings,
+        }),
+      });
+    } catch {
+      setError("Failed to save settings");
+      setSaving(false);
+      return;
+    }
     if (!response.ok) {
       const body = await response.json();
       setError(body.error ?? "Failed to save settings");
+      setSaving(false);
       return;
     }
     addAudit({
@@ -2359,6 +2542,7 @@ function SettingsPage({
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 2200);
+    setSaving(false);
   };
 
   return (
@@ -2431,12 +2615,17 @@ function SettingsPage({
             <Btn
               variant="red"
               onClick={handleSave}
+              disabled={saving}
               className="min-w-[140px] justify-center"
             >
               {saved ? (
                 <>
                   <Check size={13} />
                   Saved
+                </>
+              ) : saving ? (
+                <>
+                  <LoaderCircle size={13} className="animate-spin" /> Saving...
                 </>
               ) : (
                 "Save Changes"
@@ -2462,6 +2651,15 @@ export function FigmaAdmin({
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState("");
+  const [feedback, setFeedback] = useState("");
+
+  const notify = (message: string) => {
+    setFeedback(message);
+    window.setTimeout(
+      () => setFeedback((current) => (current === message ? "" : current)),
+      2800,
+    );
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -2566,6 +2764,7 @@ export function FigmaAdmin({
           pending: "Pending",
           to_confirm: "To Confirm",
           confirmed: "Confirmed",
+          cancelled: "Cancelled",
         };
         setBookings(
           (Array.isArray(bookingRows) ? bookingRows : []).map((row) => ({
@@ -2648,10 +2847,21 @@ export function FigmaAdmin({
       .catch((error) =>
         console.error("[figma-admin] audit write failed", error),
       );
+    notify(`${entry.activity} successfully`);
   };
 
   return (
-    <>
+    <AdminFeedbackContext.Provider value={{ notify }}>
+      {feedback && (
+        <div
+          className="fixed right-5 top-5 z-[100] flex items-center gap-2 rounded border border-emerald-500/30 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-300 shadow-lg shadow-black/30"
+          role="status"
+        >
+          <Check size={15} />
+          {feedback}
+        </div>
+      )}
+
       <style>{`
         * { font-family: 'Outfit', system-ui, sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -2669,7 +2879,8 @@ export function FigmaAdmin({
             </div>
           )}
           {dataLoading ? (
-            <div className="flex flex-1 items-center justify-center text-xs uppercase tracking-[0.2em] text-zinc-600">
+            <div className="flex flex-1 items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] text-zinc-600">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-300" />
               Loading data...
             </div>
           ) : dataError ? (
@@ -2722,6 +2933,6 @@ export function FigmaAdmin({
           {section === "settings" && <SettingsPage addAudit={addAudit} />}
         </div>
       </div>
-    </>
+    </AdminFeedbackContext.Provider>
   );
 }
