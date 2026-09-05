@@ -505,7 +505,7 @@ function Sidebar({
             className="text-sm font-bold uppercase tracking-[0.25em] text-white"
             style={{ fontFamily: CONDENSED }}
           >
-            Lens
+            KCAPTURED admin
           </div>
           <div className="mt-0.5 text-[9px] uppercase tracking-[0.18em] text-zinc-700">
             KCAPTURED Studios

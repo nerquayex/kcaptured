@@ -399,5 +399,11 @@
     "ip": "::1",
     "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code-Insiders/1.137.0-insider Chrome/148.0.7778.280 Electron/42.10.0 Safari/537.36",
     "timestamp": "2026-09-05T00:21:04.299Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.133.0 Chrome/148.0.7778.280 Electron/42.8.0 Safari/537.36",
+    "timestamp": "2026-09-05T09:28:11.438Z"
   }
 ]
