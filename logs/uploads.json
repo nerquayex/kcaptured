@@ -342,5 +342,62 @@
     "ip": "::1",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
     "timestamp": "2026-08-22T19:04:59.114Z"
+  },
+  {
+    "type": "key_success",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code-Insiders/1.137.0-insider Chrome/148.0.7778.280 Electron/42.10.0 Safari/537.36",
+    "timestamp": "2026-09-05T00:19:49.584Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "lifestyle",
+    "fileName": "testimg.png",
+    "fileSize": 1189,
+    "fileMimeType": "image/png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code-Insiders/1.137.0-insider Chrome/148.0.7778.280 Electron/42.10.0 Safari/537.36",
+    "timestamp": "2026-09-05T00:20:37.091Z"
+  },
+  {
+    "type": "upload_success",
+    "fileName": "testimg.png",
+    "fileSize": 1189,
+    "fileMimeType": "image/png",
+    "category": "lifestyle",
+    "publicId": "portfolio/lifestyle/jjs2gvhayapkapl1jb7m",
+    "url": "https://res.cloudinary.com/dla5ebx4j/image/upload/v1788567701/portfolio/lifestyle/jjs2gvhayapkapl1jb7m.png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code-Insiders/1.137.0-insider Chrome/148.0.7778.280 Electron/42.10.0 Safari/537.36",
+    "timestamp": "2026-09-05T00:20:39.955Z"
+  },
+  {
+    "type": "upload_attempt",
+    "category": "lifestyle",
+    "fileName": "testimg.png",
+    "fileSize": 1189,
+    "fileMimeType": "image/png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code-Insiders/1.137.0-insider Chrome/148.0.7778.280 Electron/42.10.0 Safari/537.36",
+    "timestamp": "2026-09-05T00:20:44.787Z"
+  },
+  {
+    "type": "upload_success",
+    "fileName": "testimg.png",
+    "fileSize": 1189,
+    "fileMimeType": "image/png",
+    "category": "lifestyle",
+    "publicId": "portfolio/lifestyle/qibuqi6df5tqq0qhnl0x",
+    "url": "https://res.cloudinary.com/dla5ebx4j/image/upload/v1788567708/portfolio/lifestyle/qibuqi6df5tqq0qhnl0x.png",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code-Insiders/1.137.0-insider Chrome/148.0.7778.280 Electron/42.10.0 Safari/537.36",
+    "timestamp": "2026-09-05T00:20:46.768Z"
+  },
+  {
+    "type": "upload_delete",
+    "publicId": "portfolio/lifestyle/jjs2gvhayapkapl1jb7m",
+    "ip": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Code-Insiders/1.137.0-insider Chrome/148.0.7778.280 Electron/42.10.0 Safari/537.36",
+    "timestamp": "2026-09-05T00:21:04.299Z"
   }
 ]
