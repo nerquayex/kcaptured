@@ -53,13 +53,7 @@ A modern, high-performance photography portfolio website built with Next.js 15, 
    pnpm install
    ```
 
-3. **Set environment variables (optional):**
-   Create `.env.local` file:
 
-   ```text
-   NEXT_PUBLIC_BASE_URL=https://kcaptured.com
-   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dq4tkpuu4
-   ```
 
 4. **Run the development server:**
 
@@ -364,15 +358,6 @@ Cloudinary images automatically receive:
   - `/terms`
   - `/testimonials`
 
-### Pages and routes that should stay private
-
-- `/upload` — upload dashboard / client admin page
-- `/api/auth/validate-key` — upload key validation
-- `/api/upload` — client upload endpoint
-- `/api/portfolio-delete` — delete endpoint for portfolio images
-- `/api/testimonial-upload` — testimonial upload endpoint
-- `/api/testimonial-delete` — delete endpoint for testimonials
-- `/api/portfolio-images` — backend portfolio image data source
 
 > These routes should not be indexed or listed in Search Console.
 
@@ -418,7 +403,6 @@ For production, set these in Vercel:
 
 ```text
 NEXT_PUBLIC_BASE_URL=https://kcaptured.com
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=dq4tkpuu4
 ```
 
 ## Troubleshooting
