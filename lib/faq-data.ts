@@ -9,7 +9,7 @@ export const faqItems: FAQItem[] = [
   {
     id: '1',
     question: 'How do I book a photography session?',
-    answer: 'To book a session, simply message us on Instagram @kcaptures._ with your preferred date and session type. A $20 deposit is required to hold your date, with the final amount due on the day of your session. We accept cash, Cash App ($Kenstevens2), and Zelle (kenny.stevens13@hotmail.com).',
+    answer: 'To book a session, simply message us on Instagram @kcapturedvisuals with your preferred date and session type. A $20 deposit is required to hold your date, with the final amount due on the day of your session. We accept cash, Cash App ($Kenstevens2), and Zelle (kenny.stevens13@hotmail.com).',
     category: 'Booking',
   },
   {

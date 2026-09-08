@@ -58,7 +58,7 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-2xl font-semibold mb-3">Contact</h2>
               <p className="text-gray-300 leading-relaxed">
-                If you have questions about this policy, please reach out via Instagram (@kcaptures._), email, or the contact form on the site.
+                If you have questions about this policy, please reach out via Instagram (@kcapturedvisuals), email, or the contact form on the site.
               </p>
             </section>
           </div>

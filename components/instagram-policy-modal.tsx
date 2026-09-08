@@ -19,7 +19,7 @@ export function InstagramPolicyModalContent({ isOpen, onClose }: InstagramPolicy
 
   const handleProceed = () => {
     onClose();
-    window.open('https://www.instagram.com/kcaptures_.1', '_blank', 'noopener,noreferrer');
+    window.open('https://www.instagram.com/kcapturedvisuals', '_blank', 'noopener,noreferrer');
   };
 
   if (!isOpen || !isMounted) return null;

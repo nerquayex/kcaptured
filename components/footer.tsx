@@ -65,7 +65,7 @@ const AUTH_WINDOW_MS = 20 * 60 * 1000;
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const [contactEmail, setContactEmail] = useState("");
-  const [instagramHandle, setInstagramHandle] = useState("kcaptures_.1");
+  const [instagramHandle, setInstagramHandle] = useState("kcapturedvisuals");
   const [showUploadInput, setShowUploadInput] = useState(false);
   const [keyValue, setKeyValue] = useState("");
   const [locked, setLocked] = useState(false);
