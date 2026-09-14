@@ -75,7 +75,7 @@ interface PackageItem {
 interface Testimonial {
   id: string;
   client: string;
-  avatar: string;
+  videoUrl: string;
   text: string;
   rating: number;
   date: string;
@@ -2451,7 +2451,7 @@ function PackagesPage({
 
 const emptyTestiForm = () => ({
   client: "",
-  avatar: "",
+  videoUrl: "",
   text: "",
   rating: 5,
   date: "",
@@ -2473,6 +2473,7 @@ function TestimonialsPage({
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [publishingId, setPublishingId] = useState<string | null>(null);
+  const [videoUploading, setVideoUploading] = useState(false);
   const [form, setForm] = useState(emptyTestiForm());
 
   const openAdd = () => {
@@ -2484,12 +2485,52 @@ function TestimonialsPage({
     setEditing(t);
     setForm({
       client: t.client,
-      avatar: t.avatar,
+      videoUrl: t.videoUrl,
       text: t.text,
       rating: t.rating,
       date: t.date,
       published: t.published,
     });
+  };
+
+  const handleVideoUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("video/")) {
+      window.alert("Please upload a video file for the testimonial.");
+      event.target.value = "";
+      return;
+    }
+
+    setVideoUploading(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+      uploadData.append("target", "testimonial");
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: adminHeaders(),
+        body: uploadData,
+      });
+
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || !body.url) {
+        throw new Error(body.error ?? "Video upload failed");
+      }
+
+      setForm((current) => ({ ...current, videoUrl: String(body.url) }));
+    } catch (error) {
+      window.alert(
+        error instanceof Error ? error.message : "Unable to upload the testimonial video.",
+      );
+    } finally {
+      setVideoUploading(false);
+      event.target.value = "";
+    }
   };
 
   const closeForm = () => {
@@ -2508,7 +2549,7 @@ function TestimonialsPage({
     try {
       const payload = {
         clientName: form.client,
-        imageUrl: form.avatar,
+        videoUrl: form.videoUrl,
         content: form.text,
         rating: form.rating,
         date: form.date,
@@ -2531,7 +2572,7 @@ function TestimonialsPage({
               {
                 id: body.testimonial.id,
                 client: body.testimonial.clientName,
-                avatar: body.testimonial.imageUrl ?? "",
+                videoUrl: body.testimonial.videoUrl ?? "",
                 text: body.testimonial.content,
                 rating: body.testimonial.rating,
                 date:
@@ -2540,7 +2581,11 @@ function TestimonialsPage({
                 published: body.testimonial.published,
               },
             ]
-          : prev.map((t) => (t.id === editing?.id ? { ...t, ...form } : t)),
+          : prev.map((t) =>
+              t.id === editing?.id
+                ? { ...t, client: form.client, videoUrl: form.videoUrl, text: form.text, rating: form.rating, date: form.date, published: form.published }
+                : t,
+            ),
       );
       addAudit({
         activity: isAdding ? "Testimonial Added" : "Testimonial Edited",
@@ -2628,11 +2673,18 @@ function TestimonialsPage({
                 className="flex flex-col gap-4 rounded border border-[#222] bg-[#141414] p-5"
               >
                 <div className="flex items-start gap-3.5">
-                  <img
-                    src={t.avatar}
-                    alt={t.client}
-                    className="h-10 w-10 flex-shrink-0 rounded-full object-cover bg-zinc-800"
-                  />
+                  {t.videoUrl ? (
+                    <video
+                      src={t.videoUrl}
+                      className="h-14 w-20 flex-shrink-0 rounded object-cover bg-zinc-800"
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <div className="flex h-14 w-20 flex-shrink-0 items-center justify-center rounded bg-zinc-800 text-[9px] uppercase tracking-[0.2em] text-zinc-500">
+                      Video
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="text-sm font-semibold text-white">
@@ -2702,12 +2754,32 @@ function TestimonialsPage({
             onChange={(e) => setForm((f) => ({ ...f, client: e.target.value }))}
             placeholder="Client full name"
           />
-          <FInput
-            label="Client Photo URL"
-            value={form.avatar}
-            onChange={(e) => setForm((f) => ({ ...f, avatar: e.target.value }))}
-            placeholder="https://..."
-          />
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+              Client Video
+            </label>
+            <div className="flex items-center gap-3">
+              <label className="inline-flex cursor-pointer items-center justify-center rounded border border-[#2a2a2a] bg-[#0d0d0d] px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500">
+                {videoUploading ? "Uploading..." : "Upload Video"}
+                <input
+                  type="file"
+                  accept="video/*"
+                  hidden
+                  onChange={handleVideoUpload}
+                />
+              </label>
+              <span className="text-xs text-zinc-500">
+                {form.videoUrl ? "Video attached" : "No video uploaded yet"}
+              </span>
+            </div>
+            {form.videoUrl && (
+              <video
+                src={form.videoUrl}
+                controls
+                className="h-28 w-full rounded border border-[#2a2a2a] bg-black object-cover"
+              />
+            )}
+          </div>
           <FTextarea
             label="Testimonial"
             value={form.text}
@@ -3740,7 +3812,7 @@ export function FigmaAdmin({
             (row) => ({
               id: String(row.id),
               client: String(row.clientName ?? ""),
-              avatar: row.imageUrl ?? "",
+              videoUrl: row.videoUrl ?? "",
               text: String(row.content ?? ""),
               rating: Number(row.rating ?? 5),
               date:

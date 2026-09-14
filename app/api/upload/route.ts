@@ -55,6 +55,13 @@ export async function POST(request: Request) {
   const featured = formData.get("featured") === "true";
   const allowedCategories = getAllowedCategories();
 
+  const testimonialVideoMimeTypes = [
+    "video/mp4",
+    "video/quicktime",
+    "video/webm",
+    "video/x-matroska",
+  ];
+
   if (target === "package") {
     if (!(fileEntry instanceof File)) {
       return new Response(JSON.stringify({ error: "No file provided" }), {
@@ -152,6 +159,91 @@ export async function POST(request: Request) {
         url: uploadResult.secure_url,
         publicId: uploadResult.public_id,
         item: { sampleUrl: uploadResult.secure_url, cloudinaryUrl: uploadResult.secure_url },
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  if (target === "testimonial") {
+    if (!(fileEntry instanceof File)) {
+      return new Response(JSON.stringify({ error: "No file provided" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!testimonialVideoMimeTypes.includes(fileEntry.type)) {
+      return new Response(JSON.stringify({ error: "Only video files are allowed for testimonials" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const MAX_TESTIMONIAL_VIDEO_SIZE = 200 * 1024 * 1024;
+    if (fileEntry.size > MAX_TESTIMONIAL_VIDEO_SIZE) {
+      return new Response(JSON.stringify({ error: "Video file is too large" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    let uploadResult: any;
+    try {
+      uploadResult = await new Promise<any>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "testimonials",
+            resource_type: "video",
+            tags: ["testimonial-video", "client-upload"],
+            transformation: [{ quality: "auto", fetch_format: "auto" }],
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+
+        fileEntry.arrayBuffer().then((buffer) => {
+          uploadStream.end(Buffer.from(buffer));
+        }, reject);
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : typeof error === "object" && error !== null && "message" in error
+            ? String((error as any).message)
+            : JSON.stringify(error);
+
+      await appendUploadLog({
+        type: "upload_error",
+        error: `Testimonial video upload failed: ${message}`,
+        fileName: fileEntry.name,
+        fileSize: fileEntry.size,
+        fileMimeType: fileEntry.type,
+        category: "testimonials",
+        ip,
+        userAgent,
+      });
+
+      return new Response(JSON.stringify({ error: "Video storage upload failed" }), {
+        status: 502,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!uploadResult?.secure_url) {
+      return new Response(JSON.stringify({ error: "Upload failed" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        url: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } },
     );
