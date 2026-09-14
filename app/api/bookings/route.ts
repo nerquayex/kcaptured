@@ -116,7 +116,16 @@ export async function POST(request: Request) {
     );
     if (existing.rows[0])
       return json({ booking: mapRow(existing.rows[0]), alreadyCreated: true });
-    const status = "pending";
+
+    const requestedStatus =
+      body.status === "pending" ||
+      body.status === "to_confirm" ||
+      body.status === "confirmed" ||
+      body.status === "cancelled"
+        ? String(body.status)
+        : "pending";
+
+    const status = requestedStatus;
     try {
       const result = await pool.query(
         `INSERT INTO bookings (id, client_name, email, phone, package_name, preferred_date, request_date, status, notes, idempotency_key, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,now(),$7,$8,$9,now(),now()) RETURNING *`,

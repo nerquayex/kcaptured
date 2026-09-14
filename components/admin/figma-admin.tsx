@@ -26,6 +26,8 @@ import {
   ArrowUp,
   ArrowDown,
   Check,
+  DollarSign,
+  TrendingUp,
 } from "lucide-react";
 
 type Section =
@@ -140,6 +142,20 @@ const BOOKING_STYLES: Record<BookingStatus, string> = {
   "To Confirm": "bg-orange-500/10 text-orange-400 border border-orange-500/25",
   Confirmed: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25",
   Cancelled: "bg-zinc-500/10 text-zinc-400 border border-zinc-500/25",
+};
+
+const BOOKING_STATUS_VALUES: Record<BookingStatus, string> = {
+  Pending: "pending",
+  "To Confirm": "to_confirm",
+  Confirmed: "confirmed",
+  Cancelled: "cancelled",
+};
+
+const BOOKING_STATUS_LABELS: Record<string, BookingStatus> = {
+  pending: "Pending",
+  to_confirm: "To Confirm",
+  confirmed: "Confirmed",
+  cancelled: "Cancelled",
 };
 
 function PageHeader({
@@ -602,6 +618,112 @@ function DashboardPage({
   audit: AuditEntry[];
   onNavigate: (s: Section) => void;
 }) {
+  const [showTrend, setShowTrend] = useState(false);
+  const [chartType, setChartType] = useState<"line" | "bar" | "pie">("line");
+  const [duration, setDuration] = useState<"month" | "3m" | "6m" | "12m">("month");
+  const [selectedBucket, setSelectedBucket] = useState<{
+    label: string;
+    value: number;
+    bookings: Booking[];
+  } | null>(null);
+
+  const packagePriceMap = new Map(
+    packages.map((pkg) => [pkg.name.toLowerCase(), Number(pkg.price ?? 0)]),
+  );
+
+  const durationMonths = {
+    month: 1,
+    "3m": 3,
+    "6m": 6,
+    "12m": 12,
+  } as const;
+
+  const monthlyTrendData = Array.from(
+    { length: durationMonths[duration] },
+    (_, index) => {
+      const monthDate = new Date();
+      monthDate.setDate(1);
+      monthDate.setMonth(
+        monthDate.getMonth() - (durationMonths[duration] - 1 - index),
+      );
+      const key = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, "0")}`;
+      const relevantBookings = bookings.filter((booking) => {
+        if (booking.status === "Cancelled") return false;
+        const bookingDate = new Date(
+          booking.requestDate || booking.preferredDate || "",
+        );
+        if (Number.isNaN(bookingDate.getTime())) return false;
+        const bookingKey = `${bookingDate.getFullYear()}-${String(bookingDate.getMonth() + 1).padStart(2, "0")}`;
+        return bookingKey === key;
+      });
+
+      const total = relevantBookings.reduce((sum, booking) => {
+        const packageName = booking.package.trim().toLowerCase();
+        const price = packagePriceMap.get(packageName) ?? 0;
+        return sum + price;
+      }, 0);
+
+      return {
+        label: monthDate.toLocaleDateString("en-US", { month: "short" }),
+        value: total,
+        bookings: relevantBookings,
+      };
+    },
+  );
+
+  const pieTrendData = [
+    "Pending",
+    "To Confirm",
+    "Confirmed",
+  ].map((status) => {
+    const bookingsInStatus = bookings.filter((booking) => {
+      if (booking.status === "Cancelled") return false;
+      const bookingDate = new Date(
+        booking.requestDate || booking.preferredDate || "",
+      );
+      if (Number.isNaN(bookingDate.getTime())) return false;
+      const now = new Date();
+      now.setDate(1);
+      const startDate = new Date(now);
+      startDate.setMonth(startDate.getMonth() - (durationMonths[duration] - 1));
+      return (
+        booking.status === status &&
+        bookingDate >= startDate &&
+        bookingDate <= now
+      );
+    });
+
+    const value = bookingsInStatus.reduce((sum, booking) => {
+      const packageName = booking.package.trim().toLowerCase();
+      return sum + (packagePriceMap.get(packageName) ?? 0);
+    }, 0);
+
+    return {
+      label: status,
+      value,
+      bookings: bookingsInStatus,
+    };
+  });
+
+  const trendEntries = chartType === "pie" ? pieTrendData : monthlyTrendData;
+  const maxTrendValue = Math.max(...trendEntries.map((entry) => entry.value), 1);
+
+  const expectedRevenue = bookings
+    .filter((b) => b.status !== "Cancelled")
+    .reduce((sum, booking) => {
+      const packageName = booking.package.trim().toLowerCase();
+      const price = packagePriceMap.get(packageName) ?? 0;
+      return sum + price;
+    }, 0);
+
+  const totalIncome = bookings
+    .filter((b) => b.status === "Confirmed")
+    .reduce((sum, booking) => {
+      const packageName = booking.package.trim().toLowerCase();
+      const price = packagePriceMap.get(packageName) ?? 0;
+      return sum + price;
+    }, 0);
+
   const stats = [
     {
       label: "Portfolio Images",
@@ -622,10 +744,22 @@ function DashboardPage({
       Icon: MessageSquare,
     },
     {
-      label: "Total Bookings",
-      value: bookings.length,
-      sub: "all time",
-      Icon: Calendar,
+      label: "Total Expected Revenue",
+      value: `$${expectedRevenue.toLocaleString()}`,
+      sub: `${bookings.filter((b) => b.status !== "Cancelled").length} active bookings`,
+      Icon: DollarSign,
+    },
+    {
+      label: "Total Income",
+      value: `$${totalIncome.toLocaleString()}`,
+      sub: `${bookings.filter((b) => b.status === "Confirmed").length} confirmed`,
+      Icon: Check,
+    },
+    {
+      label: "Cancelled",
+      value: bookings.filter((b) => b.status === "Cancelled").length,
+      sub: "0 if no cancellations",
+      Icon: X,
     },
     {
       label: "Pending",
@@ -634,9 +768,15 @@ function DashboardPage({
       Icon: Clock,
     },
     {
+      label: "To Confirm",
+      value: bookings.filter((b) => b.status === "To Confirm").length,
+      sub: "needs action",
+      Icon: Calendar,
+    },
+    {
       label: "Confirmed",
       value: bookings.filter((b) => b.status === "Confirmed").length,
-      sub: "this season",
+      sub: "secured bookings",
       Icon: Check,
     },
   ];
@@ -644,6 +784,33 @@ function DashboardPage({
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <PageHeader title="Dashboard" />
+      <div className="flex-shrink-0 border-b border-[#1e1e1e] bg-[#0a0a0a] px-6 py-4">
+        <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
+          Quick Actions
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Btn variant="red" onClick={() => onNavigate("portfolio")}>
+            <Plus size={13} />
+            Add Portfolio Image
+          </Btn>
+          <Btn onClick={() => onNavigate("packages")}>
+            <Plus size={13} />
+            Add Package
+          </Btn>
+          <Btn onClick={() => onNavigate("testimonials")}>
+            <Plus size={13} />
+            Add Testimonial
+          </Btn>
+          <Btn onClick={() => onNavigate("bookings")}>
+            <Calendar size={13} />
+            View Bookings
+          </Btn>
+          <Btn onClick={() => setShowTrend((current) => !current)}>
+            <TrendingUp size={13} />
+            {showTrend ? "Hide Trend" : "Income Trend"}
+          </Btn>
+        </div>
+      </div>
       <div className="flex-1 overflow-y-auto p-6">
         <div className="flex flex-col gap-6">
           <div
@@ -676,6 +843,247 @@ function DashboardPage({
               </div>
             ))}
           </div>
+
+          {showTrend && (
+            <SectionCard title="Income Trend">
+              <div className="p-5">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap gap-2">
+                    {(["line", "bar", "pie"] as const).map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => {
+                          setChartType(option);
+                          setSelectedBucket(null);
+                        }}
+                        className="rounded border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] transition-all"
+                        style={{
+                          background: chartType === option ? RED : "transparent",
+                          color: chartType === option ? "white" : "#8a8a8a",
+                          borderColor: chartType === option ? "transparent" : "#2a2a2a",
+                        }}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(["month", "3m", "6m", "12m"] as const).map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => {
+                          setDuration(option);
+                          setSelectedBucket(null);
+                        }}
+                        className="rounded border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] transition-all"
+                        style={{
+                          background: duration === option ? "#1c1c1c" : "transparent",
+                          color: duration === option ? "white" : "#8a8a8a",
+                          borderColor: duration === option ? "#4a4a4a" : "#2a2a2a",
+                        }}
+                      >
+                        {option === "month" ? "Current month" : option.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {chartType === "line" && (
+                  <svg
+                    viewBox="0 0 640 220"
+                    className="h-56 w-full overflow-visible"
+                    role="img"
+                    aria-label="Income trend chart"
+                  >
+                    {[0, 1, 2, 3].map((line) => {
+                      const y = 24 + line * 44;
+                      return (
+                        <line
+                          key={line}
+                          x1="24"
+                          x2="620"
+                          y1={y}
+                          y2={y}
+                          stroke="#2a2a2a"
+                          strokeDasharray="4 6"
+                        />
+                      );
+                    })}
+                    <polyline
+                      fill="none"
+                      stroke="#E50914"
+                      strokeWidth="3"
+                      points={monthlyTrendData
+                        .map((entry, index) => {
+                          const x = 40 + (index * 520) / Math.max(monthlyTrendData.length - 1, 1);
+                          const y = 180 - (entry.value / maxTrendValue) * 120;
+                          return `${x},${y}`;
+                        })
+                        .join(" ")}
+                    />
+                    {monthlyTrendData.map((entry, index) => {
+                      const x = 40 + (index * 520) / Math.max(monthlyTrendData.length - 1, 1);
+                      const y = 180 - (entry.value / maxTrendValue) * 120;
+                      const isActive = selectedBucket?.label === entry.label;
+                      return (
+                        <g key={entry.label} onClick={() => setSelectedBucket(entry)} style={{ cursor: "pointer" }}>
+                          <circle cx={x} cy={y} r={isActive ? 6 : 4} fill={isActive ? "#fff" : "#E50914"} stroke="#E50914" strokeWidth="2" />
+                          <text x={x} y="200" textAnchor="middle" fill="#8b8b8b" fontSize="11">
+                            {entry.label}
+                          </text>
+                          <text x={x} y={y - 12} textAnchor="middle" fill="#f2f2f2" fontSize="10">
+                            ${entry.value.toLocaleString()}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </svg>
+                )}
+
+                {chartType === "bar" && (
+                  <div className="h-56 w-full">
+                    <div className="flex h-full items-end gap-3">
+                      {monthlyTrendData.map((entry, index) => {
+                        const height = Math.max((entry.value / maxTrendValue) * 150, entry.value > 0 ? 18 : 0);
+                        const isActive = selectedBucket?.label === entry.label;
+                        return (
+                          <button
+                            key={entry.label}
+                            type="button"
+                            onClick={() => setSelectedBucket(entry)}
+                            className="flex h-full flex-1 items-end justify-center"
+                            style={{ minWidth: 40 }}
+                          >
+                            <div className="flex w-full flex-col items-center justify-end gap-2">
+                              <span className="text-[10px] text-zinc-400">${entry.value.toLocaleString()}</span>
+                              <div
+                                className="w-full rounded-t border border-[#3a3a3a] transition-all"
+                                style={{
+                                  height: `${height}px`,
+                                  background: isActive ? "#fff" : "#E50914",
+                                  opacity: entry.value === 0 ? 0.35 : 1,
+                                }}
+                              />
+                              <span className="text-[10px] text-zinc-500">{entry.label}</span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {chartType === "pie" && (
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                    <svg
+                      viewBox="0 0 260 220"
+                      className="h-56 w-full max-w-[260px]"
+                      role="img"
+                      aria-label="Income by status chart"
+                    >
+                      <circle cx="110" cy="110" r="72" fill="transparent" stroke="#1c1c1c" strokeWidth="26" />
+                      {(() => {
+                        const radius = 72;
+                        const circumference = 2 * Math.PI * radius;
+                        let offset = 0;
+                        const palette = ["#E50914", "#f97316", "#22c55e", "#a3a3a3"];
+                        return pieTrendData.map((slice, index) => {
+                          const ratio = slice.value / Math.max(pieTrendData.reduce((sum, entry) => sum + entry.value, 0), 1);
+                          const length = ratio * circumference;
+                          const isActive = selectedBucket?.label === slice.label;
+                          const circle = (
+                            <circle
+                              key={slice.label}
+                              cx="110"
+                              cy="110"
+                              r={radius}
+                              fill="transparent"
+                              stroke={palette[index % palette.length]}
+                              strokeWidth="26"
+                              strokeDasharray={`${length} ${circumference - length}`}
+                              strokeDashoffset={-offset}
+                              strokeLinecap="round"
+                              transform="rotate(-90 110 110)"
+                              style={{ cursor: "pointer", opacity: isActive ? 1 : 0.85 }}
+                              onClick={() => setSelectedBucket(slice)}
+                            />
+                          );
+                          offset += length;
+                          return circle;
+                        });
+                      })()}
+                      <text x="110" y="108" textAnchor="middle" fill="#f2f2f2" fontSize="12" fontWeight="700">
+                        {pieTrendData.reduce((sum, entry) => sum + entry.value, 0).toLocaleString()}
+                      </text>
+                      <text x="110" y="128" textAnchor="middle" fill="#8a8a8a" fontSize="10">
+                        total
+                      </text>
+                    </svg>
+                    <div className="flex-1 space-y-2">
+                      {pieTrendData.map((slice, index) => {
+                        const palette = ["#E50914", "#f97316", "#22c55e", "#a3a3a3"];
+                        const total = pieTrendData.reduce((sum, entry) => sum + entry.value, 0) || 1;
+                        return (
+                          <button
+                            key={slice.label}
+                            type="button"
+                            onClick={() => setSelectedBucket(slice)}
+                            className="flex w-full items-center justify-between rounded border border-[#2a2a2a] px-3 py-2 text-left"
+                            style={{ borderColor: selectedBucket?.label === slice.label ? palette[index % palette.length] : "#2a2a2a" }}
+                          >
+                            <span className="flex items-center gap-2 text-xs text-zinc-300">
+                              <span className="h-2.5 w-2.5 rounded-full" style={{ background: palette[index % palette.length] }} />
+                              {slice.label}
+                            </span>
+                            <span className="text-xs text-zinc-500">${slice.value.toLocaleString()} ({Math.round((slice.value / total) * 100)}%)</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {selectedBucket && (
+                  <div className="mt-5 rounded border border-[#2a2a2a] bg-[#0d0d0d] p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                          Selected
+                        </div>
+                        <div className="mt-1 text-lg font-semibold text-white">{selectedBucket.label}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                          Total
+                        </div>
+                        <div className="mt-1 text-lg font-semibold text-white">${selectedBucket.value.toLocaleString()}</div>
+                      </div>
+                    </div>
+                    {selectedBucket.bookings.length === 0 ? (
+                      <div className="text-sm text-zinc-500">No matching bookings in this period.</div>
+                    ) : (
+                      <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
+                        {selectedBucket.bookings.map((booking) => (
+                          <div key={booking.id} className="flex items-center justify-between gap-3 border-b border-[#1a1a1a] pb-2 last:border-b-0 last:pb-0">
+                            <div>
+                              <div className="text-sm text-white">{booking.client}</div>
+                              <div className="text-[10px] uppercase tracking-[0.15em] text-zinc-500">{booking.package}</div>
+                            </div>
+                            <div className="text-right text-xs text-zinc-400">
+                              <div>{booking.preferredDate}</div>
+                              <div className="mt-0.5 text-zinc-500">{booking.status}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </SectionCard>
+          )}
 
           <div
             className="grid gap-4"
@@ -736,25 +1144,6 @@ function DashboardPage({
             </SectionCard>
           </div>
 
-          <div>
-            <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
-              Quick Actions
-            </div>
-            <div className="flex gap-3">
-              <Btn variant="red" onClick={() => onNavigate("portfolio")}>
-                <Plus size={13} />
-                Add Portfolio Image
-              </Btn>
-              <Btn onClick={() => onNavigate("packages")}>
-                <Plus size={13} />
-                Add Package
-              </Btn>
-              <Btn onClick={() => onNavigate("testimonials")}>
-                <Plus size={13} />
-                Add Testimonial
-              </Btn>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -2382,14 +2771,131 @@ function TestimonialsPage({
 
 function BookingsPage({
   bookings,
+  packages,
   setBookings,
   addAudit,
 }: {
   bookings: Booking[];
+  packages: PackageItem[];
   setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
   addAudit: (e: Omit<AuditEntry, "id" | "datetime">) => void;
 }) {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"All" | BookingStatus>("All");
+  const [showCancelled, setShowCancelled] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
+  const [newBooking, setNewBooking] = useState({
+    client: "",
+    email: "",
+    phone: "",
+    package: packages[0]?.name ?? "",
+    preferredDate: "",
+    notes: "",
+    status: "Pending" as BookingStatus,
+  });
+
+  const statusOptions: Array<"All" | BookingStatus> = [
+    "All",
+    "Pending",
+    "To Confirm",
+    "Confirmed",
+    "Cancelled",
+  ];
+
+  const filteredBookings =
+    statusFilter === "All"
+      ? bookings.filter(
+          (booking) => showCancelled || booking.status !== "Cancelled",
+        )
+      : bookings.filter((booking) => booking.status === statusFilter);
+
+  const resetCreateForm = () => {
+    setNewBooking({
+      client: "",
+      email: "",
+      phone: "",
+      package: packages[0]?.name ?? "",
+      preferredDate: "",
+      notes: "",
+      status: "Pending",
+    });
+    setCreateError("");
+  };
+
+  const handleCreateBooking = async () => {
+    if (!newBooking.client.trim()) {
+      setCreateError("Client name is required.");
+      return;
+    }
+
+    if (!newBooking.email.trim() && !newBooking.phone.trim()) {
+      setCreateError("Add at least one contact method.");
+      return;
+    }
+
+    setCreating(true);
+    setCreateError("");
+
+    try {
+      const response = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${window.sessionStorage.getItem("uploadToken") ?? ""}`,
+          "x-upload-source": "kc-upload",
+        },
+        body: JSON.stringify({
+          clientName: newBooking.client.trim(),
+          email: newBooking.email.trim(),
+          phone: newBooking.phone.trim(),
+          packageName: newBooking.package.trim(),
+          preferredDate: newBooking.preferredDate || null,
+          notes: newBooking.notes.trim(),
+          status: BOOKING_STATUS_VALUES[newBooking.status],
+          idempotencyKey: crypto.randomUUID(),
+        }),
+      });
+
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(body.error ?? `Create booking failed (${response.status})`);
+      }
+
+      const created = body.booking;
+      const nextBooking: Booking = {
+        id: String(created.id),
+        client: String(created.client ?? ""),
+        email: String(created.email ?? ""),
+        phone: String(created.phone ?? ""),
+        package: String(created.package ?? ""),
+        preferredDate: created.preferredDate
+          ? String(created.preferredDate).slice(0, 10)
+          : "—",
+        requestDate: created.requestDate
+          ? String(created.requestDate).slice(0, 10)
+          : "—",
+        status: BOOKING_STATUS_LABELS[String(created.status)] ?? "Pending",
+      };
+
+      setBookings((prev) => [nextBooking, ...prev]);
+      addAudit({
+        activity: "Booking Created",
+        description: `${nextBooking.client} booking added manually`,
+        section: "Bookings",
+        type: "create",
+      });
+      setIsCreateOpen(false);
+      resetCreateForm();
+    } catch (error) {
+      setCreateError(
+        error instanceof Error ? error.message : "Unable to create booking.",
+      );
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const changeStatus = async (
     id: string,
@@ -2434,12 +2940,54 @@ function BookingsPage({
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <PageHeader title="Bookings" />
+      <PageHeader title="Bookings">
+        <Btn variant="red" onClick={() => {
+          resetCreateForm();
+          setIsCreateOpen(true);
+        }}>
+          <Plus size={13} />
+          Create Booking
+        </Btn>
+      </PageHeader>
+      <div className="flex-shrink-0 border-b border-[#1e1e1e] bg-[#0a0a0a] px-6 py-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap gap-2">
+            {statusOptions.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => setStatusFilter(option)}
+                className="whitespace-nowrap rounded px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] transition-all"
+                style={{
+                  background: statusFilter === option ? RED : "transparent",
+                  color: statusFilter === option ? "white" : "#8a8a8a",
+                  border: statusFilter === option ? "1px solid transparent" : "1px solid #272727",
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <label className="ml-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] text-zinc-500">
+            <input
+              type="checkbox"
+              checked={showCancelled}
+              onChange={(e) => setShowCancelled(e.target.checked)}
+              className="h-3.5 w-3.5 rounded border border-[#3a3a3a] bg-[#111] accent-red-500"
+            />
+            Show cancelled
+          </label>
+        </div>
+        {statusFilter === "All" && !showCancelled && (
+          <div className="mt-2 text-[10px] uppercase tracking-[0.16em] text-zinc-600">
+            Cancelled hidden by default
+          </div>
+        )}
+      </div>
       <div className="flex-1 overflow-y-auto p-6">
-        {bookings.filter((booking) => booking.status !== "Cancelled").length ===
-        0 ? (
+        {filteredBookings.length === 0 ? (
           <div className="flex min-h-48 items-center justify-center rounded border border-dashed border-[#2a2a2a] text-xs uppercase tracking-[0.2em] text-zinc-600">
-            No bookings
+            {statusFilter === "All" ? "No bookings" : `No ${statusFilter.toLowerCase()} bookings`}
           </div>
         ) : (
           <SectionCard>
@@ -2464,93 +3012,221 @@ function BookingsPage({
                 </tr>
               </thead>
               <tbody>
-                {bookings
-                  .filter((booking) => booking.status !== "Cancelled")
-                  .map((bk) => (
-                    <tr
-                      key={bk.id}
-                      className="border-b border-[#181818] transition-colors hover:bg-[#191919]"
+                {filteredBookings.map((bk) => (
+                  <tr
+                    key={bk.id}
+                    className="border-b border-[#181818] transition-colors hover:bg-[#191919]"
+                  >
+                    <td className="px-5 py-4">
+                      <div className="text-sm font-medium text-white">
+                        {bk.client}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="text-xs text-zinc-400">{bk.email}</div>
+                      <div className="mt-0.5 text-xs text-zinc-600">
+                        {bk.phone}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-sm text-zinc-300">
+                      {bk.package}
+                    </td>
+                    <td
+                      className="px-5 py-4 text-xs text-zinc-400"
+                      style={{ fontFamily: MONO }}
                     >
-                      <td className="px-5 py-4">
-                        <div className="text-sm font-medium text-white">
-                          {bk.client}
-                        </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="text-xs text-zinc-400">{bk.email}</div>
-                        <div className="mt-0.5 text-xs text-zinc-600">
-                          {bk.phone}
-                        </div>
-                      </td>
-                      <td className="px-5 py-4 text-sm text-zinc-300">
-                        {bk.package}
-                      </td>
-                      <td
-                        className="px-5 py-4 text-xs text-zinc-400"
-                        style={{ fontFamily: MONO }}
+                      {bk.preferredDate}
+                    </td>
+                    <td
+                      className="px-5 py-4 text-xs text-zinc-500"
+                      style={{ fontFamily: MONO }}
+                    >
+                      {bk.requestDate}
+                    </td>
+                    <td className="px-5 py-4">
+                      <select
+                        value={bk.status}
+                        onChange={(e) =>
+                          changeStatus(
+                            bk.id,
+                            bk.status,
+                            e.target.value as BookingStatus,
+                          )
+                        }
+                        disabled={updatingId === bk.id}
+                        className={`cursor-pointer rounded border px-2.5 py-1.5 text-xs font-semibold outline-none transition-colors ${BOOKING_STYLES[bk.status]}`}
+                        style={{ background: "transparent" }}
                       >
-                        {bk.preferredDate}
-                      </td>
-                      <td
-                        className="px-5 py-4 text-xs text-zinc-500"
-                        style={{ fontFamily: MONO }}
-                      >
-                        {bk.requestDate}
-                      </td>
-                      <td className="px-5 py-4">
-                        <select
-                          value={bk.status}
-                          onChange={(e) =>
-                            changeStatus(
-                              bk.id,
-                              bk.status,
-                              e.target.value as BookingStatus,
-                            )
-                          }
-                          disabled={updatingId === bk.id}
-                          className={`cursor-pointer rounded border px-2.5 py-1.5 text-xs font-semibold outline-none transition-colors ${BOOKING_STYLES[bk.status]}`}
-                          style={{ background: "transparent" }}
-                        >
-                          {updatingId === bk.id ? (
+                        {updatingId === bk.id ? (
+                          <option
+                            value={bk.status}
+                            style={{
+                              background: "#141414",
+                              color: "#f2f2f2",
+                            }}
+                          >
+                            Saving...
+                          </option>
+                        ) : (
+                          (
+                            [
+                              "Pending",
+                              "To Confirm",
+                              "Confirmed",
+                              "Cancelled",
+                            ] as BookingStatus[]
+                          ).map((s) => (
                             <option
-                              value={bk.status}
+                              key={s}
+                              value={s}
                               style={{
                                 background: "#141414",
                                 color: "#f2f2f2",
                               }}
                             >
-                              Saving...
+                              {s}
                             </option>
-                          ) : (
-                            (
-                              [
-                                "Pending",
-                                "To Confirm",
-                                "Confirmed",
-                                "Cancelled",
-                              ] as BookingStatus[]
-                            ).map((s) => (
-                              <option
-                                key={s}
-                                value={s}
-                                style={{
-                                  background: "#141414",
-                                  color: "#f2f2f2",
-                                }}
-                              >
-                                {s}
-                              </option>
-                            ))
-                          )}
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
+                          ))
+                        )}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </SectionCard>
         )}
       </div>
+
+      <Modal
+        open={isCreateOpen}
+        onClose={() => {
+          setIsCreateOpen(false);
+          resetCreateForm();
+        }}
+        title="Create Booking"
+        maxW="560px"
+      >
+        <div className="flex flex-col gap-5">
+          <FInput
+            label="Client Name"
+            value={newBooking.client}
+            onChange={(e) =>
+              setNewBooking((f) => ({ ...f, client: e.target.value }))
+            }
+            placeholder="Jane Doe"
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <FInput
+              label="Email"
+              type="email"
+              value={newBooking.email}
+              onChange={(e) =>
+                setNewBooking((f) => ({ ...f, email: e.target.value }))
+              }
+              placeholder="jane@email.com"
+            />
+            <FInput
+              label="Phone"
+              value={newBooking.phone}
+              onChange={(e) =>
+                setNewBooking((f) => ({ ...f, phone: e.target.value }))
+              }
+              placeholder="(555) 555-0000"
+            />
+          </div>
+
+          <FSelect
+            label="Package"
+            value={newBooking.package}
+            onChange={(e) =>
+              setNewBooking((f) => ({ ...f, package: e.target.value }))
+            }
+          >
+            {packages.length === 0 ? (
+              <option value="">No packages available</option>
+            ) : (
+              packages.map((pkg) => (
+                <option key={pkg.id} value={pkg.name} style={{ background: "#141414" }}>
+                  {pkg.name}
+                </option>
+              ))
+            )}
+          </FSelect>
+
+          <div className="grid grid-cols-2 gap-4">
+            <FInput
+              label="Preferred Date"
+              type="date"
+              value={newBooking.preferredDate}
+              onChange={(e) =>
+                setNewBooking((f) => ({ ...f, preferredDate: e.target.value }))
+              }
+            />
+            <FSelect
+              label="Status"
+              value={newBooking.status}
+              onChange={(e) =>
+                setNewBooking((f) => ({
+                  ...f,
+                  status: e.target.value as BookingStatus,
+                }))
+              }
+            >
+              {(["Pending", "To Confirm", "Confirmed", "Cancelled"] as BookingStatus[]).map(
+                (status) => (
+                  <option key={status} value={status} style={{ background: "#141414" }}>
+                    {status}
+                  </option>
+                ),
+              )}
+            </FSelect>
+          </div>
+
+          <FTextarea
+            label="Notes"
+            value={newBooking.notes}
+            onChange={(e) =>
+              setNewBooking((f) => ({ ...f, notes: e.target.value }))
+            }
+            rows={4}
+            placeholder="Trip details, client notes, or anything relevant..."
+          />
+
+          {createError && (
+            <div className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+              {createError}
+            </div>
+          )}
+
+          <div className="flex gap-3 border-t border-[#222] pt-3">
+            <Btn
+              onClick={() => {
+                setIsCreateOpen(false);
+                resetCreateForm();
+              }}
+              className="flex-1 justify-center"
+            >
+              Cancel
+            </Btn>
+            <Btn
+              variant="red"
+              onClick={handleCreateBooking}
+              disabled={creating}
+              className="flex-1 justify-center"
+            >
+              {creating ? (
+                <>
+                  <LoaderCircle size={13} className="animate-spin" /> Saving...
+                </>
+              ) : (
+                "Save Booking"
+              )}
+            </Btn>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -3240,6 +3916,7 @@ export function FigmaAdmin({
           {section === "bookings" && (
             <BookingsPage
               bookings={bookings}
+              packages={packages}
               setBookings={setBookings}
               addAudit={addAudit}
             />
