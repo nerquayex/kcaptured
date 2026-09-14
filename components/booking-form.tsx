@@ -48,8 +48,11 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
 
   const buildInstagramDmUrl = (selectedPackage: string, preferredDate: string) => {
     const message = buildInstagramMessage(selectedPackage, preferredDate)
+    const encodedMessage = encodeURIComponent(message)
     return {
-      dmUrl: `https://ig.me/m/${INSTAGRAM_DM_HANDLE}`,
+      dmUrl: `https://ig.me/m/${INSTAGRAM_DM_HANDLE}?text=${encodedMessage}`,
+      directAppUrl: `instagram://direct/inbox`,
+      profileUrl: `https://www.instagram.com/${INSTAGRAM_DM_HANDLE}/`,
       message,
     }
   }
@@ -172,7 +175,7 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
   }
 
   const handleContinueInstagram = async () => {
-    const { dmUrl, message } = buildInstagramDmUrl(savedSummary.packageName, savedSummary.preferredDate)
+    const { dmUrl, directAppUrl, profileUrl, message } = buildInstagramDmUrl(savedSummary.packageName, savedSummary.preferredDate)
 
     try {
       if (navigator.clipboard?.writeText) {
@@ -182,7 +185,23 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
       console.warn('[booking-form] clipboard copy failed', error)
     }
 
-    window.open(dmUrl, '_blank', 'noopener,noreferrer')
+    try {
+      const appWindow = window.open(directAppUrl, '_blank', 'noopener,noreferrer')
+      if (!appWindow) {
+        window.open(dmUrl, '_blank', 'noopener,noreferrer')
+      } else {
+        setTimeout(() => {
+          const fallbackWindow = window.open(dmUrl, '_blank', 'noopener,noreferrer')
+          if (!fallbackWindow) {
+            window.open(profileUrl, '_blank', 'noopener,noreferrer')
+          }
+        }, 900)
+      }
+    } catch (error) {
+      console.warn('[booking-form] Instagram DM open failed, using fallback', error)
+      window.open(dmUrl, '_blank', 'noopener,noreferrer')
+    }
+
     onSaved?.()
     onClose()
   }
@@ -203,6 +222,9 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
               <p className="font-medium">{savedMessage || 'Your booking request was created. We will contact you shortly.'}</p>
               <p className="mt-2 text-sm text-emerald-100/90">
                 Booking: {savedSummary.packageName || 'Your selected package'} · {formatDateLabel(savedSummary.preferredDate)}
+              </p>
+              <p className="mt-3 text-xs text-emerald-50/90">
+                Instagram will open with your message copied so you can send it quickly.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
