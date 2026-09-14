@@ -771,10 +771,12 @@ const emptyImgForm = () => ({
 
 function PortfolioPage({
   portfolio,
+  packages,
   setPortfolio,
   addAudit,
 }: {
   portfolio: PortfolioImage[];
+  packages: PackageItem[];
   setPortfolio: React.Dispatch<React.SetStateAction<PortfolioImage[]>>;
   addAudit: (e: Omit<AuditEntry, "id" | "datetime">) => void;
 }) {
@@ -783,22 +785,40 @@ function PortfolioPage({
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<PortfolioImage | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
   const [deleting, setDeleting] = useState<PortfolioImage | null>(null);
   const [form, setForm] = useState(emptyImgForm());
   const [previewUrl, setPreviewUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [saveError, setSaveError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [bulkSaving, setBulkSaving] = useState(false);
+  const [bulkCategory, setBulkCategory] = useState("");
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [bulkFeatured, setBulkFeatured] = useState(false);
+  const [bulkError, setBulkError] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [reorderingId, setReorderingId] = useState<string | null>(null);
   const [loadedImages, setLoadedImages] = useState<Set<string>>(
     () => new Set(),
   );
   const fileRef = useRef<HTMLInputElement>(null);
+  const bulkFileRef = useRef<HTMLInputElement>(null);
+
+  const packageCategoryOptions = Array.from(
+    new Set(
+      packages
+        .map((pkg) => pkg.category)
+        .filter((value) => typeof value === "string" && value.trim().length > 0),
+    ),
+  ).sort();
+
   const categories = Array.from(
     new Set(portfolio.map((image) => image.category)),
   ).sort();
   const categoryOptions = ["All", ...categories];
+  const effectiveCategoryOptions =
+    packageCategoryOptions.length > 0 ? packageCategoryOptions : categories;
 
   const filtered = portfolio
     .filter((p) => category === "All" || p.category === category)
@@ -810,6 +830,29 @@ function PortfolioPage({
     setSelectedFile(null);
     setSaveError("");
     setIsAdding(true);
+  };
+
+  const openBulkUpload = () => {
+    const nextCategory =
+      packageCategoryOptions[0] ??
+      categories[0] ??
+      "Lifestyle";
+    setBulkCategory(nextCategory);
+    setBulkFiles([]);
+    setBulkFeatured(false);
+    setBulkError("");
+    setIsBulkUploadOpen(true);
+  };
+
+  const closeBulkUpload = () => {
+    setIsBulkUploadOpen(false);
+    setBulkCategory("");
+    setBulkFiles([]);
+    setBulkFeatured(false);
+    setBulkError("");
+    if (bulkFileRef.current) {
+      bulkFileRef.current.value = "";
+    }
   };
 
   const openEdit = (img: PortfolioImage) => {
@@ -836,6 +879,78 @@ function PortfolioPage({
     Authorization: `Bearer ${window.sessionStorage.getItem("uploadToken") ?? ""}`,
     "x-upload-source": "kc-upload",
   });
+
+  const handleBulkUpload = async () => {
+    if (bulkFiles.length === 0) {
+      setBulkError("Select at least one image to upload.");
+      return;
+    }
+
+    setBulkSaving(true);
+    setBulkError("");
+
+    try {
+      const uploaded: PortfolioImage[] = [];
+      for (const file of bulkFiles) {
+        const title = file.name
+          .replace(/\.[^/.]+$/, "")
+          .replace(/[-_]+/g, " ")
+          .trim() || "Untitled Image";
+
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+        uploadData.append("category", bulkCategory.toLowerCase());
+        uploadData.append("title", title);
+        uploadData.append("caption", "");
+        uploadData.append("featured", String(bulkFeatured));
+
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          headers: adminHeaders(),
+          body: uploadData,
+        });
+
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}));
+          throw new Error(
+            body.error ?? `Upload failed for ${file.name} (${response.status})`,
+          );
+        }
+
+        const body = await response.json();
+        const item = body.item;
+        uploaded.push({
+          id: String(item.id),
+          title: item.title,
+          category: item.category,
+          date: String(item.created_at ?? "").slice(0, 10),
+          order: Number(item.sort_order),
+          src: item.cloudinaryUrl,
+          description: item.caption ?? undefined,
+          featured: Boolean(item.featured),
+        });
+      }
+
+      if (uploaded.length > 0) {
+        setPortfolio((prev) => [...prev, ...uploaded]);
+      }
+
+      addAudit({
+        activity: "Portfolio Bulk Upload",
+        description: `${uploaded.length} image${uploaded.length === 1 ? "" : "s"} uploaded to ${bulkCategory}`,
+        section: "Portfolio",
+        type: "create",
+      });
+
+      closeBulkUpload();
+    } catch (error) {
+      setBulkError(
+        error instanceof Error ? error.message : "Bulk upload failed.",
+      );
+    } finally {
+      setBulkSaving(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaveError("");
@@ -1036,6 +1151,10 @@ function PortfolioPage({
             </button>
           ))}
         </div>
+        <Btn variant="red" onClick={openBulkUpload}>
+          <Upload size={13} />
+          Bulk Upload
+        </Btn>
         <Btn variant="red" onClick={openAdd}>
           <Plus size={13} />
           Add Image
@@ -1255,6 +1374,94 @@ function PortfolioPage({
       </div>
 
       <Modal
+        open={isBulkUploadOpen}
+        onClose={closeBulkUpload}
+        title="Bulk Upload"
+        maxW="520px"
+      >
+        <div className="flex flex-col gap-5">
+          <FSelect
+            label="Category"
+            value={bulkCategory}
+            onChange={(e) => setBulkCategory(e.target.value)}
+          >
+            {effectiveCategoryOptions.map((c) => (
+              <option key={c} value={c} style={{ background: "#141414" }}>
+                {c}
+              </option>
+            ))}
+          </FSelect>
+
+          <div>
+            <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+              Images
+            </label>
+            <div
+              className="cursor-pointer rounded-lg border-2 border-dashed border-[#2a2a2a] p-4 transition-colors hover:border-zinc-600"
+              onClick={() => bulkFileRef.current?.click()}
+            >
+              <div className="flex flex-col items-center gap-3 text-center">
+                <Upload size={18} className="text-zinc-600" />
+                <div className="text-sm text-zinc-500">
+                  {bulkFiles.length > 0
+                    ? `${bulkFiles.length} file${bulkFiles.length === 1 ? "" : "s"} selected`
+                    : "Choose multiple images"}
+                </div>
+                <div className="text-xs text-zinc-700">
+                  JPG, PNG, WEBP
+                </div>
+              </div>
+            </div>
+            <input
+              ref={bulkFileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                const files = Array.from(e.target.files ?? []);
+                setBulkFiles(files);
+                setBulkError("");
+              }}
+            />
+          </div>
+
+          <Toggle
+            label="Featured Images"
+            value={bulkFeatured}
+            onChange={setBulkFeatured}
+          />
+
+          {bulkError && (
+            <div className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+              {bulkError}
+            </div>
+          )}
+
+          <div className="flex gap-3 border-t border-[#222] pt-3">
+            <Btn onClick={closeBulkUpload} className="flex-1 justify-center">
+              Cancel
+            </Btn>
+            <Btn
+              variant="red"
+              onClick={handleBulkUpload}
+              disabled={bulkSaving || bulkFiles.length === 0}
+              className="flex-1 justify-center"
+            >
+              {bulkSaving ? (
+                <>
+                  <LoaderCircle size={13} className="animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                "Upload Images"
+              )}
+            </Btn>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
         open={isAdding || !!editing}
         onClose={closeForm}
         title={isAdding ? "Add Image" : "Edit Image"}
@@ -1320,13 +1527,11 @@ function PortfolioPage({
               setForm((f) => ({ ...f, category: e.target.value }))
             }
           >
-            {categoryOptions
-              .filter((c) => c !== "All")
-              .map((c) => (
-                <option key={c} value={c} style={{ background: "#141414" }}>
-                  {c}
-                </option>
-              ))}
+            {effectiveCategoryOptions.map((c) => (
+              <option key={c} value={c} style={{ background: "#141414" }}>
+                {c}
+              </option>
+            ))}
           </FSelect>
 
           <FTextarea
@@ -3011,6 +3216,7 @@ export function FigmaAdmin({
               {section === "portfolio" && (
                 <PortfolioPage
                   portfolio={portfolio}
+                  packages={packages}
                   setPortfolio={setPortfolio}
                   addAudit={addAudit}
                 />
