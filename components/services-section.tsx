@@ -206,7 +206,7 @@ export function ServicesSection() {
         </motion.div>
       </div>
 
-      <BookingForm isOpen={bookingOpen} initialPackage={selectedPackage} onClose={() => setBookingOpen(false)} onSaved={() => { window.location.href = 'https://www.instagram.com/kcapturedvisuals' }} />
+      <BookingForm isOpen={bookingOpen} initialPackage={selectedPackage} onClose={() => setBookingOpen(false)} onSaved={() => setBookingOpen(false)} />
     </section>
   );
 }

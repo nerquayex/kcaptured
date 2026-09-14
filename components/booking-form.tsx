@@ -13,8 +13,10 @@ interface BookingFormProps {
   isOpen: boolean
   initialPackage?: string
   onClose: () => void
-  onSaved: () => void
+  onSaved?: () => void
 }
+
+const INSTAGRAM_DM_HANDLE = 'kcapturedvisuals'
 
 export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: BookingFormProps) {
   const [packages, setPackages] = useState<PackageOption[]>([])
@@ -23,14 +25,34 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
   const [savedMessage, setSavedMessage] = useState('')
+  const [savedSummary, setSavedSummary] = useState({ packageName: '', preferredDate: '' })
   const submittingRef = useRef(false)
   const requestKeyRef = useRef(crypto.randomUUID())
+
+  const formatDateLabel = (value: string) => {
+    if (!value) return 'a preferred date'
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return value
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(date)
+  }
+
+  const buildInstagramDmUrl = (selectedPackage: string, preferredDate: string) => {
+    const packageLabel = selectedPackage.trim() || 'a photography package'
+    const dateLabel = formatDateLabel(preferredDate)
+    const text = `Hi KCAPTURED, I'd like to book the ${packageLabel} package for ${dateLabel}. Please confirm availability.`
+    return `https://ig.me/m/${INSTAGRAM_DM_HANDLE}?text=${encodeURIComponent(text)}`
+  }
 
   useEffect(() => {
     if (!isOpen) return
     setPackageName(initialPackage)
     setSaved(false)
     setSavedMessage('')
+    setSavedSummary({ packageName: '', preferredDate: '' })
     setError('')
     requestKeyRef.current = crypto.randomUUID()
     fetch('/api/packages')
@@ -47,12 +69,13 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
     setError('')
     const formElement = event.currentTarget
     const form = new FormData(formElement)
+    const preferredDate = String(form.get('preferredDate') ?? '').trim()
     const body = {
       clientName: String(form.get('clientName') ?? '').trim(),
       email: String(form.get('email') ?? '').trim(),
       phone: String(form.get('phone') ?? '').trim(),
       packageName: packageName.trim(),
-      preferredDate: String(form.get('preferredDate') ?? '').trim(),
+      preferredDate,
       notes: String(form.get('notes') ?? '').trim(),
       idempotencyKey: requestKeyRef.current,
     }
@@ -118,16 +141,34 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
         return
       }
 
+      const summaryPackage = packageName.trim() || 'your selected package'
+      const summaryDate = preferredDate || 'a preferred date'
+      setSavedSummary({ packageName: summaryPackage, preferredDate: summaryDate })
       formElement.reset()
-      setSavedMessage(result.alreadyCreated ? 'Your booking request was already saved. We will review it and get back to you.' : 'Your booking request was saved successfully. We will review it and get back to you.')
+      setSavedMessage(
+        result.alreadyCreated
+          ? 'Your booking request was already saved. We will review it and get back to you.'
+          : 'Your booking request was created. We will contact you shortly.'
+      )
       setSaved(true)
     } catch (requestError) {
       console.error('[booking-form] booking request failed before a response was processed', requestError)
     } finally {
       submittingRef.current = false
       setSubmitting(false)
-      onSaved()
     }
+  }
+
+  const handleContinueOnSite = () => {
+    onSaved?.()
+    onClose()
+  }
+
+  const handleContinueInstagram = () => {
+    const dmUrl = buildInstagramDmUrl(savedSummary.packageName, savedSummary.preferredDate)
+    window.open(dmUrl, '_blank', 'noopener,noreferrer')
+    onSaved?.()
+    onClose()
   }
 
   if (!isOpen) return null
@@ -143,9 +184,17 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
         {saved ? (
           <div className="space-y-5 text-center">
             <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-5 text-emerald-200">
-              {savedMessage || 'Your booking request was saved successfully. Continue tto instagram to confirm Booking'}
+              <p className="font-medium">{savedMessage || 'Your booking request was created. We will contact you shortly.'}</p>
+              <p className="mt-2 text-sm text-emerald-100/90">
+                Booking: {savedSummary.packageName || 'Your selected package'} · {formatDateLabel(savedSummary.preferredDate)}
+              </p>
             </div>
-            <Button type="button" onClick={onSaved} className="w-full">Continue to Instagram</Button>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button type="button" variant="outline" onClick={handleContinueOnSite} className="w-full border-white/15 bg-white/5 text-white hover:bg-white/10">
+                Continue on site
+              </Button>
+              <Button type="button" onClick={handleContinueInstagram} className="w-full">Continue to Instagram DM</Button>
+            </div>
           </div>
         ) : <form onSubmit={handleSubmit} className="space-y-4">
           <div>
