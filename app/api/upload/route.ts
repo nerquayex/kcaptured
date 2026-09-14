@@ -20,7 +20,13 @@ function getAllowedCategories() {
   return (process.env.NEXT_PUBLIC_UPLOAD_CATEGORIES ?? "studio,lifestyle,event")
     .split(",")
     .map((item) => item.trim())
-    .filter((item) => /^[a-zA-Z0-9_-]+$/.test(item));
+    .filter((item) => /^[a-zA-Z0-9_ -]+$/.test(item));
+}
+
+function normalizePortfolioCategory(value: string) {
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed) return "uncategorized";
+  return trimmed.replace(/\s+/g, " ");
 }
 
 export async function POST(request: Request) {
@@ -321,16 +327,18 @@ export async function POST(request: Request) {
     });
   }
 
-  const normalizedCategory = allowedCategories.includes(category)
-    ? category
-    : "uncategorized";
+  const normalizedCategory = normalizePortfolioCategory(category);
+  const normalizedFolderCategory = normalizedCategory
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "uncategorized";
 
   let uploadResult: any;
   try {
     uploadResult = await new Promise<any>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: `portfolio/${normalizedCategory}`,
+          folder: `portfolio/${normalizedFolderCategory}`,
           resource_type: "image",
           context: { category: normalizedCategory },
           tags: [normalizedCategory, "portfolio-upload"],

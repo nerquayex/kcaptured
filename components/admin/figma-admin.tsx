@@ -1209,6 +1209,12 @@ function PortfolioPage({
   const effectiveCategoryOptions =
     packageCategoryOptions.length > 0 ? packageCategoryOptions : categories;
 
+  React.useEffect(() => {
+    if (category !== "All" && !categories.includes(category)) {
+      setCategory("All");
+    }
+  }, [category, categories]);
+
   const filtered = portfolio
     .filter((p) => category === "All" || p.category === category)
     .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));
