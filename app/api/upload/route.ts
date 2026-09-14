@@ -46,6 +46,7 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const fileEntry = formData.get("file");
+  const target = String(formData.get("target") ?? "portfolio");
   const category = String(formData.get("category") ?? "uncategorized");
   const title = String(formData.get("title") ?? "");
   const caption = formData.get("caption")
@@ -53,6 +54,108 @@ export async function POST(request: Request) {
     : null;
   const featured = formData.get("featured") === "true";
   const allowedCategories = getAllowedCategories();
+
+  if (target === "package") {
+    if (!(fileEntry instanceof File)) {
+      return new Response(JSON.stringify({ error: "No file provided" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!ALLOWED_MIME_TYPES.includes(fileEntry.type)) {
+      return new Response(JSON.stringify({ error: "Invalid file type" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (fileEntry.size > MAX_FILE_SIZE) {
+      return new Response(JSON.stringify({ error: "File too large" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    let uploadResult: any;
+    try {
+      uploadResult = await new Promise<any>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "packages",
+            resource_type: "image",
+            tags: ["package-upload", String(category || "package")],
+            transformation: [
+              {
+                width: 1200,
+                crop: "limit",
+                quality: "auto",
+                fetch_format: "auto",
+              },
+            ],
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+
+        fileEntry.arrayBuffer().then((buffer) => {
+          uploadStream.end(Buffer.from(buffer));
+        }, reject);
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : typeof error === "object" && error !== null && "message" in error
+            ? String((error as any).message)
+            : JSON.stringify(error);
+      await appendUploadLog({
+        type: "upload_error",
+        error: `Package Cloudinary upload failed: ${message}`,
+        fileName: fileEntry.name,
+        fileSize: fileEntry.size,
+        fileMimeType: fileEntry.type,
+        category,
+        ip,
+        userAgent,
+      });
+      return new Response(JSON.stringify({ error: "Image storage upload failed" }), {
+        status: 502,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (!uploadResult?.secure_url) {
+      return new Response(JSON.stringify({ error: "Upload failed" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    await appendUploadLog({
+      type: "upload_success",
+      fileName: fileEntry.name,
+      fileSize: fileEntry.size,
+      fileMimeType: fileEntry.type,
+      category: "package",
+      publicId: uploadResult.public_id,
+      url: uploadResult.secure_url,
+      ip,
+      userAgent,
+    });
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        url: uploadResult.secure_url,
+        publicId: uploadResult.public_id,
+        item: { sampleUrl: uploadResult.secure_url, cloudinaryUrl: uploadResult.secure_url },
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  }
 
   if (category === "client-uploads") {
     await appendUploadLog({

@@ -65,6 +65,7 @@ interface PackageItem {
   description?: string;
   duration?: string;
   images?: number;
+  sampleUrl?: string;
   features: string[];
   status: "active" | "inactive";
 }
@@ -1392,6 +1393,7 @@ const emptyPkgForm = () => ({
   description: "",
   duration: "",
   images: 0,
+  sampleUrl: "",
   features: "",
   status: "active" as "active" | "inactive",
 });
@@ -1411,9 +1413,14 @@ function PackagesPage({
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyPkgForm());
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const openAdd = () => {
     setForm(emptyPkgForm());
+    setPreviewUrl("");
+    setSelectedFile(null);
     setIsAdding(true);
   };
 
@@ -1426,18 +1433,31 @@ function PackagesPage({
       description: pkg.description ?? "",
       duration: pkg.duration ?? "",
       images: pkg.images ?? 0,
+      sampleUrl: pkg.sampleUrl ?? "",
       features: pkg.features.join("\n"),
       status: pkg.status,
     });
+    setPreviewUrl(pkg.sampleUrl ?? "");
+    setSelectedFile(null);
   };
 
   const closeForm = () => {
     setIsAdding(false);
     setEditing(null);
+    setPreviewUrl("");
+    setSelectedFile(null);
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
   };
 
   const adminHeaders = () => ({
     "Content-Type": "application/json",
+    Authorization: `Bearer ${window.sessionStorage.getItem("uploadToken") ?? ""}`,
+    "x-upload-source": "kc-upload",
+  });
+
+  const uploadHeaders = () => ({
     Authorization: `Bearer ${window.sessionStorage.getItem("uploadToken") ?? ""}`,
     "x-upload-source": "kc-upload",
   });
@@ -1449,22 +1469,54 @@ function PackagesPage({
         .split("\n")
         .map((f) => f.trim())
         .filter(Boolean);
+
+      const packageId = editing?.id ?? crypto.randomUUID();
+      let sampleUrl = form.sampleUrl || undefined;
+
+      if (selectedFile) {
+        const uploadData = new FormData();
+        uploadData.append("file", selectedFile);
+        uploadData.append("target", "package");
+        uploadData.append("category", form.category);
+        uploadData.append("title", form.name);
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers: uploadHeaders(),
+          body: uploadData,
+        });
+        if (!uploadResponse.ok) {
+          const uploadBody = await uploadResponse.json().catch(() => ({}));
+          throw new Error(uploadBody.error ?? `Upload failed (${uploadResponse.status})`);
+        }
+        const uploadBody = await uploadResponse.json();
+        sampleUrl = uploadBody.url ?? uploadBody.sampleUrl ?? uploadBody.item?.sampleUrl ?? undefined;
+        if (!sampleUrl) {
+          throw new Error("Image upload succeeded but no Cloudinary URL was returned.");
+        }
+      }
+
+      const payload = {
+        id: packageId,
+        category: form.category,
+        name: form.name,
+        price: form.price,
+        duration: form.duration,
+        description: form.description,
+        editedImages: form.images,
+        features,
+        sampleUrl,
+        active: form.status === "active",
+      };
+
       const response = await fetch("/api/package", {
         method: isAdding ? "POST" : "PATCH",
         headers: adminHeaders(),
-        body: JSON.stringify({
-          id: editing?.id ?? crypto.randomUUID(),
-          category: form.category,
-          name: form.name,
-          price: form.price,
-          duration: form.duration,
-          description: form.description,
-          editedImages: form.images,
-          features,
-          active: form.status === "active",
-        }),
+        body: JSON.stringify(payload),
       });
-      if (!response.ok) return;
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error ?? `Save failed (${response.status})`);
+      }
       const body = await response.json();
       const item = body.item;
       const mapped = {
@@ -1476,6 +1528,7 @@ function PackagesPage({
         description: item.description ?? undefined,
         images:
           item.edited_images == null ? undefined : Number(item.edited_images),
+        sampleUrl: item.sample_url ?? item.sampleUrl ?? undefined,
         features: Array.isArray(item.features) ? item.features : [],
         status: item.active ? ("active" as const) : ("inactive" as const),
       };
@@ -1491,6 +1544,10 @@ function PackagesPage({
         type: isAdding ? "create" : "edit",
       });
       closeForm();
+    } catch (error) {
+      console.error("Failed to save package", error);
+      const message = error instanceof Error ? error.message : "Save failed";
+      alert(message);
     } finally {
       setSaving(false);
     }
@@ -1577,6 +1634,16 @@ function PackagesPage({
                     </div>
                   </div>
                 </div>
+
+                {pkg.sampleUrl && (
+                  <div className="overflow-hidden rounded border border-[#222] bg-[#0d0d0d]">
+                    <img
+                      src={pkg.sampleUrl}
+                      alt={pkg.name}
+                      className="h-28 w-full object-cover"
+                    />
+                  </div>
+                )}
 
                 <div className="flex gap-4">
                   <div>
@@ -1677,6 +1744,48 @@ function PackagesPage({
             }
             placeholder="0"
           />
+
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+              Package Image
+            </label>
+            <div className="flex items-center gap-3">
+              <Btn
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                size="xs"
+              >
+                <Upload size={12} />
+                Choose Image
+              </Btn>
+              <span className="text-xs text-zinc-500">
+                {selectedFile ? selectedFile.name : "No file selected"}
+              </span>
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                setSelectedFile(file);
+                if (file) {
+                  setPreviewUrl(URL.createObjectURL(file));
+                }
+              }}
+            />
+            {(previewUrl || form.sampleUrl) && (
+              <div className="overflow-hidden rounded border border-[#2a2a2a] bg-[#0d0d0d]">
+                <img
+                  src={previewUrl || form.sampleUrl || ""}
+                  alt="Package preview"
+                  className="h-40 w-full object-cover"
+                />
+              </div>
+            )}
+          </div>
+
           <FTextarea
             label="Description"
             value={form.description}
