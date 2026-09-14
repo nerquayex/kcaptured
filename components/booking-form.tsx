@@ -40,11 +40,18 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
     }).format(date)
   }
 
-  const buildInstagramDmUrl = (selectedPackage: string, preferredDate: string) => {
+  const buildInstagramMessage = (selectedPackage: string, preferredDate: string) => {
     const packageLabel = selectedPackage.trim() || 'a photography package'
     const dateLabel = formatDateLabel(preferredDate)
-    const text = `Hi KCAPTURED, I'd like to book the ${packageLabel} package for ${dateLabel}. Please confirm availability.`
-    return `https://ig.me/m/${INSTAGRAM_DM_HANDLE}?text=${encodeURIComponent(text)}`
+    return `Hi KCAPTURED, I'd like to book the ${packageLabel} package for ${dateLabel}. Please confirm availability.`
+  }
+
+  const buildInstagramDmUrl = (selectedPackage: string, preferredDate: string) => {
+    const message = buildInstagramMessage(selectedPackage, preferredDate)
+    return {
+      dmUrl: `https://ig.me/m/${INSTAGRAM_DM_HANDLE}`,
+      message,
+    }
   }
 
   useEffect(() => {
@@ -164,8 +171,17 @@ export function BookingForm({ isOpen, initialPackage = '', onClose, onSaved }: B
     onClose()
   }
 
-  const handleContinueInstagram = () => {
-    const dmUrl = buildInstagramDmUrl(savedSummary.packageName, savedSummary.preferredDate)
+  const handleContinueInstagram = async () => {
+    const { dmUrl, message } = buildInstagramDmUrl(savedSummary.packageName, savedSummary.preferredDate)
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(message)
+      }
+    } catch (error) {
+      console.warn('[booking-form] clipboard copy failed', error)
+    }
+
     window.open(dmUrl, '_blank', 'noopener,noreferrer')
     onSaved?.()
     onClose()
