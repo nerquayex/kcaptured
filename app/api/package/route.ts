@@ -19,8 +19,14 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { id, category, name, duration, price, features, sampleUrl, description, editedImages } = body as any
-    if (!id || !category || !name) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    if (!id) {
+      return new Response(JSON.stringify({ error: 'Missing required field: id' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    }
+    if (!category) {
+      return new Response(JSON.stringify({ error: 'Missing required field: category' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    }
+    if (!name) {
+      return new Response(JSON.stringify({ error: 'Missing required field: name' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
     }
 
     const sql = `INSERT INTO packages (id, category, name, duration, price, features, description, edited_images, sample_url, sort_order, active, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11, now(), now()) RETURNING *`
@@ -33,8 +39,10 @@ export async function POST(request: Request) {
 
     return new Response(JSON.stringify({ success: true, item: row }), { status: 200, headers: { 'Content-Type': 'application/json' } })
   } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err)
     console.error('[package][POST] error', err)
-    return new Response(JSON.stringify({ error: 'Create failed' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    await appendUploadLog({ type: 'upload_error', error: `Create failed: ${errorMsg}`, ip, userAgent })
+    return new Response(JSON.stringify({ error: 'Create failed', details: errorMsg }), { status: 500, headers: { 'Content-Type': 'application/json' } })
   }
 }
 
@@ -53,7 +61,9 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json()
     const { id, category, name, duration, price, features, sampleUrl, active, description, editedImages } = body as any
-    if (!id) return new Response(JSON.stringify({ error: 'Missing id' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    if (!id) {
+      return new Response(JSON.stringify({ error: 'Missing required field: id' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    }
 
     const sets = []
     const vals = []
@@ -68,7 +78,9 @@ export async function PATCH(request: Request) {
     if (sampleUrl !== undefined) { sets.push(`sample_url = $${idx++}`); vals.push(sampleUrl) }
     if (active !== undefined) { sets.push(`active = $${idx++}`); vals.push(Boolean(active)) }
 
-    if (sets.length === 0) return new Response(JSON.stringify({ error: 'No fields provided' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    if (sets.length === 0) {
+      return new Response(JSON.stringify({ error: 'No fields provided to update' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+    }
 
     vals.push(id)
     const sql = `UPDATE packages SET ${sets.join(', ')}, updated_at = now() WHERE id = $${idx} RETURNING *`
@@ -79,7 +91,9 @@ export async function PATCH(request: Request) {
 
     return new Response(JSON.stringify({ success: true, item: row }), { status: 200, headers: { 'Content-Type': 'application/json' } })
   } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err)
     console.error('[package][PATCH] error', err)
-    return new Response(JSON.stringify({ error: 'Update failed' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    await appendUploadLog({ type: 'upload_error', error: `Update failed: ${errorMsg}`, ip, userAgent })
+    return new Response(JSON.stringify({ error: 'Update failed', details: errorMsg }), { status: 500, headers: { 'Content-Type': 'application/json' } })
   }
 }
