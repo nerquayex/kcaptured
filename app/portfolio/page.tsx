@@ -52,8 +52,18 @@ export default async function PortfolioPage() {
     <div className="min-h-screen bg-black text-white">
       <Header />
 
-      <main className="pt-8 pb-16 md:pt-12 md:pb-24 bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main>
+        <section
+          className="pt-8 pb-16 md:pt-12 md:pb-24 relative"
+          style={{
+            backgroundImage: 'url(https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718667/2W1A9540__2_pniw8h.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }}
+        >
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-xl text-gray-300">
               A selection of our recent work
@@ -65,6 +75,7 @@ export default async function PortfolioPage() {
 
           <MasonryGallery images={images} />
         </div>
+        </section>
       </main>
 
       <Footer />

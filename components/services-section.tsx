@@ -57,16 +57,7 @@ export function ServicesSection() {
   };
 
   return (
-    <section
-      className="py-16 md:py-24 relative"
-      style={{
-        backgroundImage: 'url(https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773520574/kcompressed_iul9zi.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
-      <div className="absolute inset-0 bg-black/80" />
+    <section className="py-16 md:py-24 relative bg-[#951025]">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

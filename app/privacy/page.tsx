@@ -1,5 +1,7 @@
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import RandomBg from '@/components/random-bg';
+import { portfolioImages } from '@/lib/portfolio-data';
 
 export const metadata = {
   title: 'Privacy Policy | KCAPTURED',
@@ -8,17 +10,36 @@ export const metadata = {
 };
 
 export default function PrivacyPolicyPage() {
+  // pick two random studio images to include with the current privacy image
+  const studioImages = portfolioImages.filter((p) => p.category === 'studio').map((p) => p.cloudinaryUrl);
+  // pick two distinct random indexes
+  const pickTwo = () => {
+    const copy = [...studioImages];
+    const picks: string[] = [];
+    for (let i = 0; i < 2 && copy.length > 0; i++) {
+      const idx = Math.floor(Math.random() * copy.length);
+      picks.push(copy[idx]);
+      copy.splice(idx, 1);
+    }
+    return picks;
+  };
+
+  const privacyImage = 'https://res.cloudinary.com/dla5ebx4j/image/upload/f_auto,q_auto,w_1200/v1789440169/portfolio/studio/v0qmirepcdjst1tnxbgr.jpg';
+  const randomPair = pickTwo();
+  const bgSet = [privacyImage, ...randomPair];
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
       <Header />
 
-      <main className="py-16 md:py-24">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-10 shadow-2xl shadow-black/20">
-            <h1 className="text-4xl font-semibold mb-6">Privacy Policy</h1>
-            <p className="text-gray-300 mb-6">
-              KCAPTURED Productions is committed to protecting your privacy. This policy explains what information we collect, how we use it, and the choices you have.
-            </p>
+      <main>
+        <RandomBg images={bgSet} className="py-16 md:py-24">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-10 shadow-2xl shadow-black/20">
+              <h1 className="text-4xl font-semibold mb-6">Privacy Policy</h1>
+              <p className="text-gray-300 mb-6">
+                KCAPTURED Productions is committed to protecting your privacy. This policy explains what information we collect, how we use it, and the choices you have.
+              </p>
 
             <section className="mb-6">
               <h2 className="text-2xl font-semibold mb-3">Information We Collect</h2>
@@ -62,7 +83,8 @@ export default function PrivacyPolicyPage() {
               </p>
             </section>
           </div>
-        </div>
+          </div>
+        </RandomBg>
       </main>
 
       <Footer />

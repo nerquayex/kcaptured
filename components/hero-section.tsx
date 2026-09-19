@@ -52,7 +52,8 @@ export function HeroSection() {
   const imageUrl = 'https://res.cloudinary.com/dq4tkpuu4/image/upload/v1781263118/IMG_5187_hdozar.jpg';
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-red -mt-16">
+    <>
+      <section ref={sectionRef} className="relative overflow-hidden bg-red -mt-16">
       <img
         src={imageUrl}
         alt="Hero"
@@ -61,22 +62,25 @@ export function HeroSection() {
 
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40" />
 
-      <div className="fixed inset-0 z-10 flex items-center justify-center px-4 py-24 text-center pointer-events-none" style={{ opacity: labelOpacity }}>
+      </section>
+
+      <div className="fixed inset-0 z-10 flex items-center justify-center px-4 py-24 pointer-events-none" style={{ opacity: labelOpacity }}>
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="max-w-4xl mx-auto text-white"
+          className="max-w-5xl w-full mx-auto px-4 text-white flex justify-center"
         >
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight transparent-lx"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight whitespace-normal max-w-[80vw] mx-auto text-center"
+            style={{ color: 'transparent', WebkitTextStroke: '1.2px white', textStroke: '1.2px white', display: 'inline-block' }}
           >
-             KCAPTURED VISUALS
+            KCAPTURED VISUALS
           </motion.h1>
 
         </motion.div>
       </div>
-    </section>
+    </>
   );
 }

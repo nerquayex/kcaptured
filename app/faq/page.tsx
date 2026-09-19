@@ -23,9 +23,16 @@ export default function FAQPage() {
       <main>
         {/* FAQ Section */}
         <section
-          className="py-16 md:py-24 bg-black bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_18%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.04),transparent_22%)]"
+          className="py-16 md:py-24 relative"
+          style={{
+            backgroundImage: 'url(https://res.cloudinary.com/dla5ebx4j/image/upload/f_auto,q_auto,w_1200/v1789440180/portfolio/studio/tphc5efwb1zmg7ewx5yb.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }}
         >
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_40px_120px_-80px_rgba(255,255,255,0.18)] backdrop-blur-xl">
               {/* Page Header */}
               <div className="text-center mb-16">
