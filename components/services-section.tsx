@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState } from 'react'
-import Image from 'next/image';
 import type { Service } from '@/lib/services-data';
 import { Grid, List } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -16,7 +15,7 @@ export function ServicesSection() {
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
+  const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('list');
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('');
   const { scrollYProgress } = useScroll({
@@ -51,22 +50,6 @@ export function ServicesSection() {
     })()
     return () => { mounted = false }
   }, [])
-
-  // Default to list view on large screens and respond to breakpoint changes
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(min-width: 1024px)');
-    const apply = () => setDisplayMode(mq.matches ? 'list' : 'grid');
-    apply();
-    // prefer addEventListener for modern browsers
-    if (mq.addEventListener) {
-      mq.addEventListener('change', apply);
-      return () => mq.removeEventListener('change', apply);
-    }
-    // fallback
-    mq.addListener(apply);
-    return () => mq.removeListener(apply);
-  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -243,18 +226,23 @@ export function ServicesSection() {
               >
                 <div className={isList ? 'lg:flex-1' : ''}>
                   <div
-                    className={`grid items-center ${isList ? 'gap-6 grid-cols-1 lg:grid-cols-[1fr_50%]' : 'gap-4'}`}
+                    className={`grid items-start ${
+                      isList
+                        ? hasImage
+                          ? 'grid-cols-1 gap-6 lg:grid-cols-[1fr_50%]'
+                          : 'grid-cols-1'
+                        : 'gap-4'
+                    }`}
                   >
                     {hasImage && !isList && (
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black sm:rounded-2xl">
-                        <Image
+                      <div className="overflow-hidden rounded-xl border border-white/10 bg-black sm:rounded-2xl">
+                        <img
                           src={optimizeCloudinaryUrl(service.sampleUrl!)}
                           alt={service.name}
-                          fill
-                          sizes="(max-width: 1024px) 50vw, 25vw"
-                          priority={index < 4}
-                          unoptimized
-                          className="object-cover object-center"
+                          loading={index < 4 ? 'eager' : 'lazy'}
+                          fetchPriority={index < 4 ? 'high' : 'auto'}
+                          decoding="async"
+                          className="h-auto w-full"
                         />
                       </div>
                     )}
@@ -292,15 +280,14 @@ export function ServicesSection() {
                     </div>
 
                     {hasImage && isList && (
-                      <div className="relative w-full h-64 lg:h-[720px] overflow-hidden rounded-[32px] border border-white/10 bg-black">
-                        <Image
+                      <div className="w-full overflow-hidden rounded-[32px] border border-white/10 bg-black">
+                        <img
                           src={optimizeCloudinaryUrl(service.sampleUrl!)}
                           alt={service.name}
-                          fill
-                          sizes="(min-width:1024px) 45vw, 100vw"
-                          priority={index < 2}
-                          unoptimized
-                          className="object-contain"
+                          loading={index < 2 ? 'eager' : 'lazy'}
+                          fetchPriority={index < 2 ? 'high' : 'auto'}
+                          decoding="async"
+                          className="h-auto w-full"
                         />
                       </div>
                     )}
