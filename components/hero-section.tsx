@@ -1,31 +1,21 @@
 'use client';
 
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [labelOpacity, setLabelOpacity] = useState(1);
-  const { scrollY } = useScroll();
-  const [sectionHeight, setSectionHeight] = useState(0);
-
-  useEffect(() => {
-    const updateHeight = () => {
-      if (sectionRef.current) {
-        setSectionHeight(sectionRef.current.offsetHeight);
-      }
-    };
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
-
-  useMotionValueEvent(scrollY, 'change', (latest) => {
-    if (sectionHeight > 0) {
-      const opacity = Math.max(0, 1 - latest / (sectionHeight * 0.8));
-      setLabelOpacity(opacity);
-    }
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
   });
+  const imageY = useTransform(scrollYProgress, [0, 1], [0, 56]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.35]);
+  const labelOpacity = useTransform(scrollYProgress, [0, 0.62, 0.86], [1, 0.72, 0]);
+  const labelY = useTransform(scrollYProgress, [0, 1], [0, -96]);
+  const labelScale = useTransform(scrollYProgress, [0, 1], [1, 0.88]);
+  const curtainY = useTransform(scrollYProgress, [0, 1], ['18%', '-28%']);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -51,18 +41,35 @@ export function HeroSection() {
 
   return (
     <>
-      <section ref={sectionRef} className="relative overflow-hidden bg-red -mt-16">
-      <img
-        src={imageUrl}
-        alt="Hero"
-        className="block w-full h-auto object-contain select-none pointer-events-none"
-      />
+      <section ref={sectionRef} className="relative -mt-16 overflow-hidden bg-[#951025]">
+        <motion.img
+          src={imageUrl}
+          alt="Hero"
+          className="block w-full h-auto origin-center object-contain select-none pointer-events-none will-change-transform"
+          style={{ y: imageY, scale: imageScale }}
+        />
 
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40" />
-
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40"
+          style={{ opacity: overlayOpacity }}
+        />
+        <motion.div
+          className="absolute inset-x-0 -bottom-1 h-48 bg-gradient-to-b from-transparent via-[#951025]/75 to-[#951025]"
+          style={{ y: curtainY }}
+        />
+        <motion.div
+          className="absolute inset-x-0 bottom-0 h-20 origin-bottom bg-[#951025]"
+          initial={{ scaleY: 0 }}
+          whileInView={{ scaleY: 1 }}
+          viewport={{ once: false, amount: 0.15 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        />
       </section>
 
-      <div className="fixed inset-0 z-10 flex items-center justify-center px-4 py-24 pointer-events-none" style={{ opacity: labelOpacity }}>
+      <motion.div
+        className="fixed inset-0 z-10 flex items-center justify-center px-4 py-24 pointer-events-none will-change-transform"
+        style={{ opacity: labelOpacity, y: labelY, scale: labelScale }}
+      >
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -78,7 +85,7 @@ export function HeroSection() {
           </motion.h1>
 
         </motion.div>
-      </div>
+      </motion.div>
     </>
   );
 }

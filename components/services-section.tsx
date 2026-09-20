@@ -1,19 +1,26 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import type { Service } from '@/lib/services-data';
-import { CheckCircle, Grid, List } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Grid, List } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { BookingForm } from '@/components/booking-form';
 
 export function ServicesSection() {
   const MotionButton = motion.create(Button);
+  const sectionRef = useRef<HTMLElement>(null);
   const [services, setServices] = useState<Service[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('');
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'start start'],
+  });
+  const topRuleScale = useTransform(scrollYProgress, [0.18, 1], [0, 1]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [-48, 18]);
 
   const filteredServices = selectedCategory === 'all'
     ? services
@@ -57,12 +64,24 @@ export function ServicesSection() {
   };
 
   return (
-    <section className="py-16 md:py-24 relative bg-[#951025]">
+    <motion.section
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#951025] py-16 md:py-24"
+    >
+      <motion.div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px origin-left bg-white/70"
+        style={{ scaleX: topRuleScale }}
+      />
+      <motion.div
+        className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(149,16,37,0))]"
+        style={{ y: glowY }}
+      />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 36, scale: 0.96 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.45 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-10"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-3">
@@ -73,7 +92,13 @@ export function ServicesSection() {
           </p>
         </motion.div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-10">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.4 }}
+          transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-10"
+        >
           <div className="flex flex-wrap gap-2 sm:gap-3">
             {[
               { label: 'All Services', value: 'all' },
@@ -85,7 +110,7 @@ export function ServicesSection() {
               <MotionButton
                 key={cat.value}
                 onClick={() => setSelectedCategory(cat.value)}
-                whileHover={{ scale: 1.03 }}
+                whileHover={{ scale: 1.06, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 className={`px-4 py-2 text-sm font-medium rounded-full transition-all border ${
                   selectedCategory === cat.value
@@ -124,7 +149,7 @@ export function ServicesSection() {
               <List size={18} />
             </button>
           </div>
-        </div>
+        </motion.div>
 
         <motion.div
           key={`${selectedCategory}-${displayMode}`}
@@ -142,6 +167,8 @@ export function ServicesSection() {
               <motion.div
                 key={service.id}
                 variants={itemVariants}
+                whileHover={{ y: -6, scale: 1.01 }}
+                transition={{ duration: 0.3 }}
                 className={`rounded-[32px] border border-white/10 bg-black/70 backdrop-blur-xl transition-shadow hover:shadow-[0_0_60px_rgba(255,255,255,0.12)] p-6 ${
                   isList ? 'lg:flex lg:items-start lg:gap-6' : ''
                 }`}
@@ -198,6 +225,6 @@ export function ServicesSection() {
       </div>
 
       <BookingForm isOpen={bookingOpen} initialPackage={selectedPackage} onClose={() => setBookingOpen(false)} onSaved={() => setBookingOpen(false)} />
-    </section>
+    </motion.section>
   );
 }
