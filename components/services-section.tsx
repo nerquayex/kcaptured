@@ -292,7 +292,7 @@ export function ServicesSection() {
                     </div>
 
                     {hasImage && isList && (
-                      <div className="relative w-full h-[440px] overflow-hidden rounded-[32px] border border-white/10 bg-black">
+                      <div className="relative w-full h-64 lg:h-[720px] overflow-hidden rounded-[32px] border border-white/10 bg-black">
                         <Image
                           src={optimizeCloudinaryUrl(service.sampleUrl!)}
                           alt={service.name}
@@ -300,7 +300,7 @@ export function ServicesSection() {
                           sizes="(min-width:1024px) 45vw, 100vw"
                           priority={index < 2}
                           unoptimized
-                          className="object-cover"
+                          className="object-contain"
                         />
                       </div>
                     )}

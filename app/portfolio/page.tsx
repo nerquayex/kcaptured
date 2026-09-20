@@ -48,21 +48,32 @@ export default async function PortfolioPage() {
     console.error("[portfolio] failed to load portfolio items", error);
   }
 
+  // load settings to determine portfolio view mode
+  let portfolioView = 'current';
+  try {
+    const settingsRes = await pool.query('SELECT portfolio_view FROM site_settings WHERE id = $1', ['site-settings']);
+    if (settingsRes.rows[0] && settingsRes.rows[0].portfolio_view) {
+      portfolioView = settingsRes.rows[0].portfolio_view;
+    }
+  } catch (err) {
+    console.error('[portfolio] failed to load settings', err);
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
 
       <main>
         <section
-          className="pt-8 pb-16 md:pt-12 md:pb-24 relative"
+          className="pt-8 pb-16 md:pt-12 md:pb-24 relative bg-[#e63143]"
           style={{
-            backgroundImage: 'url(https://res.cloudinary.com/dla5ebx4j/image/upload/q_auto/f_auto/v1781718667/2W1A9540__2_pniw8h.png)',
+            backgroundImage: 'url(https://res.cloudinary.com/dla5ebx4j/image/upload/f_auto,q_auto,w_1200/v1781717926/2W1A9136__2_y6lin6.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
           }}
         >
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-black/50" />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-xl text-gray-300">
@@ -73,7 +84,7 @@ export default async function PortfolioPage() {
             </h1>
           </div>
 
-          <MasonryGallery images={images} />
+          <MasonryGallery images={images} mode={portfolioView === 'masonry' ? 'masonry' : 'current'} />
         </div>
         </section>
       </main>

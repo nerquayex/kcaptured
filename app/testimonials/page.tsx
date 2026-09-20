@@ -14,8 +14,9 @@ export default function TestimonialsPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
-      <main className="py-16 md:py-24 bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="py-16 md:py-24 relative" style={{ backgroundImage: 'url(https://res.cloudinary.com/dla5ebx4j/image/upload/f_auto,q_auto,w_1200/v1781717926/2W1A9136__2_y6lin6.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-xl text-gray-300">Hear directly from our clients</p>
             <h1 className="mt-4 text-4xl font-semibold text-white">Testimonials</h1>

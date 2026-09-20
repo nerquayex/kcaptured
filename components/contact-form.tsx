@@ -178,7 +178,7 @@ export function ContactForm() {
               className="rounded-none border-0 bg-[#c0392b] px-7 py-3 text-[11px] font-medium uppercase tracking-[0.18em] text-white hover:bg-[#a93226] disabled:bg-[#c0392b]/40"
             >
               <Mail size={16} />
-              {isSubmitting ? 'Sending' : 'Send'}
+              {isSubmitting ? 'Sending' : 'Send Message '}
             </Button>
           </div>
         </form>
@@ -203,7 +203,8 @@ export function ContactForm() {
         <img
           src={aboutImageUrl}
           alt="KCAPTURED portrait"
-          className="h-full w-full object-cover object-center"
+          className="h-full w-full object-cover"
+          style={{ objectPosition: '40% center' }}
         />
         <div className="absolute inset-0 bg-black/15" />
       </motion.div>
@@ -224,7 +225,8 @@ export function ContactForm() {
           <img
             src={aboutImageUrl}
             alt="KCAPTURED portrait"
-            className="h-full w-full object-cover object-center"
+            className="h-full w-full object-cover"
+            style={{ objectPosition: '40% center' }}
           />
           <div className="absolute inset-0 bg-[#0c0c0c]/85" />
         </motion.div>

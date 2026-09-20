@@ -3535,6 +3535,8 @@ function SettingsPage({
     bookingEmail: "",
     bookingMessage: "",
     maxBookings: "10",
+    heroLabel: 'KCAPTURED VISUALS',
+    portfolioView: 'current',
   });
 
   useEffect(() => {
@@ -3549,7 +3551,7 @@ function SettingsPage({
         if (!response.ok) throw new Error(body.error);
         return body;
       })
-      .then((settings) =>
+        .then((settings) =>
         setForm((current) => ({
           ...current,
           studioName: settings.studioName,
@@ -3558,6 +3560,8 @@ function SettingsPage({
           instagram: settings.instagramHandle ?? "",
           bookingEmail: settings.bookingEmail ?? "",
           maxBookings: String(settings.maxConcurrentBookings ?? 10),
+          heroLabel: settings.heroLabel ?? 'KCAPTURED VISUALS',
+          portfolioView: settings.portfolioView ?? 'current',
         })),
       )
       .catch((loadError) =>
@@ -3589,6 +3593,8 @@ function SettingsPage({
           instagramHandle: form.instagram,
           bookingEmail: form.bookingEmail,
           maxConcurrentBookings: form.maxBookings,
+          heroLabel: form.heroLabel,
+          portfolioView: form.portfolioView,
         }),
       });
     } catch {
@@ -3663,6 +3669,22 @@ function SettingsPage({
                   setForm((f) => ({ ...f, bookingEmail: e.target.value }))
                 }
               />
+              <FInput
+                label="Hero Label"
+                value={form.heroLabel}
+                onChange={(e) => setForm((f) => ({ ...f, heroLabel: e.target.value }))}
+              />
+              <div>
+                <label className="block mb-2 text-sm font-medium">Portfolio View</label>
+                <select
+                  value={form.portfolioView}
+                  onChange={(e) => setForm((f) => ({ ...f, portfolioView: e.target.value }))}
+                  className="w-full rounded-md border bg-transparent px-3 py-2"
+                >
+                  <option value="current">Current (default)</option>
+                  <option value="masonry">Masonry (no gaps)</option>
+                </select>
+              </div>
             </div>
           </SectionCard>
 

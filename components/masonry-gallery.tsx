@@ -9,9 +9,10 @@ import { Button } from '@/components/ui/button';
 
 interface MasonryGalleryProps {
   images: PortfolioImage[]
+  mode?: 'current' | 'masonry'
 }
 
-export function MasonryGallery({ images }: MasonryGalleryProps) {
+export function MasonryGallery({ images, mode = 'current' }: MasonryGalleryProps) {
   const MotionButton = motion.create(Button);
 
   const categoryOrder = ['lifestyle', 'studio', 'event', 'portrait', 'graduation'];
@@ -80,29 +81,49 @@ export function MasonryGallery({ images }: MasonryGalleryProps) {
         ))}
       </div>
 
-      {/* Grid */}
+      {/* Grid or Masonry */}
       {orderedImages.length === 0 ? (
         <div className="py-16 text-center text-sm text-gray-400">No portfolio images available.</div>
-      ) : (
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
-        {orderedImages.map((image) => (
-          <div key={image.id} className="overflow-hidden w-full max-w-[398px]">
-            <div className="relative w-full aspect-[319/398] overflow-hidden bg-black">
-              {image.cloudinaryUrl ? (
-                <Image
-                  src={optimizeCloudinaryUrl(image.cloudinaryUrl)}
-                  alt={image.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  priority={orderedImages.indexOf(image) < 3}
-                  unoptimized
-                  className="object-cover object-center transition-transform duration-300 hover:scale-105"
-                />
-              ) : null}
+      ) : mode === 'masonry' ? (
+        <div className="masonry-columns gap-4">
+          {orderedImages.map((image) => (
+            <div key={image.id} className="masonry-item overflow-hidden">
+              <div className="relative w-full" style={{ paddingBottom: `${(image.height / image.width) * 100}%` }}>
+                {image.cloudinaryUrl ? (
+                  <Image
+                    src={optimizeCloudinaryUrl(image.cloudinaryUrl)}
+                    alt={image.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority={orderedImages.indexOf(image) < 3}
+                    unoptimized
+                    className="object-cover object-center transition-transform duration-300 hover:scale-105"
+                  />
+                ) : null}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
+          {orderedImages.map((image) => (
+            <div key={image.id} className="overflow-hidden w-full max-w-[398px]">
+              <div className="relative w-full aspect-[319/398] overflow-hidden bg-black">
+                {image.cloudinaryUrl ? (
+                  <Image
+                    src={optimizeCloudinaryUrl(image.cloudinaryUrl)}
+                    alt={image.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority={orderedImages.indexOf(image) < 3}
+                    unoptimized
+                    className="object-cover object-center transition-transform duration-300 hover:scale-105"
+                  />
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </>
   );

@@ -71,6 +71,8 @@ export const siteSettings = pgTable('site_settings', {
 	instagram_handle: text('instagram_handle'),
 	booking_email: text('booking_email'),
 	max_concurrent_bookings: integer('max_concurrent_bookings').notNull().default(10),
+	hero_label: text('hero_label'),
+	portfolio_view: text('portfolio_view'),
 	created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 	updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })

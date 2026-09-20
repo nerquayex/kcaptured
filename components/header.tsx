@@ -54,8 +54,30 @@ export function Header() {
     return pathname === href;
   };
 
+  useEffect(() => {
+    // Observe the contact section so we can update activeHash while scrolling
+    const contactEl = typeof document !== 'undefined' ? document.getElementById('contact') : null;
+    if (!contactEl) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveHash('#contact');
+          } else if (window.location.hash === '#contact') {
+            setActiveHash('');
+          }
+        });
+      },
+      { root: null, rootMargin: '0px 0px -40% 0px', threshold: [0.25, 0.5] }
+    );
+
+    io.observe(contactEl);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 md:bg-transparent md:backdrop-blur-lg md:border-b md:border-transparent">
+    <header className="sticky top-0 z-50 bg-transparent backdrop-blur-lg border-b border-transparent">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">

@@ -1,14 +1,31 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export function HeroSection() {
+  const [heroLabel, setHeroLabel] = useState('KCAPTURED VISUALS');
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
   });
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/settings');
+        if (!res.ok) return;
+        const body = await res.json();
+        if (mounted && body?.heroLabel) setHeroLabel(body.heroLabel);
+      } catch {
+        // ignore
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
   const imageY = useTransform(scrollYProgress, [0, 1], [0, 56]);
   const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
   const overlayOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.35]);
@@ -81,7 +98,7 @@ export function HeroSection() {
             className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight whitespace-normal max-w-[80vw] mx-auto text-center kcv-heading"
             style={{ color: 'transparent', display: 'inline-block' }}
           >
-            KCAPTURED VISUALS
+            {heroLabel}
           </motion.h1>
 
         </motion.div>
