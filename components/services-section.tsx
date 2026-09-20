@@ -166,7 +166,7 @@ export function ServicesSection() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className={displayMode === 'grid' ? 'grid grid-cols-2 gap-3 sm:gap-5 lg:gap-6' : 'flex flex-col gap-6'}
+          className={displayMode === 'grid' ? 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6' : 'flex flex-col gap-6'}
         >
           {loading ? (
             skeletonItems.map((_, idx) => (
@@ -247,29 +247,39 @@ export function ServicesSection() {
                       </div>
                     )}
 
-                    <div className={isList ? 'space-y-4' : 'space-y-3'}>
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className={isList ? 'text-2xl font-bold text-white' : 'text-xl font-bold text-white sm:text-2xl'}>${service.price}</p>
-                      </div>
+                    <div className={isList ? 'space-y-4' : 'space-y-2.5'}>
+                      {isList ? (
+                        <>
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <p className="text-2xl font-bold text-white">${service.price}</p>
+                          </div>
 
-                      <div>
-                        <h3 className={isList ? 'text-3xl font-semibold text-white mb-2' : 'text-xl font-semibold leading-tight text-white sm:text-2xl'}>{service.name}</h3>
-                        <p className="text-sm text-gray-300">{service.duration}</p>
-                      </div>
+                          <div>
+                            <h3 className="text-3xl font-semibold text-white mb-2">{service.name}</h3>
+                            <p className="text-sm text-gray-300">{service.duration}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                          <h3 className="text-base font-semibold leading-tight text-white sm:text-lg">{service.name}</h3>
+                          <p className="text-base font-bold leading-tight text-white sm:text-lg">${service.price}</p>
+                          <p className="text-[11px] leading-tight text-gray-400 sm:text-xs">{service.duration}</p>
+                        </div>
+                      )}
 
                       <div className={isList ? 'border-b border-white/10 my-4' : 'border-b border-white/10'} />
 
-                      <ul className={isList ? 'space-y-3' : 'space-y-2'}>
+                      <ul className={isList ? 'space-y-3' : 'space-y-1.5'}>
                         {service.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start gap-3">
-                            <span className="mt-1 text-white/80">•</span>
-                            <span className={isList ? 'text-sm text-gray-300' : 'text-xs leading-relaxed text-gray-300 sm:text-sm'}>{feature}</span>
+                          <li key={idx} className={isList ? 'flex items-start gap-3' : 'flex items-start gap-2'}>
+                            <span className={isList ? 'mt-1 text-white/80' : 'mt-1 text-xs text-white/70'}>•</span>
+                            <span className={isList ? 'text-sm text-gray-300' : 'text-xs leading-snug text-gray-300'}>{feature}</span>
                           </li>
                         ))}
                       </ul>
 
                       <Button
-                        className={isList ? 'w-full md:w-auto px-6 py-3 text-sm font-semibold' : 'w-full px-3 py-2 text-xs font-semibold sm:px-5 sm:py-3 sm:text-sm'}
+                        className={isList ? 'w-full md:w-auto px-6 py-3 text-sm font-semibold' : 'w-full px-3 py-2 text-xs font-semibold sm:px-4'}
                         onClick={() => {
                           setSelectedPackage(service.name)
                           setBookingOpen(true)
