@@ -1,16 +1,20 @@
 "use client";
 
 import React, { useRef, useState } from 'react'
+import Image from 'next/image';
 import type { Service } from '@/lib/services-data';
 import { Grid, List } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { BookingForm } from '@/components/booking-form';
+import { Skeleton } from '@/components/ui/skeleton';
+import { optimizeCloudinaryUrl } from '@/lib/utils';
 
 export function ServicesSection() {
   const MotionButton = motion.create(Button);
   const sectionRef = useRef<HTMLElement>(null);
   const [services, setServices] = useState<Service[]>([])
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid');
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -33,15 +37,36 @@ export function ServicesSection() {
     ;(async () => {
       try {
         const res = await fetch('/api/packages')
-        if (!res.ok) return
+        if (!res.ok) {
+          if (mounted) setServices([])
+          return
+        }
         const data = await res.json()
         if (mounted) setServices(Array.isArray(data) ? data : [])
       } catch {
         if (mounted) setServices([])
+      } finally {
+        if (mounted) setLoading(false)
       }
     })()
     return () => { mounted = false }
   }, [])
+
+  // Default to list view on large screens and respond to breakpoint changes
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const apply = () => setDisplayMode(mq.matches ? 'list' : 'grid');
+    apply();
+    // prefer addEventListener for modern browsers
+    if (mq.addEventListener) {
+      mq.addEventListener('change', apply);
+      return () => mq.removeEventListener('change', apply);
+    }
+    // fallback
+    mq.addListener(apply);
+    return () => mq.removeListener(apply);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -62,6 +87,8 @@ export function ServicesSection() {
       transition: { duration: 0.5 },
     },
   };
+
+  const skeletonItems = Array.from({ length: displayMode === 'grid' ? 4 : 3 });
 
   return (
     <motion.section
@@ -156,48 +183,105 @@ export function ServicesSection() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="flex flex-col gap-6"
+          className={displayMode === 'grid' ? 'grid grid-cols-2 gap-3 sm:gap-5 lg:gap-6' : 'flex flex-col gap-6'}
         >
-          {filteredServices.length === 0 ? (
+          {loading ? (
+            skeletonItems.map((_, idx) => (
+              <motion.div
+                key={idx}
+                variants={itemVariants}
+                className="rounded-2xl border border-white/10 bg-black/60 p-4 backdrop-blur-xl sm:rounded-[28px] sm:p-6"
+              >
+                {displayMode === 'grid' ? (
+                  <div className="space-y-4">
+                    <Skeleton className="aspect-[4/3] w-full rounded-xl bg-white/10 sm:rounded-2xl" />
+                    <div className="space-y-3">
+                      <Skeleton className="h-7 w-20 bg-white/10" />
+                      <Skeleton className="h-6 w-4/5 bg-white/10" />
+                      <Skeleton className="h-4 w-2/3 bg-white/10" />
+                      <div className="space-y-2 pt-2">
+                        <Skeleton className="h-3 w-full bg-white/10" />
+                        <Skeleton className="h-3 w-5/6 bg-white/10" />
+                        <Skeleton className="h-3 w-4/6 bg-white/10" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid gap-6 lg:grid-cols-[1fr_30%]">
+                    <div className="space-y-4">
+                      <Skeleton className="h-7 w-24 bg-white/10" />
+                      <Skeleton className="h-8 w-1/2 bg-white/10" />
+                      <Skeleton className="h-4 w-1/3 bg-white/10" />
+                      <div className="space-y-2 pt-3">
+                        <Skeleton className="h-3 w-full bg-white/10" />
+                        <Skeleton className="h-3 w-4/5 bg-white/10" />
+                        <Skeleton className="h-3 w-3/5 bg-white/10" />
+                      </div>
+                    </div>
+                    <Skeleton className="hidden min-h-[220px] rounded-2xl bg-white/10 lg:block" />
+                  </div>
+                )}
+              </motion.div>
+            ))
+          ) : filteredServices.length === 0 ? (
             <div className="py-12 text-center text-sm text-gray-300">No services available.</div>
-          ) : filteredServices.map((service) => {
+          ) : filteredServices.map((service, index) => {
             const isList = displayMode === 'list';
+            const hasImage = Boolean(service.sampleUrl);
 
             return (
               <motion.div
                 key={service.id}
                 variants={itemVariants}
-                whileHover={{ y: -6, scale: 1.01 }}
+                whileHover={{ y: isList ? -6 : -4, scale: isList ? 1.01 : 1.015 }}
                 transition={{ duration: 0.3 }}
-                className={`rounded-[32px] border border-white/10 bg-black/70 backdrop-blur-xl transition-shadow hover:shadow-[0_0_60px_rgba(255,255,255,0.12)] p-6 ${
-                  isList ? 'lg:flex lg:items-start lg:gap-6' : ''
+                className={`border border-white/10 bg-black/70 backdrop-blur-xl transition-shadow hover:shadow-[0_0_60px_rgba(255,255,255,0.12)] ${
+                  isList
+                    ? 'rounded-[32px] p-6 lg:flex lg:items-start lg:gap-6'
+                    : 'rounded-2xl p-3 sm:rounded-[28px] sm:p-5'
                 }`}
               >
                 <div className={isList ? 'lg:flex-1' : ''}>
-                  <div className={`grid gap-6 ${isList ? 'lg:grid-cols-[1fr_30%]' : 'lg:grid-cols-[40%_60%]'} items-center`}>
-                    <div className="space-y-4">
+                  <div
+                    className={`grid items-center ${isList ? 'gap-6 grid-cols-1 lg:grid-cols-[1fr_50%]' : 'gap-4'}`}
+                  >
+                    {hasImage && !isList && (
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-black sm:rounded-2xl">
+                        <Image
+                          src={optimizeCloudinaryUrl(service.sampleUrl!)}
+                          alt={service.name}
+                          fill
+                          sizes="(max-width: 1024px) 50vw, 25vw"
+                          priority={index < 4}
+                          unoptimized
+                          className="object-cover object-center"
+                        />
+                      </div>
+                    )}
+
+                    <div className={isList ? 'space-y-4' : 'space-y-3'}>
                       <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-2xl font-bold text-white">${service.price}</p>
+                        <p className={isList ? 'text-2xl font-bold text-white' : 'text-xl font-bold text-white sm:text-2xl'}>${service.price}</p>
                       </div>
 
                       <div>
-                        <h3 className="text-3xl font-semibold text-white mb-2">{service.name}</h3>
+                        <h3 className={isList ? 'text-3xl font-semibold text-white mb-2' : 'text-xl font-semibold leading-tight text-white sm:text-2xl'}>{service.name}</h3>
                         <p className="text-sm text-gray-300">{service.duration}</p>
                       </div>
 
-                      <div className="border-b border-white/10 my-4" />
+                      <div className={isList ? 'border-b border-white/10 my-4' : 'border-b border-white/10'} />
 
-                      <ul className="space-y-3">
+                      <ul className={isList ? 'space-y-3' : 'space-y-2'}>
                         {service.features.map((feature, idx) => (
                           <li key={idx} className="flex items-start gap-3">
                             <span className="mt-1 text-white/80">•</span>
-                            <span className="text-sm text-gray-300">{feature}</span>
+                            <span className={isList ? 'text-sm text-gray-300' : 'text-xs leading-relaxed text-gray-300 sm:text-sm'}>{feature}</span>
                           </li>
                         ))}
                       </ul>
 
                       <Button
-                        className="w-full md:w-auto px-6 py-3 text-sm font-semibold"
+                        className={isList ? 'w-full md:w-auto px-6 py-3 text-sm font-semibold' : 'w-full px-3 py-2 text-xs font-semibold sm:px-5 sm:py-3 sm:text-sm'}
                         onClick={() => {
                           setSelectedPackage(service.name)
                           setBookingOpen(true)
@@ -207,12 +291,16 @@ export function ServicesSection() {
                       </Button>
                     </div>
 
-                    {service.sampleUrl && (
-                      <div className="rounded-[32px] overflow-hidden border border-white/10 bg-white/5 h-full min-h-[240px]">
-                        <img
-                          src={service.sampleUrl}
+                    {hasImage && isList && (
+                      <div className="relative w-full h-[440px] overflow-hidden rounded-[32px] border border-white/10 bg-black">
+                        <Image
+                          src={optimizeCloudinaryUrl(service.sampleUrl!)}
                           alt={service.name}
-                          className="h-full w-full object-contain bg-black"
+                          fill
+                          sizes="(min-width:1024px) 45vw, 100vw"
+                          priority={index < 2}
+                          unoptimized
+                          className="object-cover"
                         />
                       </div>
                     )}

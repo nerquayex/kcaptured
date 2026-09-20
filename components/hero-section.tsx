@@ -78,8 +78,8 @@ export function HeroSection() {
         >
           <motion.h1
             variants={itemVariants}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight whitespace-normal max-w-[80vw] mx-auto text-center"
-            style={{ color: 'transparent', WebkitTextStroke: '1.2px white', display: 'inline-block' }}
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight tracking-tight whitespace-normal max-w-[80vw] mx-auto text-center kcv-heading"
+            style={{ color: 'transparent', display: 'inline-block' }}
           >
             KCAPTURED VISUALS
           </motion.h1>

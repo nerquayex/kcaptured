@@ -136,3 +136,11 @@
     @apply opacity-50 cursor-not-allowed;
   }
 }
+
+/* Heading stroke for hero label */
+.kcv-heading {
+  -webkit-text-stroke: 1.2px white;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
