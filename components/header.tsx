@@ -77,16 +77,34 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-transparent backdrop-blur-lg border-b border-transparent">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-colors ${
+        isOpen
+          ? 'border-white/10 bg-black/95 backdrop-blur-xl'
+          : 'border-transparent bg-transparent'
+      }`}
+    >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
+        <Link
+          href="/"
+          className={`flex items-center gap-3 transition-opacity md:opacity-100 ${
+            isOpen ? 'pointer-events-none opacity-0' : 'opacity-100'
+          }`}
+        >
           <img
             src="/kcaptured-logo.png"
             alt="KCAPTURED logo"
             className="h-12 w-12 rounded-full object-cover overflow-hidden border border-white/10"
           />
         </Link>
+        <span
+          className={`absolute left-4 text-xs font-semibold uppercase tracking-[0.28em] text-white transition-opacity md:hidden ${
+            isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+          }`}
+        >
+          Menu
+        </span>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
@@ -144,17 +162,17 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 bg-transparent backdrop-blur-xl border-b border-white/10 md:hidden"
+            className="absolute left-0 right-0 top-full border-b border-white/10 bg-black/95 shadow-2xl shadow-black/40 backdrop-blur-xl md:hidden"
           >
-            <div className="flex flex-col p-4 gap-4">
+            <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 pb-6 pt-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`font-medium transition-colors ${
+                  className={`rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
                     isActive(link.href)
-                      ? 'text-white underline underline-offset-4'
-                      : 'text-gray-200 hover:text-white'
+                      ? 'bg-white text-black'
+                      : 'text-gray-200 hover:bg-white/10 hover:text-white'
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
@@ -163,7 +181,7 @@ export function Header() {
               ))}
 
               {/* Mobile Social Media Links */}
-              <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+              <div className="mt-2 flex items-center gap-4 border-t border-white/10 px-4 pt-5">
                 <button
                   onClick={() => {
                     setIsOpen(false);

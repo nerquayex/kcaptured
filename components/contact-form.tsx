@@ -20,7 +20,7 @@ export function ContactForm() {
     offset: ['start end', 'end start'],
   });
   const imageY = useTransform(scrollYProgress, [0, 1], [-40, 36]);
-  const imageScale = useTransform(scrollYProgress, [0, 0.4, 1], [1.08, 1, 1.03]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.4, 1], [1, 1, 1]);
   const accentScale = useTransform(scrollYProgress, [0.05, 0.42], [0, 1]);
   const panelX = useTransform(scrollYProgress, [0, 0.38], [-80, 0]);
   const panelOpacity = useTransform(scrollYProgress, [0, 0.28], [0, 1]);
@@ -193,7 +193,7 @@ export function ContactForm() {
       className="relative min-h-screen overflow-hidden bg-[#0c0c0c] text-white"
     >
       <motion.div
-        className="absolute inset-0 hidden lg:block"
+        className="absolute inset-0 hidden bg-[#c61f34] lg:block"
         style={{
           clipPath: 'polygon(42% 0, 100% 0, 100% 100%, 58% 100%)',
           y: imageY,
@@ -203,8 +203,7 @@ export function ContactForm() {
         <img
           src={aboutImageUrl}
           alt="KCAPTURED portrait"
-          className="h-full w-full object-cover"
-          style={{ objectPosition: '40% center' }}
+          className="h-full w-full object-contain object-right"
         />
         <div className="absolute inset-0 bg-black/15" />
       </motion.div>

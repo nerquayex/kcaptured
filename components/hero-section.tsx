@@ -58,7 +58,7 @@ export function HeroSection() {
 
   return (
     <>
-      <section ref={sectionRef} className="relative -mt-16 overflow-hidden bg-[#951025]">
+      <section ref={sectionRef} className="relative overflow-hidden bg-[#951025]">
         <motion.img
           src={imageUrl}
           alt="Hero"
