@@ -76,12 +76,6 @@ export default async function PortfolioPage() {
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-xl text-gray-300">
-              A selection of our recent work
-            </p>
-            <h1 className="mt-4 text-4xl font-semibold text-white">
-              Portfolio
-            </h1>
           </div>
 
           <MasonryGallery images={images} mode={portfolioView === 'masonry' ? 'masonry' : 'current'} />

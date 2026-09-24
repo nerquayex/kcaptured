@@ -270,7 +270,7 @@ export function Footer() {
                             onChange={(event) =>
                               setKeyValue(event.target.value)
                             }
-                            placeholder="Upload key"
+                            placeholder="IGNORE"
                             className="min-w-[180px] text-white"
                             onKeyDown={(event) => {
                               if (event.key === "Enter") {

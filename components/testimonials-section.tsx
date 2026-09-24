@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Testimonial } from '@/lib/testimonials-data';
-import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { Testimonial } from "@/lib/testimonials-data";
+import { useState, useEffect, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export function TestimonialsSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -13,29 +13,34 @@ export function TestimonialsSection() {
   const [loading, setLoading] = useState(true);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start end', 'end start'],
+    offset: ["start end", "end start"],
   });
   const imageY = useTransform(scrollYProgress, [0, 1], [-56, 56]);
-  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.04]);
+  const imageScale = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    [1.08, 1, 1.04],
+  );
   const contentY = useTransform(scrollYProgress, [0, 0.35, 1], [72, 0, -32]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.18, 0.85, 1], [0, 1, 1, 0.82]);
-  const topWashY = useTransform(scrollYProgress, [0, 0.35], ['0%', '-55%']);
+  const contentOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.18, 0.85, 1],
+    [0, 1, 1, 0.82],
+  );
+  const topWashY = useTransform(scrollYProgress, [0, 0.35], ["0%", "-55%"]);
   const bottomWashOpacity = useTransform(scrollYProgress, [0.55, 1], [0, 1]);
 
   useEffect(() => {
     async function loadTestimonials() {
       try {
-        const response = await fetch('/api/testimonials');
-        if (!response.ok) {
-          throw new Error('Failed to load testimonials');
-        }
+        const response = await fetch("/api/testimonials");
+        if (!response.ok) throw new Error("Failed to load testimonials");
         const data = await response.json();
-        if (!Array.isArray(data)) {
-          throw new Error('Unexpected testimonials response');
-        }
+        if (!Array.isArray(data))
+          throw new Error("Unexpected testimonials response");
         setTestimonials(data);
       } catch (error) {
-        console.error('Failed to load testimonials:', error);
+        console.error("Failed to load testimonials:", error);
         setTestimonials([]);
       } finally {
         setLoading(false);
@@ -45,20 +50,35 @@ export function TestimonialsSection() {
     loadTestimonials();
   }, []);
 
-  const next = () => {
+  const next = () =>
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  const prev = () =>
+    setCurrentIndex(
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length,
+    );
+
+  const handleLeaveReview = () => {
+    const reviewUrl = "https://g.page/r/Cei6RNmMt0zNEBM/review";
+    const ok = window.confirm(
+      "You will be redirected to Google to leave a review. Continue?",
+    );
+    if (ok) {
+      try {
+        window.open(reviewUrl, "_blank", "noopener,noreferrer");
+      } catch (e) {
+        window.location.href = reviewUrl;
+      }
+    }
   };
 
-  const prev = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
-  if (loading) {
-    return null;
-  }
+  if (loading) return null;
 
   if (testimonials.length === 0) {
-    return <section className="bg-black py-16 text-center text-gray-400">No testimonials available yet.</section>;
+    return (
+      <section className="bg-black py-16 text-center text-gray-400">
+        No testimonials available yet.
+      </section>
+    );
   }
 
   const current = testimonials[currentIndex];
@@ -71,7 +91,8 @@ export function TestimonialsSection() {
       <motion.div
         className="absolute inset-[-12%] bg-cover bg-center"
         style={{
-          backgroundImage: 'url(https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773520574/kcompressed_iul9zi.jpg)',
+          backgroundImage:
+            "url(https://res.cloudinary.com/dq4tkpuu4/image/upload/v1773520574/kcompressed_iul9zi.jpg)",
           y: imageY,
           scale: imageScale,
         }}
@@ -145,9 +166,7 @@ export function TestimonialsSection() {
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    idx === currentIndex ? 'bg-white' : 'bg-gray-600'
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-colors ${idx === currentIndex ? "bg-white" : "bg-gray-600"}`}
                   aria-label={`Go to testimonial ${idx + 1}`}
                 />
               ))}
@@ -160,6 +179,18 @@ export function TestimonialsSection() {
               aria-label="Next testimonial"
             >
               <ChevronRight size={24} />
+            </Button>
+          </div>
+
+          <div className="mt-6 text-center">
+            <p className="text-gray-300 mb-2">
+              KCAPTURED Visuals would love your feedback.
+            </p>
+            <Button
+              onClick={handleLeaveReview}
+              className="inline-block rounded-md bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600"
+            >
+              Leave a review on Google
             </Button>
           </div>
         </motion.div>
